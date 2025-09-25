@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>RSI Customer • Vessel Setup</title>
+  <title>RSI Customer • Vessel Info</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Libs -->
@@ -17,30 +17,20 @@
   <!-- Ripple + Customer CSS -->
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
-
   <style>
-    /* Keep the vessel images a consistent height and look */
     .vessel-carousel img {
       width: 100%;
       height: 300px;
       object-fit: cover;
       border-radius: 6px;
-      display: block;
     }
-
-    /* Small thumbnail preview row */
-    .thumb-row { margin-top: 10px; display:flex; gap:8px; flex-wrap:wrap; }
-    .thumb-row img { width:80px; height:60px; object-fit:cover; border-radius:4px; border:1px solid #e1e4ea; }
-
-    /* Success alert placement */
-    .save-alert { margin-top:10px; display:none; }
   </style>
 </head>
 
 <body>
   <div class="container-fluid dashboard-layout">
     <div class="row">
-      <!-- Sidebar placeholder (optional) -->
+      <!-- Sidebar -->
       <div id="sidebar-placeholder"></div>
 
       <!-- Main -->
@@ -54,36 +44,27 @@
         <div class="panel">
           <div class="panel-heading">
             <i class="fa fa-ship"></i> M/V Yurisan Dozo
-            <button class="btn btn-primary btn-sm pull-right" data-toggle="collapse" data-target="#vesselInfoForm" aria-expanded="false" aria-controls="vesselInfoForm">
+            <button class="btn btn-primary btn-sm pull-right" data-toggle="collapse" data-target="#vesselInfoForm">
               <i class="fa fa-pencil"></i> Add/Edit Info
             </button>
           </div>
           <div class="panel-body">
 
-            <!-- Edit Form (collapsible, user can keep open manually) -->
+            <!-- Edit Form -->
             <div id="vesselInfoForm" class="collapse">
-              <form id="vesselForm" novalidate>
+              <form id="vesselForm">
                 <div class="form-group">
                   <label>About the Vessel</label>
                   <textarea id="aboutVessel" class="form-control rich-text"></textarea>
                 </div>
-
                 <div class="form-group">
                   <label>Upload Vessel Photos (Max 5)</label>
                   <input type="file" id="vesselPhotos" class="form-control" accept="image/*" multiple />
-                  <p class="help-block">Upload up to 5 images. Recommended size: 800x500px.</p>
-
-                  <!-- Live thumbnail previews -->
-                  <div id="thumbs" class="thumb-row" aria-live="polite"></div>
+                  <p class="help-block">Upload up to 5 images. Recommended size: 800x500px</p>
                 </div>
-
                 <button type="submit" class="btn btn-success">
                   <i class="fa fa-save"></i> Save
                 </button>
-
-                <div class="alert alert-success save-alert" id="saveSuccess">
-                  <i class="fa fa-check-circle"></i> Vessel info updated.
-                </div>
               </form>
               <hr />
             </div>
@@ -102,13 +83,11 @@
               <div class="col-md-6">
                 <h4><i class="fa fa-picture-o"></i> Vessel Gallery</h4>
                 <div id="vesselCarousel" class="carousel slide vessel-carousel" data-ride="carousel">
-                  <ol class="carousel-indicators"></ol>
                   <div class="carousel-inner">
                     <div class="item active">
-                      <img src="https://via.placeholder.com/800x500?text=No+Photo" alt="No photo">
+                      <img src="https://via.placeholder.com/800x500?text=No+Photo" />
                     </div>
                   </div>
-
                   <!-- Controls -->
                   <a class="left carousel-control" href="#vesselCarousel" data-slide="prev">
                     <span class="glyphicon glyphicon-chevron-left"></span>
@@ -145,15 +124,13 @@
                 </select>
               </div>
             </div>
-            <button id="saveLogs" class="btn btn-success"><i class="fa fa-save"></i> Save Logs Config</button>
+            <button class="btn btn-success"><i class="fa fa-save"></i> Save Logs Config</button>
             <hr />
 
             <!-- Preview Table -->
             <h4>Preview (Client Portal)</h4>
             <table class="table table-bordered" id="logsPreview">
-              <thead>
-                <tr></tr>
-              </thead>
+              <thead><tr></tr></thead>
               <tbody>
                 <tr><td colspan="4" class="text-center text-muted">Sample activity logs will appear here</td></tr>
               </tbody>
@@ -165,135 +142,77 @@
     </div>
   </div>
 
-  <!-- JS libs -->
+  <!-- JS -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
-
   <!-- Summernote -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
 
   <script>
     $(function () {
-      // Load sidebar (optional)
+      // Sidebar load
       fetch('customer-sidebar.html')
         .then(response => response.text())
         .then(data => {
-          $('#sidebar-placeholder').html(data);
+          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+          sidebarPlaceholder.innerHTML = data;
+
           const currentPage = 'customer-vessel-info';
-          const activeLink = $('#sidebar-placeholder').find(`[data-page="${currentPage}"]`);
-          if (activeLink.length) activeLink.addClass('active');
-        }).catch(()=>{/*silent if not available*/});
-
-      // Init select2
-      $('.select2').select2({ tags: true });
-
-      // Init Summernote
+          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+          }
+        });
+      // Init rich text editor
       $('#aboutVessel').summernote({
         height: 150,
         placeholder: 'Describe your vessel here...'
       });
 
-      // Helper: check if Summernote content is empty
-      function isSummernoteEmpty(html) {
-        const tmp = $('<div>').html(html).text().trim();
-        // Summernote default empty can be "<p><br></p>" — check trimmed text and any images
-        return tmp.length === 0 && $(html).find('img').length === 0;
-      }
-
-      // Build carousel (indicators + inner) from an array of image dataURLs
-      function buildCarousel(images) {
-        const $carousel = $('#vesselCarousel');
-        const $inner = $carousel.find('.carousel-inner').empty();
-        const $ind = $carousel.find('.carousel-indicators').empty();
-
-        if (!images || images.length === 0) {
-          $ind.append('<li data-target="#vesselCarousel" data-slide-to="0" class="active"></li>');
-          $inner.append(`<div class="item active"><img src="https://via.placeholder.com/800x500?text=No+Photo" alt="No photo"></div>`);
-        } else {
-          images.forEach((src, idx) => {
-            $ind.append(`<li data-target="#vesselCarousel" data-slide-to="${idx}" ${idx === 0 ? 'class="active"' : ''}></li>`);
-            $inner.append(`<div class="item ${idx === 0 ? 'active' : ''}"><img src="${src}" alt="Vessel photo ${idx+1}"></div>`);
-          });
-        }
-        // restart carousel at first item
-        try {
-          $carousel.carousel(0);
-        } catch (e) { /* ignore */ }
-      }
-
-      // Convert FileList -> Promise array of dataURL strings (preserves order)
-      function readFilesAsDataURLs(fileList, max = 5) {
-        const files = Array.from(fileList || []).slice(0, max);
-        const promises = files.map(file => new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => reject(new Error('Failed to read file'));
-          reader.readAsDataURL(file);
-        }));
-        return Promise.all(promises);
-      }
-
-      // Show small thumbnails when files selected
-      $('#vesselPhotos').on('change', function () {
-        const files = this.files || [];
-        const $thumbs = $('#thumbs').empty();
-        if (files.length > 5) {
-          alert('Maximum 5 images allowed. Only the first 5 will be used.');
-        }
-        // preview up to 5
-        Array.from(files).slice(0, 5).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            $thumbs.append(`<img src="${e.target.result}" alt="thumb">`);
-          };
-          reader.readAsDataURL(file);
-        });
-
-        // update carousel live (so user sees immediate preview)
-        readFilesAsDataURLs(files, 5).then(images => buildCarousel(images)).catch(()=>{/*ignore*/});
-      });
-
-      // Save button (submit) - updates preview content and carousel reliably
+      // Form submit handler
       $('#vesselForm').on('submit', function (e) {
         e.preventDefault();
 
-        // About HTML from Summernote
+        // Update About Preview
         const aboutHtml = $('#aboutVessel').summernote('code');
+        $('#aboutPreview').html(aboutHtml || "<p>No info provided yet.</p>");
 
-        if (isSummernoteEmpty(aboutHtml)) {
-          $('#aboutPreview').html('<p class="text-muted">No information provided yet.</p>');
+        // Update Carousel with photos
+        const files = $('#vesselPhotos')[0].files;
+        const carouselInner = $('#vesselCarousel .carousel-inner');
+        carouselInner.empty();
+
+        if (files.length > 0) {
+          Array.from(files).slice(0, 5).forEach((file, i) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const active = i === 0 ? 'active' : '';
+              const img = `
+                <div class="item ${active}">
+                  <img src="${e.target.result}" />
+                </div>`;
+              carouselInner.append(img);
+            };
+            reader.readAsDataURL(file);
+          });
         } else {
-          $('#aboutPreview').html(aboutHtml);
+          carouselInner.html(`
+            <div class="item active">
+              <img src="https://via.placeholder.com/800x500?text=No+Photo" />
+            </div>
+          `);
         }
-
-        // Images
-        const files = $('#vesselPhotos')[0].files || [];
-        if (files.length === 0) {
-          // nothing selected => keep existing carousel (or placeholder)
-          buildCarousel([]);
-          $('#thumbs').empty();
-        } else {
-          // read files (max 5), then build carousel
-          readFilesAsDataURLs(files, 5)
-            .then(images => {
-              buildCarousel(images);
-            })
-            .catch(err => {
-              console.error(err);
-              alert('Error reading image files.');
-            });
-        }
-
-        // show success feedback
-        $('#saveSuccess').stop(true, true).fadeIn(200).delay(1600).fadeOut(800);
       });
-
-      // Logs preview logic (keeps as before)
+    });
+  </script>
+  <script>
+    $(function () {
+      // Logs Preview
       function updateLogsPreview() {
-        const cols = $('#logColumns').val() || [];
+        const cols = $('#logColumns').val();
         const headRow = $('#logsPreview thead tr').empty();
-        if (!cols.length) {
+        if (!cols || cols.length === 0) {
           headRow.append('<th>No columns selected</th>');
           $('#logsPreview tbody').html('<tr><td class="text-muted text-center">No data</td></tr>');
           return;
@@ -302,8 +221,7 @@
           const label = col.charAt(0).toUpperCase() + col.slice(1);
           headRow.append(`<th>${label.replace(/([A-Z])/g, ' $1').trim()}</th>`);
         });
-        const count = Math.max(1, parseInt($('#logCount').val(), 10) || 5);
-        const sample = Array.from({ length: count }, (_, i) =>
+        const sample = Array.from({ length: $('#logCount').val() || 5 }, (_, i) =>
           `<tr>${cols.map(c => `<td>Sample ${c} ${i + 1}</td>`).join('')}</tr>`
         ).join('');
         $('#logsPreview tbody').html(sample);
