@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Admin • Certificates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple + Admin CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+  <style>
+    .checkbox label {
+      font-weight: normal;
+      margin-right: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+        <div id="sidebar-placeholder"></div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Certificate Configuration</h2>
+          <p>Configure certificate upload requirements per vessel</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <i class="fa fa-list"></i> File Upload
+           
+          </div>
+          <div class="panel-body">
+            <!-- File size/type rule -->
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Accepted File Types</label>
+                <select id="acceptTypes" class="form-control select2" multiple style="width: 100%">
+                  <option value="pdf" selected>PDF</option>
+                  <option value="jpg" selected>JPG</option>
+                  <option value="png" selected>PNG</option>
+                </select>
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>Max Size (MB)</label>
+                <input id="maxSize" type="number" class="form-control" min="1" max="50" value="100" />
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>&nbsp;</label>
+                <button id="saveRules" class="btn btn-primary btn-block">
+                  <i class="fa fa-save"></i> Save Upload Rules
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /main -->
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+  <script>
+    $(function () {
+      fetch('admin-sidebar.html')
+      .then(response => response.text())
+      .then(data => {
+        const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+        sidebarPlaceholder.innerHTML = data;
+
+        // Script to set the active state after the sidebar is loaded
+        const currentPage = 'admin-certificates';
+        const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      })
+      .catch(error => console.error('Error fetching sidebar:', error));
+
+      $(".select2").select2({ width: "100%" });
+
+      function rowToObj($tr) {
+        return {
+          name: $tr.children().eq(0).text().trim(),
+          type: $tr.find("td:eq(1) .label").text().trim(),
+          code: $tr.children().eq(2).text().trim(),
+          category: $tr.find("td:eq(3) .label").text().trim(),
+          desc: $tr.children().eq(4).text().trim(),
+          isRequired: $tr.find("td:eq(5) .label").text().trim() === "Yes",
+          requireUpload: $tr.find("td:eq(6) .label").text().trim() === "Yes",
+        };
+      }
+
+      function objToRow(o) {
+        return `
+          <tr>
+            <td>${o.name}</td>
+            <td><span class="label label-gray">${o.type || "-"}</span></td>
+            <td>${o.code || "-"}</td>
+            <td><span class="label label-light">${o.category || "-"}</span></td>
+            <td>${o.desc || "-"}</td>
+            <td><span class="label ${o.isRequired ? "label-red" : "label-gray"
+          }">${o.isRequired ? "Yes" : "No"}</span></td>
+            <td><span class="label ${o.requireUpload ? "label-blue" : "label-gray"
+          }">${o.requireUpload ? "Yes" : "No"}</span></td>
+            <td>
+              <button class="btn btn-xs btn-default edit-cert"><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-xs btn-danger delete-cert"><i class="fa fa-trash"></i></button>
+            </td>
+          </tr>`;
+      }
+
+      // Submit
+      $("#formCert").on("submit", function (e) {
+        e.preventDefault();
+        const idx = $("#certRowIndex").val();
+        const o = {
+          name: $("#certName").val(),
+          type: $("#certType").val(),
+          code: $("#certCode").val(),
+          category: $("#certCategory").val(),
+          desc: $("#certDesc").val(),
+          isRequired: $("#certIsRequired").prop("checked"),
+          requireUpload: $("#certRequireUpload").prop("checked"),
+        };
+        if (idx === "") {
+          $("#certTable tbody").append(objToRow(o));
+        } else {
+          const $tr = $("#certTable tbody tr").eq(parseInt(idx, 10));
+          $tr.replaceWith(objToRow(o));
+        }
+        $("#modalCert").modal("hide");
+        this.reset();
+        $("#certRowIndex").val("");
+      });
+
+      // Edit
+      $(document).on("click", ".edit-cert", function () {
+        const $tr = $(this).closest("tr");
+        const i = $tr.index();
+        const o = rowToObj($tr);
+        $("#certRowIndex").val(i);
+        $("#certName").val(o.name);
+        $("#certType").val(o.type);
+        $("#certCode").val(o.code);
+        $("#certCategory").val(o.category);
+        $("#certDesc").val(o.desc);
+        $("#certIsRequired").prop("checked", o.isRequired);
+        $("#certRequireUpload").prop("checked", o.requireUpload);
+        $("#modalCert").modal("show");
+      });
+
+      // Delete
+      $(document).on("click", ".delete-cert", function () {
+        if (confirm("Delete this certificate template?"))
+          $(this).closest("tr").remove();
+      });
+
+      // Save upload rules (demo)
+      $("#saveRules").on("click", function () {
+        alert("File type & size rules saved.");
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,309 @@
+/* ===============================
+   Original Registration Styles
+   =============================== */
+.registration-container { 
+  margin-top: 30px; 
+  background: #fff; 
+  padding: 20px; 
+  border-radius: 8px; 
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.side-stepper { 
+  border-right: 1px solid #eee; 
+  padding-right: 15px; 
+}
+.side-stepper .step { 
+  margin-bottom: 20px; 
+  cursor: pointer; 
+}
+.side-stepper .step.active .step-title { 
+  font-weight: bold; 
+  color: #3F91FF; 
+}
+.side-stepper .step.completed .step-title { 
+  color: #2d8548; 
+}
+.side-stepper .step-number { 
+  display:inline-block; 
+  width:28px; 
+  height:28px; 
+  border-radius:50%; 
+  background:#ccc; 
+  color:#fff; 
+  text-align:center; 
+  line-height:28px; 
+  margin-right:8px;
+}
+.side-stepper .active .step-number { 
+  background:#3F91FF; 
+}
+.side-stepper .completed .step-number { 
+  background:#2d8548; 
+}
+.form-section { 
+  display:none; 
+}
+.form-section.active { 
+  display:block; 
+}
+.footer-buttons { 
+  margin-top:20px; 
+  text-align:right; 
+}
+.upload-preview img { 
+  max-width: 150px; 
+  margin-top: 10px; 
+  border: 1px solid #ddd; 
+  padding: 5px; 
+}
+.success-message { 
+  text-align:center; 
+  padding:30px; 
+}
+
+
+/* ===============================
+   RSI Crew Dashboard Styles
+   Scoped for dashboard.html only
+   =============================== */
+.dashboard-layout {
+  min-height: 100vh;
+}
+.page-header {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+.page-header h2 {
+  font-weight: 600;
+  color: var(--r-dark);
+}
+.page-header p {
+  color: var(--r-gray);
+  margin-top: 5px;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--r-dark);
+  min-height: 100vh;
+  padding: 20px;
+  color: #fff;
+}
+.sidebar .logo {
+  color: var(--r-light);
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.sidebar .nav > li > a {
+  color: var(--r-light);
+  border-radius: 4px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar .nav > li.active > a,
+.sidebar .nav > li > a:hover {
+  background: var(--r-blue);
+  color: #fff;
+  border-left: 3px solid #FF7900
+}
+
+.main-content {
+  padding: 30px;
+  background: var(--r-light);
+  min-height: 100vh;
+}
+
+/* Reminder banners */
+#reminders .alert {
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+#reminders .alert .btn {
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 12px;
+}
+
+/* Panels */
+.panel {
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  margin-bottom: 25px;
+}
+.panel-heading {
+  background: #fff !important;
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 1px solid #eee;
+  border-radius: 12px 12px 0 0 !important;
+  color: var(--r-dark);
+}
+.panel-heading .edit-toggle {
+  border-radius: 20px;
+  font-size: 12px;
+}
+.panel-body {
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+}
+
+/* Form controls */
+.form-control[readonly] {
+  background: #f9f9f9;
+  color: #666;
+  cursor: not-allowed;
+}
+.form-group label {
+  font-weight: 500;
+  color: var(--r-dark);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--r-blue);
+  border-color: var(--r-blue);
+}
+.btn-primary:hover {
+  background: #2c76d4;
+  border-color: #2c76d4;
+}
+.btn-danger {
+  background: var(--r-red);
+  border-color: var(--r-red);
+}
+.btn-danger:hover {
+  background: #b82123;
+  border-color: #b82123;
+}
+.btn-warning {
+  background: #ffb347;
+  border-color: #ff9f1a;
+  color: #fff;
+}
+
+/* Video placeholder */
+.video-placeholder {
+  padding: 40px;
+  border: 2px dashed var(--r-gray);
+  border-radius: 12px;
+  color: var(--r-gray);
+  transition: all .3s;
+}
+.video-placeholder:hover {
+  background: #f5f9ff;
+  border-color: var(--r-blue);
+  color: var(--r-blue);
+}
+
+/* Progress bar with step markers */
+.progress-with-steps {
+  position: relative;
+  height: 30px;
+}
+.progress-steps {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+.progress-steps .step {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #5D7FAC;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.progress-steps .step.completed {
+  color: #2d8548;
+  font-weight: bold;
+}
+.progress-steps .step.done {
+  color: #2d8548;
+  font-weight: 700;
+}
+.list-group-item .label {
+  float: right;
+}
+.progress-with-steps {
+  position: relative;
+  height: 16px;
+}
+.progress-steps {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.progress-steps .step {
+  pointer-events: auto;
+  position: absolute;
+  transform: translateX(-50%);
+  cursor: pointer;
+  font-size: 12px;
+  color: #5D7FAC;
+}
+
+
+/* ===============================
+   Shared Sidebar + Stepper (Dashboard + Registration)
+   =============================== */
+.side-stepper {
+  background: var(--r-dark);
+  color: var(--r-light);
+  min-height: 100vh;
+  padding: 20px;
+  width: 240px;
+}
+.side-stepper .logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.side-stepper .step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .3s;
+}
+.side-stepper .step:hover {
+  background: rgba(255,255,255,0.05);
+}
+.side-stepper .step-number {
+  display:inline-block;
+  width:28px; 
+  height:28px;
+  border-radius:50%;
+  background:#555; 
+  color:#fff; 
+  text-align:center; 
+  line-height:28px;
+  margin-right:10px;
+  font-size: 14px;
+}
+.side-stepper .step-title {
+  font-size: 14px;
+}
+.side-stepper .active .step-number {
+  background: var(--r-blue);
+}
+.side-stepper .active .step-title {
+  color: var(--r-blue);
+  font-weight: 600;
+}
+.side-stepper .completed .step-number {
+  background: var(--r-green);
+}
+.side-stepper .completed .step-title {
+  color: var(--r-green);
+  font-weight: 600;
+}

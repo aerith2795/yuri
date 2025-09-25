@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Admin • Vessel Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Libs -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Ripple + Admin CSS -->
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="admin-page.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder"></div>
+
+
+            <!-- Main -->
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Vessel Configuration</h2>
+                    <p>Register, manage, and configure vessels</p>
+                </div>
+
+                <!-- Overview of Vessels -->
+                <div class="panel">
+                    <div class="panel-heading">
+                        <i class="fa fa-list"></i> All Vessels
+                        <button class="btn btn-primary btn-sm pull-right" data-toggle="modal"
+                            data-target="#vesselModal">
+                            <i class="fa fa-plus"></i> Add Vessel
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-inline m-b-15">
+                            <label for="companyFilter">Filter by Company:</label>
+                            <select id="companyFilter" class="form-control select2" style="min-width:240px;">
+                                <option value="">All Companies</option>
+                                <option>Ripple Marine</option>
+                                <option>Oceanic Lines</option>
+                            </select>
+                        </div>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>IMO</th>
+                                    <th>Vessel Name</th>
+                                    <th>Type</th>
+                                    <th>Company</th>
+                                    <th>License Expiry</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vesselList">
+                                <tr>
+                                    <td>IMO1234567</td>
+                                    <td>MV Ocean Star</td>
+                                    <td>Cargo</td>
+                                    <td>Ripple Marine</td>
+                                    <td>2026-02-10</td>
+                                    <td>
+                                        <button class="btn btn-xs btn-default" data-toggle="modal"
+                                            data-target="#vesselModal"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>IMO9876543</td>
+                                    <td>MV Golden Wave</td>
+                                    <td>Tanker</td>
+                                    <td>Oceanic Lines</td>
+                                    <td>2025-11-01</td>
+                                    <td>
+                                        <button class="btn btn-xs btn-default" data-toggle="modal"
+                                            data-target="#vesselModal"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Vessel Modal -->
+                <div id="vesselModal" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <form id="vesselForm">
+                                <div class="modal-header">
+                                    <button type="button" class="close"
+                                        data-dismiss="modal"><span>&times;</span></button>
+                                    <h4 class="modal-title"><i class="fa fa-ship"></i> Register Vessel</h4>
+                                </div>
+                                <div class="modal-body" style="max-height:70vh; overflow-y:auto;">
+                                    <div class="row form-group-sm">
+                                        <div class="col-sm-4 form-group">
+                                            <label>IMO Number</label>
+                                            <input type="text" class="form-control" placeholder="e.g., 1234567">
+                                        </div>
+                                        <div class="col-sm-4 form-group">
+                                            <label>Vessel Name</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                        <div class="col-sm-4 form-group">
+                                            <label>Vessel Type</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="row form-group-sm">
+                                        <div class="col-sm-6 form-group">
+                                            <label>Company</label>
+                                            <input type="text" class="form-control">
+                                        </div>
+                                        <div class="col-sm-6 form-group">
+                                            <label>License Expiry Date</label>
+                                            <input type="date" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" id="saveVessel" class="btn btn-success">
+                                        <i class="fa fa-save"></i> Save
+                                    </button>
+                                    <button type="button" id="saveAndAddAnother" class="btn btn-primary">
+                                        <i class="fa fa-plus-circle"></i> Save & Add Another
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            fetch('admin-sidebar.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('sidebar-placeholder').innerHTML = data;
+                })
+                .catch(error => console.error('Error fetching sidebar:', error));
+            
+                $('.select2').select2();
+
+            // Filter demo
+            $('#companyFilter').on('change', function () {
+                alert('Filter vessels by company (demo)');
+            });
+
+            // Save button
+            $('#saveVessel').on('click', function () {
+                alert('Vessel saved (demo). Modal will close.');
+                $('#vesselModal').modal('hide');
+            });
+
+            // Save & Add Another button
+            $('#saveAndAddAnother').on('click', function () {
+                alert('Vessel saved (demo). You can now add another.');
+                $('#vesselForm')[0].reset(); // clear inputs
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSXXX Smart Induction - Admin Dashboard</title>
+  <!-- Bootstrap 3 CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/skins/square/blue.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
+  <!-- DateRangePicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<script src="../shared.js"></script>
+// In admin/index.html (before </body>)
+<script src="../shared.js"></script>
+<script>
+  // Save vessel function
+  document.getElementById('saveVessel').addEventListener('click', () => {
+    const db = RSXXXDB.get();
+    
+    const newVessel = {
+      imo: document.getElementById('imo').value,
+      name: document.getElementById('vesselName').value,
+      license: document.getElementById('licenseExpiry').value,
+      id: Date.now() // Unique ID
+    };
+
+    db.vessels.push(newVessel);
+    RSXXXDB.save(db);
+    
+    alert(`Vessel ${newVessel.name} saved!`);
+    document.getElementById('vesselForm').reset(); // Clear form
+  });
+
+  // Display existing vessels
+  function loadVessels() {
+    const db = RSXXXDB.get();
+    const vesselList = document.getElementById('vesselList');
+    vesselList.innerHTML = db.vessels.map(vessel => `
+      <tr>
+        <td>${vessel.imo}</td>
+        <td>${vessel.name}</td>
+        <td>${vessel.license}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Load on startup + when data changes
+  loadVessels();
+  window.addEventListener('rsxxxUpdate', loadVessels);
+</script>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-header text-center">
+      <img src="https://via.placeholder.com/150x50?text=RSXXX+Logo" alt="RSXXX Logo">
+    </div>
+    <a href="#" class="active" data-section="dashboard"><i class="fa fa-dashboard"></i> Dashboard</a>
+    <a href="#" data-section="vessels"><i class="fa fa-ship"></i> Vessel Management</a>
+    <a href="#" data-section="licenses"><i class="fa fa-key"></i> License Control</a>
+    <a href="#" data-section="users"><i class="fa fa-users"></i> User Accounts</a>
+    <a href="#" data-section="reports"><i class="fa fa-file-text"></i> Reports</a>
+    <a href="#" data-section="settings"><i class="fa fa-cog"></i> Settings</a>
+    <div style="position: absolute; bottom: 0; width: 100%; padding: 15px; background: rgba(0,0,0,0.2);">
+      <div class="text-center">
+        <img src="https://via.placeholder.com/40?text=AD" class="user-avatar">
+        <span style="color: white;">Admin User</span>
+      </div>
+      <a href="#" style="display: block; text-align: center; margin-top: 10px;">
+        <i class="fa fa-sign-out"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Dashboard Section -->
+    <div class="content-section" id="dashboard-section">
+      <div class="content-header">
+        <h2><i class="fa fa-dashboard"></i> Dashboard</h2>
+        <ol class="breadcrumb">
+          <li class="active"><i class="fa fa-home"></i></li>
+        </ol>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-card blue">
+            <i class="fa fa-ship fa-2x"></i>
+            <h3>142</h3>
+            <p>Active Vessels</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card green">
+            <i class="fa fa-users fa-2x"></i>
+            <h3>1,248</h3>
+            <p>Crew Registrations</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card orange">
+            <i class="fa fa-exclamation-triangle fa-2x"></i>
+            <h3>12</h3>
+            <p>Expiring Licenses</p>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card purple">
+            <i class="fa fa-user-secret fa-2x"></i>
+            <h3>58</h3>
+            <p>Admin Users</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <div class="card-header">
+          <span><i class="fa fa-clock-o"></i> Recent Activity</span>
+          <div class="btn-group">
+            <button class="btn btn-xs btn-default">Today</button>
+            <button class="btn btn-xs btn-default">Week</button>
+            <button class="btn btn-xs btn-primary">Month</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Vessel</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>10:32 AM</td>
+                <td><img src="https://via.placeholder.com/30?text=JD" class="user-avatar"> John Doe</td>
+                <td>Updated MV Ocean Star details</td>
+                <td>IMO 1234567</td>
+              </tr>
+              <tr>
+                <td>09:15 AM</td>
+                <td><img src="https://via.placeholder.com/30?text=AS" class="user-avatar"> Anna Smith</td>
+                <td>Renewed license for MV Blue Horizon</td>
+                <td>IMO 7654321</td>
+              </tr>
+              <tr>
+                <td>Yesterday</td>
+                <td><img src="https://via.placeholder.com/30?text=AD" class="user-avatar"> Admin</td>
+                <td>Added new vessel MV Golden Wave</td>
+                <td>IMO 9876543</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vessel Management Section (Hidden by default) -->
+    <div class="content-section" id="vessels-section" style="display: none;">
+      <div class="content-header">
+        <h2><i class="fa fa-ship"></i> Vessel Management</h2>
+        <ol class="breadcrumb">
+          <li><a href="#"><i class="fa fa-home"></i></a></li>
+          <li class="active">Vessels</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>All Registered Vessels</span>
+          <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addVesselModal">
+            <i class="fa fa-plus"></i> Add Vessel
+          </button>
+        </div>
+        <div class="card-body">
+          <table id="vesselsTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>IMO</th>
+                <th>Vessel Name</th>
+                <th>Type</th>
+                <th>Company</th>
+                <th>License Expiry</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1234567</td>
+                <td>MV Ocean Star</td>
+                <td>Offshore Supply</td>
+                <td>NA Offshore</td>
+                <td>15/12/2023</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td class="table-actions">
+                  <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>7654321</td>
+                <td>MV Blue Horizon</td>
+                <td>Container Ship</td>
+                <td>Global Shipping</td>
+                <td>05/01/2024</td>
+                <td><span class="badge badge-active">Active</span></td>
+                <td class="table-actions">
+                  <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>9876543</td>
+                <td>MV Golden Wave</td>
+                <td>Tanker</td>
+                <td>PetroMarine</td>
+                <td>22/10/2023</td>
+                <td><span class="badge badge-expiring">Expiring</span></td>
+                <td class="table-actions">
+                  <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- License Control Section (Hidden by default) -->
+    <div class="content-section" id="licenses-section" style="display: none;">
+      <div class="content-header">
+        <h2><i class="fa fa-key"></i> License Control</h2>
+        <ol class="breadcrumb">
+          <li><a href="#"><i class="fa fa-home"></i></a></li>
+          <li class="active">Licenses</li>
+        </ol>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <span>Expiring Licenses</span>
+              <div class="btn-group">
+                <button class="btn btn-xs btn-default">30 Days</button>
+                <button class="btn btn-xs btn-primary">60 Days</button>
+                <button class="btn btn-xs btn-default">All</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="alert alert-warning">
+                <strong>MV Golden Wave</strong> - Expires on 22/10/2023 (12 days left)
+                <button class="btn btn-xs btn-primary pull-right">Renew Now</button>
+              </div>
+              <div class="alert alert-warning">
+                <strong>MV Northern Light</strong> - Expires on 05/11/2023 (26 days left)
+                <button class="btn btn-xs btn-primary pull-right">Renew Now</button>
+              </div>
+              <div class="alert alert-warning">
+                <strong>MV Pacific Dawn</strong> - Expires on 15/11/2023 (36 days left)
+                <button class="btn btn-xs btn-default pull-right">Remind Later</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header">
+              <span>License Statistics</span>
+              <div class="pull-right">
+                <select class="select2" style="width: 120px;">
+                  <option>2023</option>
+                  <option>2022</option>
+                  <option>2021</option>
+                </select>
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="height: 250px; background: #f9f9f9; display: flex; align-items: center; justify-content: center;">
+                <p class="text-muted">[License Renewal Chart Would Appear Here]</p>
+              </div>
+              <div class="row text-center" style="margin-top: 15px;">
+                <div class="col-md-4">
+                  <h4>142</h4>
+                  <p class="text-muted">Active</p>
+                </div>
+                <div class="col-md-4">
+                  <h4>12</h4>
+                  <p class="text-muted">Expiring</p>
+                </div>
+                <div class="col-md-4">
+                  <h4>5</h4>
+                  <p class="text-muted">Expired</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Bulk License Renewal</span>
+        </div>
+        <div class="card-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-2 control-label">Vessels</label>
+              <div class="col-md-10">
+                <select class="select2" multiple style="width: 100%;">
+                  <option>MV Ocean Star (IMO: 1234567)</option>
+                  <option>MV Blue Horizon (IMO: 7654321)</option>
+                  <option>MV Golden Wave (IMO: 9876543)</option>
+                  <option>MV Northern Light (IMO: 1357924)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Renewal Period</label>
+              <div class="col-md-10">
+                <select class="form-control">
+                  <option>1 Year</option>
+                  <option>2 Years</option>
+                  <option>3 Years</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Payment Method</label>
+              <div class="col-md-10">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="payment" checked> Company Account
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="payment"> Credit Card
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="payment"> Bank Transfer
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary"><i class="fa fa-credit-card"></i> Process Renewals</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Accounts Section (Hidden by default) -->
+    <div class="content-section" id="users-section" style="display: none;">
+      <div class="content-header">
+        <h2><i class="fa fa-users"></i> User Accounts</h2>
+        <ol class="breadcrumb">
+          <li><a href="#"><i class="fa fa-home"></i></a></li>
+          <li class="active">Users</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>All User Accounts</span>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-default">Admins</button>
+            <button class="btn btn-sm btn-default">Vessel Officers</button>
+            <button class="btn btn-sm btn-primary">All Users</button>
+          </div>
+          <button class="btn btn-sm btn-success pull-right" data-toggle="modal" data-target="#addUserModal">
+            <i class="fa fa-plus"></i> Add User
+          </button>
+        </div>
+        <div class="card-body">
+          <table id="usersTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Vessels</th>
+                <th>Last Login</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <img src="https://via.placeholder.com/30?text=AD" class="user-avatar">
+                  Admin User
+                </td>
+                <td>admin@rsxxx.com</td>
+                <td><span class="label label-danger">Super Admin</span></td>
+                <td>All</td>
+                <td>Today, 11:42 AM</td>
+                <td><span class="label label-success">Active</span></td>
+                <td class="table-actions">
+                  <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <img src="https://via.placeholder.com/30?text=JD" class="user-avatar">
+                  John Doe
+                </td>
+                <td>john@naoffshore.com</td>
+                <td><span class="label label-primary">Vessel Admin</span></td>
+                <td>MV Ocean Star</td>
+                <td>Yesterday, 3:15 PM</td>
+                <td><span class="label label-success">Active</span></td>
+                <td class="table-actions">
+                  <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <img src="https://via.placeholder.com/30?text=AS" class="user-avatar">
+                  Anna Smith
+                </td>
+                <td>anna@globalshipping.com</td>
+                <td><span class="label label-primary">Vessel Admin</span></td>
+                <td>MV Blue Horizon</td>
+                <td>2 days ago</td>
+                <td><span class="label label-default">Inactive</span></td>
+                <td class="table-actions">
+                  <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                  <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Section (Hidden by default) -->
+    <div class="content-section" id="reports-section" style="display: none;">
+      <div class="content-header">
+        <h2><i class="fa fa-file-text"></i> Reports</h2>
+        <ol class="breadcrumb">
+          <li><a href="#"><i class="fa fa-home"></i></a></li>
+          <li class="active">Reports</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Generate Custom Report</span>
+        </div>
+        <div class="card-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-2 control-label">Report Type</label>
+              <div class="col-md-10">
+                <select class="form-control">
+                  <option>Crew Registration Summary</option>
+                  <option>Vessel Compliance Status</option>
+                  <option>License Expiration Report</option>
+                  <option>User Activity Log</option>
+                  <option>Custom Data Export</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Date Range</label>
+              <div class="col-md-10">
+                <input type="text" class="form-control daterange" value="01/01/2023 - 12/31/2023">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Vessels</label>
+              <div class="col-md-10">
+                <select class="select2" multiple style="width: 100%;">
+                  <option>All Vessels</option>
+                  <option>MV Ocean Star (IMO: 1234567)</option>
+                  <option>MV Blue Horizon (IMO: 7654321)</option>
+                  <option>MV Golden Wave (IMO: 9876543)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-2 control-label">Format</label>
+              <div class="col-md-10">
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="format" checked> PDF
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="format"> Excel
+                  </label>
+                </div>
+                <div class="radio">
+                  <label>
+                    <input type="radio" name="format"> CSV
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary"><i class="fa fa-file-pdf-o"></i> Generate Report</button>
+                <button class="btn btn-default"><i class="fa fa-envelope"></i> Email Report</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Recent Reports</span>
+        </div>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Generated</th>
+                <th>Report Name</th>
+                <th>Parameters</th>
+                <th>Generated By</th>
+                <th>Download</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Today, 09:15 AM</td>
+                <td>License Expiration Report</td>
+                <td>Next 30 days, All vessels</td>
+                <td>Admin User</td>
+                <td><a href="#"><i class="fa fa-download"></i> PDF</a></td>
+              </tr>
+              <tr>
+                <td>Yesterday, 4:30 PM</td>
+                <td>Crew Registration Summary</td>
+                <td>Q3 2023, MV Ocean Star</td>
+                <td>John Doe</td>
+                <td><a href="#"><i class="fa fa-download"></i> Excel</a></td>
+              </tr>
+              <tr>
+                <td>10/05/2023</td>
+                <td>Vessel Compliance Status</td>
+                <td>All active vessels</td>
+                <td>Admin User</td>
+                <td><a href="#"><i class="fa fa-download"></i> PDF</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Section (Hidden by default) -->
+    <div class="content-section" id="settings-section" style="display: none;">
+      <div class="content-header">
+        <h2><i class="fa fa-cog"></i> System Settings</h2>
+        <ol class="breadcrumb">
+          <li><a href="#"><i class="fa fa-home"></i></a></li>
+          <li class="active">Settings</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#general-settings" data-toggle="tab">General</a></li>
+            <li><a href="#email-settings" data-toggle="tab">Email</a></li>
+            <li><a href="#api-settings" data-toggle="tab">API</a></li>
+            <li><a href="#security-settings" data-toggle="tab">Security</a></li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="general-settings">
+              <div class="settings-group">
+                <h4>System Configuration</h4>
+                <div class="form-group">
+                  <label>System Name</label>
+                  <input type="text" class="form-control" value="RSXXX Smart Induction Portal">
+                </div>
+                <div class="form-group">
+                  <label>Time Zone</label>
+                  <select class="form-control">
+                    <option>(UTC+00:00) London</option>
+                    <option selected>(UTC+01:00) Paris</option>
+                    <option>(UTC-05:00) New York</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Date Format</label>
+                  <select class="form-control">
+                    <option>DD/MM/YYYY (European)</option>
+                    <option selected>MM/DD/YYYY (US)</option>
+                    <option>YYYY-MM-DD (ISO)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4>Logo & Branding</h4>
+                <div class="form-group">
+                  <label>System Logo</label>
+                  <input type="file" class="form-control">
+                  <p class="help-block">Recommended size: 300x80 pixels</p>
+                  <img src="https://via.placeholder.com/300x80?text=RSXXX+Logo" style="max-width: 100%; margin-top: 10px;">
+                </div>
+                <div class="form-group">
+                  <label>Primary Color</label>
+                  <input type="color" class="form-control" value="#002366" style="height: 40px; width: 80px;">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="email-settings">
+              <div class="settings-group">
+                <h4>SMTP Configuration</h4>
+                <div class="form-group">
+                  <label>SMTP Host</label>
+                  <input type="text" class="form-control" value="smtp.rsxxx.com">
+                </div>
+                <div class="form-group">
+                  <label>SMTP Port</label>
+                  <input type="number" class="form-control" value="587">
+                </div>
+                <div class="form-group">
+                  <label>SMTP Username</label>
+                  <input type="text" class="form-control" value="noreply@rsxxx.com">
+                </div>
+                <div class="form-group">
+                  <label>SMTP Password</label>
+                  <input type="password" class="form-control" value="********">
+                </div>
+                <div class="form-group">
+                  <label>Encryption</label>
+                  <select class="form-control">
+                    <option>TLS</option>
+                    <option>SSL</option>
+                    <option>None</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4>Email Templates</h4>
+                <div class="form-group">
+                  <label>From Email</label>
+                  <input type="text" class="form-control" value="noreply@rsxxx.com">
+                </div>
+                <div class="form-group">
+                  <label>From Name</label>
+                  <input type="text" class="form-control" value="RSXXX Smart Induction">
+                </div>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="api-settings">
+              <div class="settings-group">
+                <h4>API Configuration</h4>
+                <div class="form-group">
+                  <label>API Base URL</label>
+                  <input type="text" class="form-control" value="https://api.rsxxx.com/v1">
+                </div>
+                <div class="form-group">
+                  <label>API Key</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control" value="sk_test_1234567890abcdef">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" type="button">Regenerate</button>
+                    </span>
+                  </div>
+                  <p class="help-block">Keep this key secret</p>
+                </div>
+                <div class="form-group">
+                  <label>API Rate Limit</label>
+                  <input type="number" class="form-control" value="100">
+                  <p class="help-block">Requests per minute</p>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4>API Documentation</h4>
+                <a href="#" class="btn btn-default"><i class="fa fa-book"></i> View API Docs</a>
+                <a href="#" class="btn btn-default"><i class="fa fa-download"></i> Download Postman Collection</a>
+              </div>
+            </div>
+
+            <div class="tab-pane" id="security-settings">
+              <div class="settings-group">
+                <h4>Authentication</h4>
+                <div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" checked> Enable Two-Factor Authentication
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Password Policy</label>
+                  <select class="form-control">
+                    <option>Basic (6 characters minimum)</option>
+                    <option selected>Medium (8 characters, letters and numbers)</option>
+                    <option>Strong (10 characters, mixed case, numbers and symbols)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Session Timeout</label>
+                  <select class="form-control">
+                    <option>15 minutes</option>
+                    <option selected>1 hour</option>
+                    <option>4 hours</option>
+                    <option>Never (until logout)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4>IP Restrictions</h4>
+                <div class="form-group">
+                  <label>Allowed IP Addresses</label>
+                  <textarea class="form-control" rows="3">192.168.1.1
+10.0.0.0/8
+203.0.113.42</textarea>
+                  <p class="help-block">One IP or CIDR range per line</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer text-right">
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Vessel Modal -->
+  <div class="modal fade" id="addVesselModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-plus"></i> Add New Vessel</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-3 control-label">IMO Number</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Vessel Name</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Vessel Type</label>
+              <div class="col-md-9">
+                <select class="form-control select2">
+                  <option>Offshore Supply</option>
+                  <option>Container Ship</option>
+                  <option>Tanker</option>
+                  <option>Bulk Carrier</option>
+                  <option>Passenger Ship</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Company</label>
+              <div class="col-md-9">
+                <select class="form-control select2">
+                  <option>NA Offshore</option>
+                  <option>Global Shipping</option>
+                  <option>PetroMarine</option>
+                  <option>Other...</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">License Expiry</label>
+              <div class="col-md-9">
+                <input type="date" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Vessel Admin</label>
+              <div class="col-md-9">
+                <div class="row">
+                  <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Username">
+                  </div>
+                  <div class="col-md-6">
+                    <input type="password" class="form-control" placeholder="Password">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Vessel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-user-plus"></i> Add New User</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Full Name</label>
+              <div class="col-md-9">
+                <input type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Email</label>
+              <div class="col-md-9">
+                <input type="email" class="form-control" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Role</label>
+              <div class="col-md-9">
+                <select class="form-control select2">
+                  <option>Super Admin</option>
+                  <option selected>Vessel Admin</option>
+                  <option>Report Viewer</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="vesselAssignment">
+              <label class="col-md-3 control-label">Assigned Vessels</label>
+              <div class="col-md-9">
+                <select class="form-control select2" multiple>
+                  <option>MV Ocean Star</option>
+                  <option>MV Blue Horizon</option>
+                  <option>MV Golden Wave</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Password</label>
+              <div class="col-md-9">
+                <input type="password" class="form-control" required>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Create User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Bootstrap 3 JS -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Select2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+  <!-- iCheck -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js"></script>
+  <!-- DateRangePicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize Select2
+      $('.select2').select2({
+        placeholder: "Select options",
+        allowClear: true
+      });
+
+      // Initialize DataTables
+      $('#vesselsTable, #usersTable').DataTable({
+        "pageLength": 10,
+        "responsive": true
+      });
+
+      // Initialize iCheck
+      $('input[type="checkbox"], input[type="radio"]').iCheck({
+        checkboxClass: 'icheckbox_square-blue',
+        radioClass: 'iradio_square-blue'
+      });
+
+      // Date Range Picker
+      $('.daterange').daterangepicker({
+        opens: 'right',
+        locale: {
+          format: 'MM/DD/YYYY'
+        }
+      });
+
+      // Menu Navigation
+      $('.sidebar a[data-section]').click(function(e) {
+        e.preventDefault();
+        var section = $(this).data('section');
+        
+        // Update active menu item
+        $('.sidebar a').removeClass('active');
+        $(this).addClass('active');
+        
+        // Show corresponding section
+        $('.content-section').hide();
+        $('#' + section + '-section').show();
+      });
+
+      // Show/hide vessel assignment based on role
+      $('select[name="role"]').on('change', function() {
+        if ($(this).val() === 'Vessel Admin') {
+          $('#vesselAssignment').show();
+        } else {
+          $('#vesselAssignment').hide();
+        }
+      }).trigger('change');
+    });
+  </script>
+</body>
+</html>

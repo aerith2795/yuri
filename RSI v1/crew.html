@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crew Registration Portal</title>
+  <style>
+    .step { display: none; }
+    .step.active { display: block; }
+    .required:after { content: " *"; color: red; }
+  </style>
+</head>
+<body>
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- Step 1: First-time check -->
+  <div id="step1" class="step active">
+    <h2>First Time Registering?</h2>
+    <button onclick="nextStep(2)">Yes, Continue</button>
+    <button onclick="nextStep(6)">No, I have an account</button>
+  </div>
+
+  <!-- Step 2: Personal Details -->
+  <div id="step2" class="step">
+    <h2>Personal Details</h2>
+    <form id="personalForm">
+      <label class="required">First Name</label>
+      <input type="text" required>
+      
+      <label class="required">Last Name</label>
+      <input type="text" required>
+      
+      <button type="button" onclick="saveDraft()">Save Draft</button>
+      <button type="button" onclick="nextStep(7)">Continue</button>
+    </form>
+  </div>
+
+  <!-- Other Steps (Welcome, Certificates, GDPR, etc.) -->
+  <div id="step7" class="step">
+    <h2>Welcome Aboard</h2>
+    <select id="vesselSelect">
+      <!-- Populated from shared.js -->
+    </select>
+    <button onclick="nextStep(8)">Continue</button>
+  </div>
+
+  <!-- Final Step -->
+  <div id="step11" class="step">
+    <h2>Verification</h2>
+    <p id="summaryText"><!-- Dynamically populated --></p>
+    <button onclick="completeRegistration()">Complete Registration</button>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    // Navigation control
+    function nextStep(stepNum) {
+      document.querySelector('.step.active').classList.remove('active');
+      document.getElementById(`step${stepNum}`).classList.add('active');
+      updateProgressBar(stepNum);
+      
+      // Special cases
+      if(stepNum === 7) loadVessels(); 
+      if(stepNum === 11) generateSummary();
+    }
+
+    // Load vessels from shared DB
+    function loadVessels() {
+      const vessels = RSXXXDB.get().vessels;
+      const select = document.getElementById('vesselSelect');
+      select.innerHTML = vessels.map(v => 
+        `<option value="${v.imo}">${v.name}</option>`
+      ).join('');
+    }
+  </script>
+</body>
+</html>

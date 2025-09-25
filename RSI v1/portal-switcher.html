@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RSXXX Portal Switcher</title>
+  <style>
+    .portal-card {
+      border: 2px solid #002366;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px;
+      width: 250px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .portal-card:hover {
+      background: #f0f8ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>RSXXX Portal Demo</h1>
+  
+  <div class="portal-card" onclick="window.open('admin/index.html')">
+    <h2><i class="fa fa-cogs"></i> Admin Portal</h2>
+    <p>Manage vessels and licenses</p>
+  </div>
+  
+  <div class="portal-card" onclick="window.open('customer/index.html')">
+    <h2><i class="fa fa-ship"></i> Customer Portal</h2>
+    <p>Configure crew requirements</p>
+  </div>
+  
+  <div class="portal-card" onclick="window.open('crew/index.html')">
+    <h2><i class="fa fa-users"></i> Crew Portal</h2>
+    <p>Test registration flow</p>
+  </div>
+
+  <button style="margin: 20px; padding: 10px;" 
+          onclick="localStorage.clear(); alert('Demo data reset!')">
+    Reset All Data
+  </button>
+</body>
+</html>

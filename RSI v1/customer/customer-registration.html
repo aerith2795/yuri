@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Customer • Vessel Setup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Libs -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Ripple + Admin CSS -->
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder"></div>
+            <!-- Main -->
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Registration Configuration</h2>
+                    <p>Setup vessel information and upload vessel photos</p>
+                </div>
+
+                <div class="tab-pane" id="registration">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <i class="fa fa-list"></i> Registration & Personal Details (Crew
+                            Portal)
+                            <button class="btn btn-primary btn-xs pull-right" data-toggle="modal"
+                                data-target="#modalAddField">
+                                <i class="fa fa-plus"></i> Add Field
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="alert alert-info">
+                                <i class="fa fa-lock"></i> Locked fields are always visible +
+                                required:
+                                <span class="label label-dark">First Name</span>
+                                <span class="label label-dark">Surname</span>
+                                <span class="label label-dark">Gender</span>
+                                <span class="label label-dark">DOB</span>
+                                <span class="label label-dark">Company</span>
+                                <span class="label label-dark">Position/Rank</span>
+                                <span class="label label-dark">Embarkation Date</span>
+                                <span class="label label-dark">Email</span>
+                                <span class="label label-dark">Password</span>
+                            </div>
+
+                            <table class="table table-bordered" id="fieldsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 26%">Field</th>
+                                        <th style="width: 16%">Type</th>
+                                        <th style="width: 12%">Visible</th>
+                                        <th style="width: 12%">Required</th>
+                                        <th style="width: 20%">Validation</th>
+                                        <th style="width: 14%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Sample optional fields (matching crew registration.html) -->
+                                    <tr data-id="address">
+                                        <td>Residence Address</td>
+                                        <td><span class="label label-gray">Text</span></td>
+                                        <td><span class="label label-blue">Yes</span></td>
+                                        <td><span class="label label-gray">No</span></td>
+                                        <td><span class="label label-light">Min 3 chars</span></td>
+                                        <td>
+                                            <button class="btn btn-xs btn-default btn-edit-field">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-danger btn-remove-field">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr data-id="passport">
+                                        <td>Passport Upload</td>
+                                        <td><span class="label label-gray">File</span></td>
+                                        <td><span class="label label-blue">Yes</span></td>
+                                        <td><span class="label label-red">Required</span></td>
+                                        <td>
+                                            <span class="label label-light">PDF/JPG/PNG ≤ 5MB</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-xs btn-default btn-edit-field">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-danger btn-remove-field">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr data-id="nok1">
+                                        <td>NOK 1 (full block)</td>
+                                        <td><span class="label label-gray">Group</span></td>
+                                        <td><span class="label label-blue">Yes</span></td>
+                                        <td><span class="label label-gray">No</span></td>
+                                        <td>
+                                            <span class="label label-light">All subfields optional</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-xs btn-default btn-edit-field">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-danger btn-remove-field">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr data-id="nok2">
+                                        <td>NOK 2 (full block)</td>
+                                        <td><span class="label label-gray">Group</span></td>
+                                        <td><span class="label label-blue">Yes</span></td>
+                                        <td><span class="label label-gray">No</span></td>
+                                        <td>
+                                            <span class="label label-light">All subfields optional</span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-xs btn-default btn-edit-field">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-xs btn-danger btn-remove-field">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="form-group">
+                                <label>General Instructions (shown to crew on Registration
+                                    step)</label>
+                                <textarea class="form-control" rows="3" id="registrationInstructions"
+                                    placeholder="e.g., Please prepare scanned copies of your passport and medical certificates."></textarea>
+                            </div>
+                            <hr />
+                            <button class="btn btn-primary" id="saveFields">
+                                <i class="fa fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Field Modal -->
+        <div class="modal fade" id="modalAddField">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formField">
+                        <div class="modal-header">
+                            <button class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title"><i class="fa fa-plus"></i> Add Field</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Field Label</label>
+                                <input type="text" class="form-control" id="fldLabel" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Field Type</label>
+                                <select id="fldType" class="form-control">
+                                    <option value="text">Text</option>
+                                    <option value="date">Date</option>
+                                    <option value="email">Email</option>
+                                    <option value="select">Select</option>
+                                    <option value="file">File</option>
+                                    <option value="group">Group</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Visible</label>
+                                    <select id="fldVisible" class="form-control">
+                                        <option value="Yes" selected>Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Required</label>
+                                    <select id="fldRequired" class="form-control">
+                                        <option value="No" selected>No</option>
+                                        <option value="Required">Required</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 10px">
+                                <label>Validation / Notes</label>
+                                <input type="text" class="form-control" id="fldValidation"
+                                    placeholder="e.g., Min length 3; PDF only; etc." />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-save"></i> Save Field
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Field Modal (reused) -->
+        <div class="modal fade" id="modalEditField">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="formEditField">
+                        <div class="modal-header">
+                            <button class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">
+                                <i class="fa fa-pencil"></i> Edit Field
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="editId" />
+                            <div class="form-group">
+                                <label>Field Label</label>
+                                <input type="text" class="form-control" id="editLabel" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Field Type</label>
+                                <select id="editType" class="form-control">
+                                    <option value="text">Text</option>
+                                    <option value="date">Date</option>
+                                    <option value="email">Email</option>
+                                    <option value="select">Select</option>
+                                    <option value="file">File</option>
+                                    <option value="group">Group</option>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label>Visible</label>
+                                    <select id="editVisible" class="form-control">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label>Required</label>
+                                    <select id="editRequired" class="form-control">
+                                        <option value="No">No</option>
+                                        <option value="Required">Required</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 10px">
+                                <label>Validation / Notes</label>
+                                <input type="text" class="form-control" id="editValidation" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-default" data-dismiss="modal">
+                                Cancel
+                            </button>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fa fa-save"></i> Update Field
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            fetch('customer-sidebar.html')
+                .then(response => response.text())
+                .then(data => {
+                    const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                    sidebarPlaceholder.innerHTML = data;
+
+                    // Script to set the active state after the sidebar is loaded
+                    const currentPage = 'customer-registration';
+                    const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                    if (activeLink) {
+                        activeLink.classList.add('active');
+                    }
+                })
+                .catch(error => console.error('Error fetching sidebar:', error));
+
+            $('.select2').select2();
+
+            // Fields table — Add / Edit / Remove
+            $("#formField").on("submit", function (e) {
+                e.preventDefault();
+                const id = $("#fldLabel")
+                    .val()
+                    .trim()
+                    .toLowerCase()
+                    .replace(/\s+/g, "-");
+                const label = $("#fldLabel").val();
+                const type = $("#fldType").val();
+                const visible = $("#fldVisible").val();
+                const req = $("#fldRequired").val();
+                const val = $("#fldValidation").val();
+
+                $("#fieldsTable tbody").append(`
+          <tr data-id="${id}">
+            <td>${label}</td>
+            <td><span class="label label-gray">${type.charAt(0).toUpperCase() + type.slice(1)
+                    }</span></td>
+            <td><span class="label ${visible === "Yes" ? "label-blue" : "label-gray"
+                    }">${visible}</span></td>
+            <td><span class="label ${req === "Required" ? "label-red" : "label-gray"
+                    }">${req}</span></td>
+            <td><span class="label label-light">${val || "-"}</span></td>
+            <td>
+              <button class="btn btn-xs btn-default btn-edit-field"><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-xs btn-danger btn-remove-field"><i class="fa fa-trash"></i></button>
+            </td>
+          </tr>
+        `);
+                $("#modalAddField").modal("hide")[0].reset;
+                this.reset();
+            });
+
+            let editRow = null;
+            $(document).on("click", ".btn-edit-field", function () {
+                editRow = $(this).closest("tr");
+                $("#editId").val(editRow.data("id"));
+                $("#editLabel").val(editRow.children().eq(0).text().trim());
+                $("#editType").val(
+                    editRow.find("td:eq(1) .label").text().trim().toLowerCase()
+                );
+                $("#editVisible").val(editRow.find("td:eq(2) .label").text().trim());
+                $("#editRequired").val(editRow.find("td:eq(3) .label").text().trim());
+                const note = editRow.find("td:eq(4) .label").text().trim();
+                $("#editValidation").val(note === "-" ? "" : note);
+                $("#modalEditField").modal("show");
+            });
+
+            $("#formEditField").on("submit", function (e) {
+                e.preventDefault();
+                if (!editRow) return;
+                editRow.children().eq(0).text($("#editLabel").val());
+                editRow.find("td:eq(1) .label").text($("#editType").val());
+                editRow
+                    .find("td:eq(2) .label")
+                    .removeClass("label-blue label-gray")
+                    .addClass(
+                        $("#editVisible").val() === "Yes" ? "label-blue" : "label-gray"
+                    )
+                    .text($("#editVisible").val());
+                editRow
+                    .find("td:eq(3) .label")
+                    .removeClass("label-red label-gray")
+                    .addClass(
+                        $("#editRequired").val() === "Required"
+                            ? "label-red"
+                            : "label-gray"
+                    )
+                    .text($("#editRequired").val());
+                editRow
+                    .find("td:eq(4) .label")
+                    .text($("#editValidation").val() || "-");
+                $("#modalEditField").modal("hide");
+            });
+
+            $(document).on("click", ".btn-remove-field", function () {
+                if (confirm("Remove this field?")) $(this).closest("tr").remove();
+            });
+
+            $("#saveFields").on("click", function () {
+                alert("Registration field configuration saved (demo).");
+            });
+
+        });
+    </script>
+</body>
+
+</html>

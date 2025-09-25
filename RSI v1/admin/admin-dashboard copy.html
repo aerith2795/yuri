@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Admin • Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple core + Admin page CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar (make this li active for current page) -->
+      <div class="col-sm-3 col-md-2 sidebar">
+        <div class="text-center logo">
+          <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px; height:auto;" />
+        </div>
+        <ul class="nav nav-pills nav-stacked">
+          <li class="active"><a href="admin-dashboard.html"><i class="fa fa-tachometer"></i> Dashboard</a></li>
+          <li><a href="admin-vessel-setup.html"><i class="fa fa-ship"></i> Vessel</a></li>
+          <li><a href="admin-certificates.html"><i class="fa fa-file-text-o"></i> Certificates</a></li>
+          <!-- <li><a href="admin-gdpr.html"><i class="fa fa-shield"></i> GDPR</a></li> -->
+          <!-- <li><a href="admin-familiarization.html"><i class="fa fa-video-camera"></i> Familiarization</a></li> -->
+          <li><a href="admin-customer-admins.html"><i class="fa fa-user-secret"></i> Customer Admins</a></li>
+          <li><a href="admin-settings.html"><i class="fa fa-cog"></i> Settings</a></li>
+        </ul>
+      </div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Admin Dashboard</h2>
+          <p>
+            Overview of vessels, customer portals, and onboarding
+            configurations.
+          </p>
+        </div>
+
+        <!-- KPIs -->
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="panel">
+              <div class="panel-heading">
+                <i class="fa fa-ship"></i> Active Vessels
+              </div>
+              <div class="panel-body">
+                <h3>5 <small class="text-gray">licensed vessels</small></h3>
+                <div class="badge-row">
+                  <span class="label label-blue">3 configured</span>
+                  <span class="label label-orange">2 pending setup</span>
+                </div>
+                <hr />
+                <a href="admin-vessel-setup.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i> Configure
+                  Vessels</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div class="panel">
+              <div class="panel-heading">
+                <i class="fa fa-user-secret"></i> Customer Admins
+              </div>
+              <div class="panel-body">
+                <p>Manage login accounts for each vessel’s customer portal.</p>
+                <ul class="list-unstyled">
+                  <li><span class="label label-blue">5 active</span></li>
+                  <li><span class="label label-orange">1 pending invite</span></li>
+                </ul>
+                <hr>
+                <a href="admin-customer-admins.html" class="btn btn-primary btn-sm">
+                  <i class="fa fa-cog"></i> Manage Admins
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- 
+
+            <div class="col-sm-6">
+              <div class="panel">
+                <div class="panel-heading">
+                  <i class="fa fa-users"></i> Crew Onboarding Status
+                </div>
+                <div class="panel-body">
+                  <p><strong>Current period:</strong> last 30 days</p>
+                  <ul class="list-unstyled">
+                    <li>
+                      <span class="label label-green">124 completed</span>
+                    </li>
+                    <li>
+                      <span class="label label-blue">38 in progress</span>
+                    </li>
+                    <li>
+                      <span class="label label-gray">15 not started</span>
+                    </li>
+                  </ul>
+                  <hr />
+                  <a
+                    href="admin-certificates.html"
+                    class="btn btn-default btn-sm"
+                    ><i class="fa fa-file"></i> Cert Templates</a
+                  >
+                  <a href="admin-gdpr.html" class="btn btn-default btn-sm"
+                    ><i class="fa fa-shield"></i> GDPR Texts</a
+                  >
+                </div>
+              </div>
+            </div> -->
+        </div>
+
+        <!-- Notices -->
+        <!-- <div class="panel">
+            <div class="panel-heading">
+              <i class="fa fa-info-circle"></i> Notices
+            </div>
+            <div class="panel-body">
+              <div class="alert alert-info">
+                <i class="fa fa-plug"></i> Vessel API for sail activities is
+                available. Make sure linked vessels have correct credentials.
+              </div>
+              <div class="alert alert-warning">
+                <i class="fa fa-exclamation-triangle"></i> 1 familiarization
+                video is missing a streamable source. Fix in
+                <a href="admin-familiarization.html">Familiarization</a>.
+              </div>
+            </div>
+          </div> -->
+      </div>
+      <!-- /main-content -->
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+</body>
+
+</html>

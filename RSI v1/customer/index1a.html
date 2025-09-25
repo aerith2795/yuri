@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RSI Customer Dashboard</title>
+
+  <!-- Bootstrap 3 -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome 4 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- Select2 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+  <!-- Ripple Global CSS -->
+  <link rel="stylesheet" href="../assets/ripple.css">
+  <!-- Customer-specific CSS -->
+  <link rel="stylesheet" href="customer.css">
+</head>
+<body>
+  <div class="dashboard-layout row no-gutter">
+    <!-- Sidebar -->
+    <div class="col-sm-3 side-stepper">
+      <div class="logo">
+        <img src="../assets/ripple-logo.png" alt="Ripple Logo" class="img-responsive" style="max-height:40px; margin:0 auto;">
+      </div>
+
+      <div class="step active" data-step="1">
+        <span class="step-number">1</span>
+        <span class="step-title">Welcome</span>
+      </div>
+      <div class="step" data-step="2">
+        <span class="step-number">2</span>
+        <span class="step-title">Registration Config</span>
+      </div>
+      <div class="step" data-step="3">
+        <span class="step-number">3</span>
+        <span class="step-title">Certificates</span>
+      </div>
+      <div class="step" data-step="4">
+        <span class="step-number">4</span>
+        <span class="step-title">GDPR</span>
+      </div>
+      <div class="step" data-step="5">
+        <span class="step-number">5</span>
+        <span class="step-title">Familiarization</span>
+      </div>
+      <div class="step" data-step="6">
+        <span class="step-number">6</span>
+        <span class="step-title">Verification</span>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-sm-9 main-content">
+      <div class="page-header">
+        <h2>Customer Dashboard</h2>
+        <p>Configure vessel onboarding requirements for your crew</p>
+      </div>
+
+      <!-- Step Sections -->
+      <div class="form-section active" id="step1">
+        <div class="panel">
+          <div class="panel-heading"><i class="fa fa-home"></i> Welcome Page</div>
+          <div class="panel-body">
+            <blockquote>
+              Welcome to Ripple Smart Induction. This text is set by Admin and cannot be edited here.
+            </blockquote>
+            <p class="text-muted">To change this message, please contact Admin.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section" id="step2">
+        <div class="panel">
+          <div class="panel-heading"><i class="fa fa-user"></i> Registration & Personal Details</div>
+          <div class="panel-body">
+            <p>Select which fields are required for crew registration:</p>
+            <!-- Sample table -->
+            <table class="table table-bordered">
+              <thead>
+                <tr><th>Field</th><th>Visible</th><th>Required</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>First Name</td><td><i class="fa fa-lock text-muted"></i></td><td><i class="fa fa-lock text-muted"></i></td></tr>
+                <tr><td>Address</td><td><input type="checkbox" checked></td><td><input type="checkbox"></td></tr>
+              </tbody>
+            </table>
+            <div class="form-group">
+              <label>Instructions for Crew</label>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ... (Step 3–6 same as before but styled with panel) ... -->
+
+    </div><!-- /.main-content -->
+  </div><!-- /.dashboard-layout -->
+
+  <!-- jQuery + Bootstrap -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <!-- Select2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+  <script>
+    $(function(){
+      // Sidebar step navigation
+      $(".step").on("click", function(){
+        $(".step").removeClass("active");
+        $(this).addClass("active");
+        const s = $(this).data("step");
+        $(".form-section").removeClass("active").hide();
+        $("#step"+s).addClass("active").show();
+      });
+      $(".form-section").hide();
+      $("#step1").show();
+    });
+  </script>
+</body>
+</html>

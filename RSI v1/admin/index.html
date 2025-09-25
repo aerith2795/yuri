@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RSI Admin Portal</title>
+  <!-- Bootstrap 3 -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <!-- FontAwesome 4 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Ripple Global CSS -->
+  <link rel="stylesheet" href="../assets/ripple.css">
+  <!-- Admin-specific CSS -->
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo text-center">
+      <img src="../assets/ripple-logo.png" alt="Ripple" width="140">
+    </div>
+    <ul class="nav nav-pills nav-stacked">
+      <li class="active"><a href="#"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+      <li><a href="#"><i class="fa fa-ship"></i> Vessel Setup</a></li>
+      <li><a href="#"><i class="fa fa-id-badge"></i> Certificates</a></li>
+      <li><a href="#"><i class="fa fa-file-text-o"></i> GDPR</a></li>
+      <li><a href="#"><i class="fa fa-video-camera"></i> Familiarization</a></li>
+      <li><a href="#"><i class="fa fa-cogs"></i> Settings</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="page-header">
+      <h2>Admin Dashboard</h2>
+      <p>Manage vessels, licenses, and onboarding requirements.</p>
+    </div>
+
+    <!-- Static Panels -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="panel">
+          <div class="panel-heading">Vessels</div>
+          <div class="panel-body">
+            <h3>12</h3>
+            <p>Total registered vessels</p>
+            <span class="label label-blue">Active</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="panel">
+          <div class="panel-heading">Licenses</div>
+          <div class="panel-body">
+            <h3>8</h3>
+            <p>Active licenses</p>
+            <span class="label label-green">Valid</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="panel">
+          <div class="panel-heading">Configurations</div>
+          <div class="panel-body">
+            <h3>5</h3>
+            <p>Pending setups</p>
+            <span class="label label-orange">Pending</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Info -->
+    <div class="panel">
+      <div class="panel-heading">Quick Info</div>
+      <div class="panel-body">
+        <p>Use this portal to configure vessels, set up licenses, define certificates, and manage onboarding requirements for Customers & Crew.</p>
+        <p class="text-muted">Note: This is a placeholder page. Data will be integrated from DB/API later.</p>
+      </div>
+    </div>
+  </div><!-- /.main-content -->
+</div><!-- /.dashboard-layout -->
+</body>
+</html>
