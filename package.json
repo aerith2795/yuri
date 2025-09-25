@@ -1,5 +1,5 @@
 {
-"name": "yuri",
+  "name": "rsi",
   "version": "1.0.0",
   "scripts": {
     "start": "npx http-server -c-1 -p 3000"
