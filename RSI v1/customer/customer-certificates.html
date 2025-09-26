@@ -24,15 +24,23 @@
             <!-- Main -->
             <div class="col-sm-9 col-md-10 main-content">
                 <div class="page-header">
-                    <h2>Vessel Configuration</h2>
-                    <p>Setup vessel information and upload vessel photos</p>
+                    <h2>Certificates Configuration</h2>
+                    <p>Define which certificates are required from crew during registration.</p>
                 </div>
 
                 <!-- Certificates -->
                 <div class="tab-pane" id="certificates">
+                    <div class="col-sm-12">
+                        <!-- <div class="panel-body"> -->
+                            <h3>82% <small>storage used</small> <i class="fa fa-info-circle small" data-toggle="tooltip" title="You have used 82% of your storage quota."></i></h3>
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-info" style="width:82%"></div>
+                            </div>
+                        <!-- </div> -->
+                    </div>
                     <div class="panel">
                         <div class="panel-heading">
-                            <i class="fa fa-list"></i> Certificates
+                            <i class="fa fa-list"></i> Add Certificate
                             <button class="btn btn-primary btn-xs pull-right" data-toggle="modal"
                                 data-target="#modalCert">
                                 <i class="fa fa-plus"></i> Add Certificate
@@ -96,23 +104,9 @@
                                 </tbody>
                             </table>
 
-                            <!-- File size/type rule -->
-                            <div class="row">
-                                <div class="col-sm-6 form-group">
-                                    <label>Accepted File Types</label>
-                                    <select id="acceptTypes" class="form-control select2" multiple style="width: 100%">
-                                        <option value="pdf" selected>PDF</option>
-                                        <option value="jpg" selected>JPG</option>
-                                        <option value="png" selected>PNG</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-3 form-group">
-                                    <label>Max Size (MB)</label>
-                                    <input id="maxSize" type="number" class="form-control" min="1" max="50" value="5" />
-                                </div>
-                            </div>
                             <hr />
-                            <button id="saveChanges" class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
+                            <button id="saveChanges" class="btn btn-primary"><i class="fa fa-save"></i> Save
+                                Changes</button>
 
                         </div>
                     </div>
@@ -189,6 +183,8 @@
                 </div>
             </div>
         </div>
+
+        
     </div>
 
     <!-- JS -->
@@ -198,7 +194,7 @@
     <script>
         $(function () {
             $('.select2').select2();
-            
+
             fetch('customer-sidebar.html')
                 .then(response => response.text())
                 .then(data => {
@@ -214,15 +210,100 @@
                 })
                 .catch(error => console.error('Error fetching sidebar:', error));
 
-                // Save
-                 $("#saveChanges").on("click", function () {
+            // Save
+            $("#saveChanges").on("click", function () {
                 alert("Save Certificates Config (demo)");
             });
 
         });
-  
-  
-  </script>
+
+
+    </script>
+    
+    <script>
+        // Certificates table — Add / Edit / Remove (demo only)
+            function rowToObj($tr) {
+                return {
+                    name: $tr.children().eq(0).text().trim(),
+                    type: $tr.find("td:eq(1) .label").text().trim(),
+                    code: $tr.children().eq(2).text().trim(),
+                    category: $tr.find("td:eq(3) .label").text().trim(),
+                    desc: $tr.children().eq(4).text().trim(),
+                    isRequired: $tr.find("td:eq(5) .label").text().trim() === "Yes",
+                    requireUpload: $tr.find("td:eq(6) .label").text().trim() === "Yes",
+                };
+            }
+
+            function objToRow(o) {
+                return `
+          <tr>
+            <td>${o.name}</td>
+            <td><span class="label label-gray">${o.type || "-"}</span></td>
+            <td>${o.code || "-"}</td>
+            <td><span class="label label-light">${o.category || "-"}</span></td>
+            <td>${o.desc || "-"}</td>
+            <td><span class="label ${o.isRequired ? "label-red" : "label-gray"
+                    }">${o.isRequired ? "Yes" : "No"}</span></td>
+            <td><span class="label ${o.requireUpload ? "label-blue" : "label-gray"
+                    }">${o.requireUpload ? "Yes" : "No"}</span></td>
+            <td>
+              <button class="btn btn-xs btn-default edit-cert"><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-xs btn-danger delete-cert"><i class="fa fa-trash"></i></button>
+            </td>
+          </tr>`;
+            }
+
+            // Submit
+            $("#formCert").on("submit", function (e) {
+                e.preventDefault();
+                const idx = $("#certRowIndex").val();
+                const o = {
+                    name: $("#certName").val(),
+                    type: $("#certType").val(),
+                    code: $("#certCode").val(),
+                    category: $("#certCategory").val(),
+                    desc: $("#certDesc").val(),
+                    isRequired: $("#certIsRequired").prop("checked"),
+                    requireUpload: $("#certRequireUpload").prop("checked"),
+                };
+                if (idx === "") {
+                    $("#certTable tbody").append(objToRow(o));
+                } else {
+                    const $tr = $("#certTable tbody tr").eq(parseInt(idx, 10));
+                    $tr.replaceWith(objToRow(o));
+                }
+                $("#modalCert").modal("hide");
+                this.reset();
+                $("#certRowIndex").val("");
+            });
+
+            // Edit
+            $(document).on("click", ".edit-cert", function () {
+                const $tr = $(this).closest("tr");
+                const i = $tr.index();
+                const o = rowToObj($tr);
+                $("#certRowIndex").val(i);
+                $("#certName").val(o.name);
+                $("#certType").val(o.type);
+                $("#certCode").val(o.code);
+                $("#certCategory").val(o.category);
+                $("#certDesc").val(o.desc);
+                $("#certIsRequired").prop("checked", o.isRequired);
+                $("#certRequireUpload").prop("checked", o.requireUpload);
+                $("#modalCert").modal("show");
+            });
+
+            // Delete
+            $(document).on("click", ".delete-cert", function () {
+                if (confirm("Delete this certificate template?"))
+                    $(this).closest("tr").remove();
+            });
+
+            // Save upload rules (demo)
+            $("#saveRules").on("click", function () {
+                alert("File type & size rules saved.");
+            });
+    </script>
 </body>
 
 </html>

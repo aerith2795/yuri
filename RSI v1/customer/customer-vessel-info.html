@@ -18,9 +18,22 @@
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
   <style>
+    /* About preview fixed height + scroll */
+    #aboutPreview {
+      height: 300px;
+      /* max-height: 335px; */
+      overflow-y: auto;
+    }
+
+    /* Vessel gallery fixed height */
+    .vessel-carousel {
+      height: 300px;
+      overflow: hidden;
+    }
+
     .vessel-carousel img {
       width: 100%;
-      height: 300px;
+      height: 100%;
       object-fit: cover;
       border-radius: 6px;
     }
@@ -37,7 +50,7 @@
       <div class="col-sm-9 col-md-10 main-content">
         <div class="page-header">
           <h2>Vessel Configuration</h2>
-          <p>Setup vessel information and configure how it will appear in the Client Portal.</p>
+          <p>Maintain vessel details to ensure accurate information is displayed in the crew portal.</p>
         </div>
 
         <!-- Vessel Info -->
@@ -85,7 +98,20 @@
                 <div id="vesselCarousel" class="carousel slide vessel-carousel" data-ride="carousel">
                   <div class="carousel-inner">
                     <div class="item active">
-                      <img src="https://via.placeholder.com/800x500?text=No+Photo" />
+                      <img
+                        src="https://t4.ftcdn.net/jpg/01/73/99/53/360_F_173995335_j0eNa99Jd3PvFxUDHf9mqwxFSG4T04Ja.jpg" />
+                    </div>
+                    <div class="item">
+                      <img src="https://static.vecteezy.com/system/resources/thumbnails/002/305/012/small_2x/aerial-top-view-of-large-container-cargo-ship-photo.jpg" />
+                    </div>
+                    <div class="item">
+                      <img src="https://plus.unsplash.com/premium_photo-1661879449050-069f67e200bd?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8c2hpcHBpbmd8ZW58MHx8MHx8fDA%3D" />
+                    </div>
+                    <div class="item">
+                      <img src="https://img.freepik.com/free-photo/aerial-view-cargo-ship-with-cargo-container-sea_335224-1372.jpg" />
+                    </div>
+                    <div class="item">
+                      <img src="https://media.istockphoto.com/id/1418267688/photo/aerial-top-down-view-of-a-large-container-cargo-ship-with-copy-space.jpg?s=612x612&w=0&k=20&c=yp2Y2BxdYy5z4mpKT8fRc1uTf-ocJVNlGjjPNEo7jSM=" />
                     </div>
                   </div>
                   <!-- Controls -->
@@ -130,9 +156,13 @@
             <!-- Preview Table -->
             <h4>Preview (Client Portal)</h4>
             <table class="table table-bordered" id="logsPreview">
-              <thead><tr></tr></thead>
+              <thead>
+                <tr></tr>
+              </thead>
               <tbody>
-                <tr><td colspan="4" class="text-center text-muted">Sample activity logs will appear here</td></tr>
+                <tr>
+                  <td colspan="4" class="text-center text-muted">Sample activity logs will appear here</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -148,89 +178,28 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
   <!-- Summernote -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
-
-  <script>
-    $(function () {
-      // Sidebar load
-      fetch('customer-sidebar.html')
-        .then(response => response.text())
-        .then(data => {
-          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
-          sidebarPlaceholder.innerHTML = data;
-
-          const currentPage = 'customer-vessel-info';
-          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-          if (activeLink) {
-            activeLink.classList.add('active');
-          }
-        });
-      // Init rich text editor
-      $('#aboutVessel').summernote({
-        height: 150,
-        placeholder: 'Describe your vessel here...'
+  <script src="../assets/rsi-config.js"></script>
+<script>
+  $(function () {
+    // Load sidebar
+    fetch('crew-sidebar.html')
+      .then(res => res.text())
+      .then(data => {
+        const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+        sidebarPlaceholder.innerHTML = data;
+        const activeLink = sidebarPlaceholder.querySelector('[data-page="crew-dashboard"]');
+        if (activeLink) activeLink.classList.add('active');
       });
 
-      // Form submit handler
-      $('#vesselForm').on('submit', function (e) {
-        e.preventDefault();
-
-        // Update About Preview
-        const aboutHtml = $('#aboutVessel').summernote('code');
-        $('#aboutPreview').html(aboutHtml || "<p>No info provided yet.</p>");
-
-        // Update Carousel with photos
-        const files = $('#vesselPhotos')[0].files;
-        const carouselInner = $('#vesselCarousel .carousel-inner');
-        carouselInner.empty();
-
-        if (files.length > 0) {
-          Array.from(files).slice(0, 5).forEach((file, i) => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-              const active = i === 0 ? 'active' : '';
-              const img = `
-                <div class="item ${active}">
-                  <img src="${e.target.result}" />
-                </div>`;
-              carouselInner.append(img);
-            };
-            reader.readAsDataURL(file);
-          });
-        } else {
-          carouselInner.html(`
-            <div class="item active">
-              <img src="https://via.placeholder.com/800x500?text=No+Photo" />
-            </div>
-          `);
-        }
-      });
+    // Load vessel config (shared JSON)
+    loadVesselConfig(function(config) {
+      renderVesselInfo(config);
+      renderOnboarding(config);
     });
-  </script>
-  <script>
-    $(function () {
-      // Logs Preview
-      function updateLogsPreview() {
-        const cols = $('#logColumns').val();
-        const headRow = $('#logsPreview thead tr').empty();
-        if (!cols || cols.length === 0) {
-          headRow.append('<th>No columns selected</th>');
-          $('#logsPreview tbody').html('<tr><td class="text-muted text-center">No data</td></tr>');
-          return;
-        }
-        cols.forEach(col => {
-          const label = col.charAt(0).toUpperCase() + col.slice(1);
-          headRow.append(`<th>${label.replace(/([A-Z])/g, ' $1').trim()}</th>`);
-        });
-        const sample = Array.from({ length: $('#logCount').val() || 5 }, (_, i) =>
-          `<tr>${cols.map(c => `<td>Sample ${c} ${i + 1}</td>`).join('')}</tr>`
-        ).join('');
-        $('#logsPreview tbody').html(sample);
-      }
+  });
+</script>
 
-      $('#logColumns, #logCount').on('change input', updateLogsPreview);
-      updateLogsPreview();
-    });
-  </script>
+
 </body>
 
 </html>

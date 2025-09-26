@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Client • Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple core + Admin page CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+</head>
+<style>
+  .scrollable-container {
+    max-height: 220px;
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+
+  .progress {
+    margin-bottom: 22px;
+  }
+</style>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div id="sidebar-placeholder"></div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="tab-content">
+          <!-- Onboarding Progress -->
+          <div id="progressContainer" class="progress-container">
+            <div class="clearfix">
+              <span class="pull-left"><strong>Onboarding Progress</strong></span>
+              <span class="pull-right" id="progressText">0 of 4 tasks completed</span>
+            </div>
+            <div class="progress progress-with-steps">
+              <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar"
+                style="width: 0%;"></div>
+
+              <!-- Step markers -->
+              <div class="progress-steps">
+                <span class="step" data-target="#welcome" style="left: 0%;">Embarkation</span>
+                <span class="step" data-target="#certificates" style="left: 33%;">Certificates</span>
+                <span class="step" data-target="#gdpr" style="left: 66%;">GDPR</span>
+                <span class="step" data-target="#video" style="left: 100%;">Video</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Welcome -->
+          <div class="tab-pane active" id="welcome">
+            <div class="page-header">
+              <h2>Hi, Cloud Strife!</h2>
+              <p id="welcomeMessage">
+                <!-- Placeholder: fetched from Customer Portal -->
+                Welcome aboard! Please review the vessel details and complete your onboarding requirements.
+              </p>
+            </div>
+            <!-- Alerts Banners -->
+            <div class="row">
+              <div class="panel">
+                <div class="panel-heading"><i class="fa fa-bell"></i> Alerts</div>
+                <div class="panel-body">
+                  <div id="reminders">
+                    <div class="alert alert-info" id="embarkReminder">
+                      <i class="fa fa-info-circle"></i> Please fill out your embarkation details.
+                      <button class="btn btn-xs btn-primary pull-right goto-embark">Go to Form</button>
+                    </div>
+                    <div class="alert alert-warning" id="certReminder">
+                      <i class="fa fa-upload"></i> Please upload your certificates.
+                      <button class="btn btn-xs btn-primary pull-right complete-task" data-target="#certReminder">Upload
+                        Now</button>
+                    </div>
+                    <div class="alert alert-info" id="gdprReminder">
+                      <i class="fa fa-shield"></i> Review GDPR to continue.
+                      <button class="btn btn-xs btn-primary pull-right complete-task"
+                        data-target="#gdprReminder">Review</button>
+                    </div>
+                    <div class="alert alert-success" id="videoReminder">
+                      <i class="fa fa-video-camera"></i> Watch the familiarization video.
+                      <button class="btn btn-xs btn-primary pull-right complete-task"
+                        data-target="#videoReminder">Watch</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Vessel Information -->
+          <div class="row">
+            <div class="panel panel-default vessel-info">
+              <div class="panel-heading"><i class="fa fa-ship"></i> About the Vessel</div>
+              <div class="panel-body">
+                <div class="row">
+                  <!-- About text -->
+                  <div class="col-sm-6">
+                    <div class="about-vessel scrollable-container">
+                      <p>
+                        <!-- Long placeholder text for vessel description -->
+                        M/V Yurisan Dozo is a state-of-the-art vessel designed for international voyages.
+                        Built in 2023, she is equipped with advanced navigation systems and modern crew facilities.
+                        This section will display the full description configured by the customer.
+                        The content may be multiple paragraphs long, so this container is scrollable.
+                      </p>
+                      <p>
+                        The vessel accommodates up to 200 crew and officers. Key features include an integrated
+                        safety monitoring system, eco-friendly propulsion, and enhanced comfort quarters.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Photos carousel -->
+                  <div class="col-sm-6">
+                    <div id="vesselCarousel" class="carousel slide" data-ride="carousel">
+                      <!-- Indicators -->
+                      <ol class="carousel-indicators">
+                        <li data-target="#vesselCarousel" data-slide-to="0" class="active"></li>
+                        <li data-target="#vesselCarousel" data-slide-to="1"></li>
+                        <li data-target="#vesselCarousel" data-slide-to="2"></li>
+                        <li data-target="#vesselCarousel" data-slide-to="3"></li>
+                      </ol>
+
+                      <!-- Wrapper for slides -->
+                      <div class="carousel-inner">
+                        <div class="item active">
+                          <img src="../assets/vessel1.jpg" alt="Vessel photo 1" class="img-responsive" />
+                        </div>
+                        <div class="item">
+                          <img src="../assets/vessel2.jpg" alt="Vessel photo 2" class="img-responsive" />
+                        </div>
+                        <div class="item">
+                          <img src="../assets/vessel3.jpg" alt="Vessel photo 3" class="img-responsive" />
+                        </div>
+                        <div class="item">
+                          <img src="../assets/vessel4.jpg" alt="Vessel photo 4" class="img-responsive" />
+                        </div>
+                      </div>
+
+                      <!-- Controls -->
+                      <a class="left carousel-control" href="#vesselCarousel" data-slide="prev">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                      </a>
+                      <a class="right carousel-control" href="#vesselCarousel" data-slide="next">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div><!-- /main-content -->
+      </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+      $(function () {
+        fetch('crew-sidebar.html')
+          .then(response => response.text())
+          .then(data => {
+            const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+            sidebarPlaceholder.innerHTML = data;
+
+            // Script to set the active state after the sidebar is loaded
+            const currentPage = 'crew-dashboard';
+            const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+            if (activeLink) {
+              activeLink.classList.add('active');
+            }
+          })
+          .catch(error => console.error('Error fetching sidebar:', error));
+
+      });
+    </script>
+</body>
+
+</html>
