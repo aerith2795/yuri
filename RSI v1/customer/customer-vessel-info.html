@@ -271,7 +271,7 @@
     ],
     logs: {
       count: 5,
-      columns: ["Activity", "Vessel", "Embark Date"]
+      columns: ["Date", "Activity", "Remarks"]
     },
     embarkation: { date: "", time: "", location: "" }
   };
@@ -395,16 +395,43 @@
         }
       }
 
-      // Save logs config
-      $('#saveLogsConfig').on('click', function () {
-        vesselConfig.logs = {
-          count: parseInt($('#logCount').val(), 10),
-          columns: $('#logColumns').val()
-        };
-        localStorage.setItem("vesselConfig", JSON.stringify(vesselConfig));
-        renderLogsPreview();
-        showAlert('Logs configuration saved!', 'success');
+     // Save logs config
+$('#saveLogsConfig').on('click', function () {
+  const newColumns = $('#logColumns').val() || [];
+  const newCount = parseInt($('#logCount').val(), 10) || 5;
+
+  // check if columns changed
+  const oldColumns = (vesselConfig.logs && vesselConfig.logs.columns) || [];
+  const columnsChanged = JSON.stringify(newColumns) !== JSON.stringify(oldColumns);
+
+  vesselConfig.logs = {
+    count: newCount,
+    columns: newColumns,
+    entries: vesselConfig.logs && vesselConfig.logs.entries && !columnsChanged 
+      ? vesselConfig.logs.entries 
+      : [] // reset entries if columns changed
+  };
+
+  // re-seed demo rows if no entries or columns changed
+  if (!vesselConfig.logs.entries.length && newColumns.length) {
+    vesselConfig.logs.entries = [];
+    for (let i = 0; i < newCount; i++) {
+      const row = {};
+      newColumns.forEach(c => {
+        if (c === "Date") row[c] = new Date(Date.now() - i*86400000).toISOString().split("T")[0];
+        else if (c === "Activity") row[c] = "Sample activity " + (i+1);
+        else if (c === "Remarks") row[c] = "Demo remark " + (i+1);
+        else row[c] = `${c} sample ${i+1}`;
       });
+      vesselConfig.logs.entries.push(row);
+    }
+  }
+
+  localStorage.setItem("vesselConfig", JSON.stringify(vesselConfig));
+  renderLogsPreview();
+  showAlert('Logs configuration saved!', 'success');
+});
+
 
       function showAlert(msg, type = 'success') {
         const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);

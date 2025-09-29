@@ -124,135 +124,174 @@
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-  <script>
-    function showAlert(msg, type = 'success') {
-      const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
-      $('body').append(alert);
-      setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
-    }
+<script>
+  function showAlert(msg, type = 'success') {
+    const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+    $('body').append(alert);
+    setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
+  }
 
-    // Load vesselConfig
+  // Utility: log crew activity
+  function logCrewActivity(activity, remarks = '') {
     const stored = localStorage.getItem("vesselConfig");
-    const config = stored ? JSON.parse(stored) : {};
-    if (config.embarkation) {
-      $('#embarkDateDisplay').text(config.embarkation.date || '—');
-      $('#embarkTimeDisplay').text(config.embarkation.time || '—');
-      $('#embarkLocationDisplay').text(config.embarkation.location || '—');
-    }
+    let config = stored ? JSON.parse(stored) : { logs: {} };
 
-    // Render Activity Logs
-    function renderCrewLogs(logsConfig) {
-      const cols = (logsConfig && logsConfig.columns) || [];
-      const count = (logsConfig && logsConfig.count) || 0;
+    if (!config.logs) config.logs = {};
+    if (!config.logs.entries) config.logs.entries = [];
 
-      const headerRow = $('#crewLogsTable thead tr').empty();
-      const tbody = $('#crewLogsTable tbody').empty();
+    // Default columns (fallback)
+    const cols = config.logs.columns || ["Date", "Activity", "Remarks"];
 
-      if (cols.length && count > 0) {
-        cols.forEach(c => headerRow.append(`<th>${c}</th>`));
-
-        // generate demo/sample logs
-        for (let i = 0; i < count; i++) {
-          let row = '<tr>';
-          cols.forEach(c => {
-            row += `<td>${c} sample ${i + 1}</td>`;
-          });
-          row += '</tr>';
-          tbody.append(row);
-        }
-      } else {
-        tbody.html('<tr><td colspan="5" class="text-center text-muted">No logs available</td></tr>');
-      }
-    }
-
-    $(function () {
-      // Load sidebar
-      fetch('crew-sidebar.html')
-        .then(r => r.text())
-        .then(data => {
-          $('#sidebar-placeholder').html(data);
-          $('[data-page="crew-dashboard"]').addClass('active');
-        });
-
-      // Load vessel info
-      const stored = localStorage.getItem("vesselConfig");
-      let config = stored ? JSON.parse(stored) : { aboutVessel: '', photos: [] };
-
-      // Render activity logs from config
-      renderCrewLogs(config.logs);
-
-      // Onboarding tasks
-      const tasks = ['cert', 'gdpr', 'video'];
-      let progress = JSON.parse(localStorage.getItem("progress")) || {};
-
-      function saveProgress() {
-        localStorage.setItem("progress", JSON.stringify(progress));
-      }
-
-      function updateProgress() {
-        const completed = tasks.filter(t => progress[t]).length;
-        $('#progressBar').css('width', (completed / tasks.length * 100) + '%');
-        $('#progressText').text(`${completed} of ${tasks.length} tasks completed`);
-
-        tasks.forEach(task => {
-          if (progress[task]) {
-            $(`#${task}Reminder`).hide();
-          } else {
-            $(`#${task}Reminder`).show();
-          }
-        });
-
-        if (completed === tasks.length) {
-          // Hide progress + alerts
-          $('.progress-container').hide();
-          $('#alertsRow').hide();
-
-          // Change welcome message
-          $('.page-header p').text("Welcome to MV Yuri Smart Induction. Your onboarding is complete. You can now fully use the dashboard.");
-
-          $('#onboardingSuccess').fadeIn();
-          showAlert('Onboarding complete! You can now fully use the dashboard.', 'success');
-        } else {
-          $('.progress-container').show();
-          $('#alertsRow').show();
-          $('#onboardingSuccess').hide();
-
-          // Reset to original message
-          $('.page-header p').text(
-            "Welcome to MV Yuri Smart Induction. Your registration is complete. To continue, please complete your onboarding tasks below."
-          );
-        }
-      }
-
-
-      updateProgress();
-
-      // CTA click
-      $('.complete-task').on('click', function () {
-        const task = $(this).data('task');
-        progress[task] = true;
-        saveProgress();
-        updateProgress();
-        showAlert(`Task "${task}" completed!`, 'success');
-
-        const urlMap = {
-          embark: 'crew-registration.html',
-          cert: 'crew-certificates.html',
-          gdpr: 'crew-gdpr.html',
-          video: 'crew-familiarization.html'
-        };
-        window.location.href = urlMap[task];
-      });
-
-      // Auto-sync if config changes in another tab
-      window.addEventListener('storage', function (e) {
-        if (e.key === 'vesselConfig') {
-          const updated = JSON.parse(e.newValue);
-          renderCrewLogs(updated.logs);
-        }
-      });
+    // Build row object
+    const now = new Date();
+    const row = {};
+    cols.forEach(c => {
+      if (c.toLowerCase() === "date") row[c] = now.toLocaleString();
+      else if (c.toLowerCase() === "activity") row[c] = activity;
+      else if (c.toLowerCase() === "remarks") row[c] = remarks;
+      else row[c] = "—";
     });
-  </script>
+
+    // Add new log to top
+    config.logs.entries.unshift(row);
+
+    // Keep only max `count`
+    if (config.logs.count && config.logs.entries.length > config.logs.count) {
+      config.logs.entries = config.logs.entries.slice(0, config.logs.count);
+    }
+
+    localStorage.setItem("vesselConfig", JSON.stringify(config));
+    renderCrewLogs(config.logs);
+  }
+
+  // Load vesselConfig
+  const stored = localStorage.getItem("vesselConfig");
+  const config = stored ? JSON.parse(stored) : {};
+  if (config.embarkation) {
+    $('#embarkDateDisplay').text(config.embarkation.date || '—');
+    $('#embarkTimeDisplay').text(config.embarkation.time || '—');
+    $('#embarkLocationDisplay').text(config.embarkation.location || '—');
+  }
+
+  // Render Activity Logs
+  function renderCrewLogs(logsConfig) {
+    const cols = (logsConfig && logsConfig.columns) || [];
+    const entries = (logsConfig && logsConfig.entries) || [];
+    const count = (logsConfig && logsConfig.count) || 0;
+
+    const headerRow = $('#crewLogsTable thead tr').empty();
+    const tbody = $('#crewLogsTable tbody').empty();
+
+    if (cols.length && (entries.length || count > 0)) {
+      cols.forEach(c => headerRow.append(`<th>${c}</th>`));
+
+      if (entries.length) {
+        // Show saved (real) entries
+        entries.forEach(row => {
+          let tr = '<tr>';
+          cols.forEach(c => tr += `<td>${row[c] || '—'}</td>`);
+          tr += '</tr>';
+          tbody.append(tr);
+        });
+      } else {
+        // Fallback: demo/sample rows
+        for (let i = 0; i < count; i++) {
+          let tr = '<tr>';
+          cols.forEach(c => tr += `<td>${c} sample ${i+1}</td>`);
+          tr += '</tr>';
+          tbody.append(tr);
+        }
+      }
+    } else {
+      tbody.html('<tr><td colspan="5" class="text-center text-muted">No logs available</td></tr>');
+    }
+  }
+
+  $(function () {
+    // Load sidebar
+    fetch('crew-sidebar.html')
+      .then(r => r.text())
+      .then(data => {
+        $('#sidebar-placeholder').html(data);
+        $('[data-page="crew-dashboard"]').addClass('active');
+      });
+
+    // Load vessel info
+    const stored = localStorage.getItem("vesselConfig");
+    let config = stored ? JSON.parse(stored) : { aboutVessel: '', photos: [] };
+
+    // Render activity logs from config
+    renderCrewLogs(config.logs);
+
+    // Onboarding tasks
+    const tasks = ['cert', 'gdpr', 'video'];
+    let progress = JSON.parse(localStorage.getItem("progress")) || {};
+
+    function saveProgress() {
+      localStorage.setItem("progress", JSON.stringify(progress));
+    }
+
+    function updateProgress() {
+      const completed = tasks.filter(t => progress[t]).length;
+      $('#progressBar').css('width', (completed / tasks.length * 100) + '%');
+      $('#progressText').text(`${completed} of ${tasks.length} tasks completed`);
+
+      tasks.forEach(task => {
+        if (progress[task]) {
+          $(`#${task}Reminder`).hide();
+        } else {
+          $(`#${task}Reminder`).show();
+        }
+      });
+
+      if (completed === tasks.length) {
+        $('.progress-container').hide();
+        $('#alertsRow').hide();
+        $('.page-header p').text("Welcome to MV Yuri Smart Induction. Your onboarding is complete. You can now fully use the dashboard.");
+        $('#onboardingSuccess').fadeIn();
+        showAlert('Onboarding complete! You can now fully use the dashboard.', 'success');
+        logCrewActivity("Onboarding completed", "All tasks done");
+      } else {
+        $('.progress-container').show();
+        $('#alertsRow').show();
+        $('#onboardingSuccess').hide();
+        $('.page-header p').text(
+          "Welcome to MV Yuri Smart Induction. Your registration is complete. To continue, please complete your onboarding tasks below."
+        );
+      }
+    }
+
+    updateProgress();
+
+    // CTA click
+    $('.complete-task').on('click', function () {
+      const task = $(this).data('task');
+      progress[task] = true;
+      saveProgress();
+      updateProgress();
+      showAlert(`Task "${task}" completed!`, 'success');
+
+      logCrewActivity(`Completed task: ${task}`);
+
+      const urlMap = {
+        embark: 'crew-registration.html',
+        cert: 'crew-certificates.html',
+        gdpr: 'crew-gdpr.html',
+        video: 'crew-familiarization.html'
+      };
+      window.location.href = urlMap[task];
+    });
+
+    // Auto-sync if config changes in another tab
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'vesselConfig') {
+        const updated = JSON.parse(e.newValue);
+        renderCrewLogs(updated.logs);
+      }
+    });
+  });
+</script>
+
 
 </body>
 
