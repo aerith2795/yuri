@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --r-dark: #070a1a; /* Made even darker */
+            --r-dark: #070a1a;
+            /* Made even darker */
             --r-gray: #5d7fac;
             --r-blue: #3f91ff;
             --r-red: #e32f31;
@@ -29,7 +30,7 @@
         body {
             font-family: 'Overpass', sans-serif;
             /* Darker, static background */
-            background: linear-gradient(135deg, var(--r-dark), #101c56); 
+            background: linear-gradient(135deg, var(--r-dark), #101c56);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -468,7 +469,7 @@
                 });
             });
 
-            // Form submission with redirect to index.html
+            // Form submission with redirect to landing.html
             const adminCustomerForm = document.getElementById('admin-customer-login-form');
             const crewForm = document.getElementById('crew-login-form');
 
@@ -476,18 +477,18 @@
                 adminCustomerForm.addEventListener('submit', function (e) {
                     e.preventDefault();
                     const email = document.querySelector('#admin-customer-form input[type="email"]').value;
-                    
+
                     if (email) {
-                        // Store user type in localStorage for use in index.html
+                        // Store user type in localStorage for use in landing.html
                         localStorage.setItem('userType', 'admin-customer');
                         localStorage.setItem('userEmail', email);
-                        
+
                         // Show loading state
                         const submitBtn = this.querySelector('.btn-login');
                         const originalText = submitBtn.innerHTML;
                         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                         submitBtn.disabled = true;
-                        
+
                         // Simulate API call delay, then redirect
                         setTimeout(() => {
                             window.location.href = 'landing.html';
@@ -502,21 +503,21 @@
                 crewForm.addEventListener('submit', function (e) {
                     e.preventDefault();
                     const email = document.querySelector('#crew-form input[type="email"]').value;
-                    
+
                     if (email) {
-                        // Store user type in localStorage for use in index.html
+                        // Store user type in localStorage for use in landing.html
                         localStorage.setItem('userType', 'crew');
                         localStorage.setItem('userEmail', email);
-                        
+
                         // Show loading state
                         const submitBtn = this.querySelector('.btn-login');
                         const originalText = submitBtn.innerHTML;
                         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                         submitBtn.disabled = true;
-                        
+
                         // Simulate API call delay, then redirect
                         setTimeout(() => {
-                            window.location.href = 'index.html';
+                            window.location.href = 'landing.html';
                         }, 1500);
                     } else {
                         alert('Please enter your email address');
@@ -524,6 +525,7 @@
                 });
             }
 
+            // Register button functionality
             // Register button functionality
             const registerButtons = document.querySelectorAll('.btn-register');
             registerButtons.forEach(button => {
@@ -533,7 +535,8 @@
                     if (activeTab === 'admin-customer') {
                         alert('Redirecting to customer registration page');
                     } else {
-                        alert('Redirecting to crew registration page');
+                        // Redirect to crew registration page
+                        window.location.href = 'landing.html'; 
                     }
                 });
             });
