@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Unified Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Overpass:400,600" rel="stylesheet" />
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: 'Overpass', sans-serif;
+    }
+    .split {
+      height: 100%;
+      display: flex;
+    }
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #3F91FF, #0B0F24);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+    .left h1 {
+      font-weight: 600;
+      font-size: 36px;
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f7f9fc;
+      padding: 40px;
+    }
+    .login-box {
+      background: #fff;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 360px;
+    }
+    .nav-tabs > li > a {
+      font-weight: 600;
+    }
+    .form-control {
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+    .btn-modern {
+      border-radius: 30px;
+      padding: 12px;
+      font-weight: 600;
+      width: 100%;
+    }
+    .login-links {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="split">
+    <!-- Branding -->
+    <div class="left">
+      <div>
+        <h1>Ripple Smart Induction</h1>
+        <p>Secure login for Admins, Customers, and Crew</p>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div class="right">
+      <div class="login-box">
+        <ul class="nav nav-tabs nav-justified">
+          <li class="active"><a href="#adminTab" data-toggle="tab">Admin / Customer</a></li>
+          <li><a href="#crewTab" data-toggle="tab">Crew</a></li>
+        </ul>
+        <div class="tab-content" style="margin-top:20px;">
+          <!-- Admin/Customer -->
+          <div id="adminTab" class="tab-pane fade in active">
+            <input type="email" class="form-control" placeholder="Email" />
+            <input type="password" class="form-control" placeholder="Password" />
+            <button class="btn btn-primary btn-modern">Login</button>
+            <div class="login-links"><a href="#">Forgot Password?</a></div>
+          </div>
+          <!-- Crew -->
+          <div id="crewTab" class="tab-pane fade">
+            <input type="email" class="form-control" placeholder="Email" />
+            <input type="password" class="form-control" placeholder="Password" />
+            <button class="btn btn-success btn-modern">Login</button>
+            <div class="login-links">
+              <a href="#">Forgot Password?</a> • 
+              <a href="crew-register.html">Register</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

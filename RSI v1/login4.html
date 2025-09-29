@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Unified Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Overpass:400,600" rel="stylesheet" />
+  <link href="assets/ripple.css" rel="stylesheet" />
+
+  <style>
+    /* Ensure default Ripple colors are defined for button usage if ripple.css isn't loaded */
+    :root {
+        --r-blue: #007bff; /* Primary for Admin/Platform */
+        --r-dark: #343a40; 
+        --r-orange: #ff9900; /* Used for Customer */
+        --r-green: #28a745; /* Used for Crew */
+    }
+
+    /* ----------------------------------------------------- */
+    /* 🌊 RIPPLE WATER EFFECT */
+    /* ----------------------------------------------------- */
+
+    /* Define the animation for the background */
+    @keyframes flowing-water {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body {
+      font-family: 'Overpass', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      
+      /* Base background color - will be covered by animation */
+      background: var(--r-dark);
+      position: relative;
+    }
+
+    /* Pseudo-element for the dynamic background layer */
+    body::before {
+        content: '';
+        position: fixed; /* Ensures it covers the entire viewport */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Place it behind the login-card */
+        
+        /* The Animated Gradient/Texture */
+        background: linear-gradient(
+            -45deg, 
+            var(--r-blue), 
+            var(--r-dark), 
+            #0056b3, /* A darker blue tone for depth */
+            #004085 /* Even deeper blue */
+        );
+        background-size: 400% 400%; /* Important for the smooth movement */
+        animation: flowing-water 20s ease infinite;
+    }
+
+    /* ----------------------------------------------------- */
+    /* LOGIN CARD & GLASS-MORPHISM STYLES (Mostly Unchanged) */
+    /* ----------------------------------------------------- */
+    .login-card {
+      /* Glass-Morphism effect */
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 500px; 
+      overflow: hidden;
+      animation: fadeIn 0.7s ease;
+      z-index: 10; /* Ensures the card is above the background */
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tabs */
+    .nav-tabs {
+      border: none;
+      display: flex;
+    }
+    .nav-tabs > li {
+      flex: 1;
+    }
+    .nav-tabs > li > a {
+      font-weight: 600;
+      color: #fff;
+      background: transparent;
+      border: none;
+      padding: 16px 0;
+      text-align: center;
+      transition: background 0.3s;
+    }
+    .nav-tabs > li.active > a {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border-radius: 0;
+    }
+
+    .tab-content {
+      padding: 30px 25px;
+      animation: fadeSlide 0.5s;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card h3 {
+      font-weight: 600;
+      color: #fff;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    /* Input style */
+    .form-control {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid rgba(255,255,255,0.5);
+      border-radius: 0;
+      box-shadow: none;
+      color: #fff;
+      padding: 12px 10px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+    .form-control:focus {
+      border-bottom: 2px solid var(--r-blue);
+      outline: none;
+    }
+    .form-control::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Buttons */
+    .btn-modern {
+      border-radius: 30px;
+      padding: 12px;
+      font-weight: 600;
+      width: 100%;
+      transition: all 0.3s;
+      border: none;
+    }
+    .btn-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.25);
+    }
+    
+    /* Unique Button Colors */
+    .btn-admin { background-color: var(--r-blue); }
+    .btn-customer { background-color: var(--r-orange); }
+    .btn-crew { background-color: var(--r-green); }
+    
+    .link-text {
+      font-size: 13px;
+      display: inline-block;
+      margin-top: 12px;
+      color: #fff;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+    .link-text:hover {
+      opacity: 1;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .login-links {
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <ul class="nav nav-tabs nav-justified">
+    <li class="active"><a href="#adminTab" data-toggle="tab"><i class="fa fa-briefcase"></i> Admin</a></li>
+    <li><a href="#customerTab" data-toggle="tab"><i class="fa fa-users"></i> Customer</a></li>
+    <li><a href="#crewTab" data-toggle="tab"><i class="fa fa-ship"></i> Crew</a></li>
+  </ul>
+
+  <div class="tab-content">
+    
+    <div class="tab-pane fade in active" id="adminTab">
+      <h3>Admin Login</h3>
+      <form onsubmit="event.preventDefault(); alert('Admin Login attempted!');">
+        <input type="text" class="form-control" placeholder="Admin Username" required />
+        <input type="password" class="form-control" placeholder="Password" required />
+        <button type="submit" class="btn btn-modern btn-admin"><i class="fa fa-sign-in"></i> Login to Console</button>
+        <div class="login-links">
+          <a href="#" class="link-text">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="tab-pane fade" id="customerTab">
+      <h3>Customer Access</h3>
+      <form onsubmit="event.preventDefault(); alert('Customer Login attempted!');">
+        <input type="email" class="form-control" placeholder="Customer Email" required />
+        <input type="password" class="form-control" placeholder="Password" required />
+        <button type="submit" class="btn btn-modern btn-customer"><i class="fa fa-sign-in"></i> Login to Dashboard</button>
+        <div class="login-links">
+          <a href="#" class="link-text">Forgot Password?</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="tab-pane fade" id="crewTab">
+      <h3>Crew Login</h3>
+      <form onsubmit="event.preventDefault(); alert('Crew Login attempted!');">
+        <input type="text" class="form-control" placeholder="Crew ID or Email" required />
+        <input type="password" class="form-control" placeholder="Password" required />
+        <button type="submit" class="btn btn-modern btn-crew"><i class="fa fa-sign-in"></i> Login to Portal</button>
+        <div class="login-links">
+          <a href="#" class="link-text">Forgot Password?</a> • 
+          <a href="crew-register.html" class="link-text">Register</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>

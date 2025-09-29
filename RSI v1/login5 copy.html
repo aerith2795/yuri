@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --r-dark: #070a1a; /* Made even darker */
+            --r-dark: #0b0f24;
             --r-gray: #5d7fac;
             --r-blue: #3f91ff;
             --r-red: #e32f31;
@@ -28,13 +28,31 @@
 
         body {
             font-family: 'Overpass', sans-serif;
-            /* Darker, static background */
-            background: linear-gradient(135deg, var(--r-dark), #101c56); 
+            /* ANIMATED BACKGROUND START */
+            background: linear-gradient(-45deg, var(--r-dark), #101c56, var(--r-blue), #5d7fac);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            /* ANIMATED BACKGROUND END */
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+        }
+
+        /* Keyframes for animated background */
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         .login-container {
@@ -63,8 +81,8 @@
 
         .image-section {
             flex: 1;
-            /* Adjusted opacity of the dark overlay for the image */
-            background: linear-gradient(rgba(0, 102, 204, 0.7), rgba(30, 42, 74, 0.7)),
+            /* Opacity adjustment: Changed 0.8 to 0.6 for the darker color to make the ship clearer */
+            background: linear-gradient(rgba(0, 102, 204, 0.7), rgba(30, 42, 74, 0.6)),
                 url('https://shipadmin.com/sadesign/templates/New/assets/login-image.jpg');
             background-size: cover;
             background-position: center;
@@ -90,7 +108,7 @@
         }
 
         .logo {
-            margin-bottom: 200px;
+            margin-bottom: 30px;
             max-width: 200px;
         }
 
@@ -372,7 +390,7 @@
             </div>
 
             <div class="tab-content active" id="admin-customer-form">
-                <form id="admin-customer-login-form">
+                <form>
                     <div class="form-group">
                         <div class="input-with-icon">
                             <i class="fas fa-envelope"></i>
@@ -395,12 +413,17 @@
                         <a href="#" class="forgot-password">Forgot Password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                    <button class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
                 </form>
+
+                <div class="register-section">
+                    <p class="register-text">New customer?</p>
+                    <button class="btn btn-register"><i class="fas fa-user-plus"></i> Create Account</button>
+                </div>
             </div>
 
             <div class="tab-content crew-login" id="crew-form">
-                <form id="crew-login-form">
+                <form>
                     <div class="form-group">
                         <div class="input-with-icon">
                             <i class="fas fa-envelope"></i>
@@ -423,7 +446,7 @@
                         <a href="#" class="forgot-password">Forgot Password?</a>
                     </div>
 
-                    <button type="submit" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                    <button class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
                 </form>
 
                 <div class="register-section">
@@ -452,6 +475,7 @@
                 sloganElement.textContent = slogans[randomIndex];
             }
 
+
             // Tab switching functionality
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
@@ -468,61 +492,21 @@
                 });
             });
 
-            // Form submission with redirect to index.html
-            const adminCustomerForm = document.getElementById('admin-customer-login-form');
-            const crewForm = document.getElementById('crew-login-form');
-
-            if (adminCustomerForm) {
-                adminCustomerForm.addEventListener('submit', function (e) {
+            // Form submission (simulated)
+            const loginButtons = document.querySelectorAll('.btn-login');
+            loginButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
-                    const email = document.querySelector('#admin-customer-form input[type="email"]').value;
-                    
+                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                    const email = document.querySelector(`#${activeTab}-form input[type="email"]`).value;
+
                     if (email) {
-                        // Store user type in localStorage for use in index.html
-                        localStorage.setItem('userType', 'admin-customer');
-                        localStorage.setItem('userEmail', email);
-                        
-                        // Show loading state
-                        const submitBtn = this.querySelector('.btn-login');
-                        const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-                        submitBtn.disabled = true;
-                        
-                        // Simulate API call delay, then redirect
-                        setTimeout(() => {
-                            window.location.href = 'landing.html';
-                        }, 1500);
+                        alert(`Login attempt for ${activeTab === 'admin-customer' ? 'Admin/Customer' : 'Crew'} user: ${email}`);
                     } else {
-                        alert('Please enter your email address');
+                        alert(`Please enter your email to login as ${activeTab === 'admin-customer' ? 'Admin/Customer' : 'Crew'}`);
                     }
                 });
-            }
-
-            if (crewForm) {
-                crewForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const email = document.querySelector('#crew-form input[type="email"]').value;
-                    
-                    if (email) {
-                        // Store user type in localStorage for use in index.html
-                        localStorage.setItem('userType', 'crew');
-                        localStorage.setItem('userEmail', email);
-                        
-                        // Show loading state
-                        const submitBtn = this.querySelector('.btn-login');
-                        const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-                        submitBtn.disabled = true;
-                        
-                        // Simulate API call delay, then redirect
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1500);
-                    } else {
-                        alert('Please enter your email address');
-                    }
-                });
-            }
+            });
 
             // Register button functionality
             const registerButtons = document.querySelectorAll('.btn-register');
