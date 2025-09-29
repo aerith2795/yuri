@@ -63,6 +63,102 @@ body {
   background: #e66a2c;
   border-color: #e66a2c;
 }
+.btn-default {
+  background: var(--r-light);
+  border-color: var(--r-blue);
+  color: var(--r-blue);
+}
+.btn-default:hover {
+  background: var(--r-light);
+  border-color: var(--r-blue);
+}
+/* ========================================
+   Ripple Light Button Variants
+   Inspired by btn-default
+   ======================================== */
+
+/* Base light button */
+.btn-light {
+  background: var(--r-light);
+  border: 1px solid transparent;
+  color: var(--r-dark);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-light:hover,
+.btn-light:focus {
+  background: #fff;
+  border-color: var(--r-gray);
+  color: var(--r-dark);
+}
+
+/* Ripple Light Variants */
+.btn-light-blue {
+  background: var(--r-light);
+  border: 1px solid var(--r-blue);
+  color: var(--r-blue);
+}
+
+.btn-light-blue:hover,
+.btn-light-blue:focus {
+  background: #fff;
+  border-color: var(--r-blue);
+  color: var(--r-blue);
+}
+
+.btn-light-green {
+  background: var(--r-light);
+  border: 1px solid var(--r-green);
+  color: var(--r-green);
+}
+
+.btn-light-green:hover,
+.btn-light-green:focus {
+  background: #fff;
+  border-color: var(--r-green);
+  color: var(--r-green);
+}
+
+.btn-light-red {
+  background: var(--r-light);
+  border: 1px solid var(--r-red);
+  color: var(--r-red);
+}
+
+.btn-light-red:hover,
+.btn-light-red:focus {
+  background: #fff;
+  border-color: var(--r-red);
+  color: var(--r-red);
+}
+
+.btn-light-orange {
+  background: var(--r-light);
+  border: 1px solid var(--r-orange);
+  color: var(--r-orange);
+}
+
+.btn-light-orange:hover,
+.btn-light-orange:focus {
+  background: #fff;
+  border-color: var(--r-orange);
+  color: var(--r-orange);
+}
+
+.btn-light-gray {
+  background: var(--r-light);
+  border: 1px solid var(--r-gray);
+  color: var(--r-gray);
+}
+
+.btn-light-gray:hover,
+.btn-light-gray:focus {
+  background: #fff;
+  border-color: var(--r-gray);
+  color: var(--r-gray);
+}
+
+
 
 /* ===============================
      Labels for required fields

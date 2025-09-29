@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>RSI Admin • Welcome Text</title>
+    <title>RSI Customer • Other Settings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Libs -->
@@ -113,7 +113,7 @@ Your registration is complete. To begin your journey, please provide your embark
 
             // Save action
             $('#saveWelcome').on('click', function () {
-                alert('Welcome text saved (demo).');
+                showAlert('Welcome text saved (demo). Crew Portal will be updated shortly!.', 'success');
                 renderPreview();
             });
 
@@ -121,9 +121,17 @@ Your registration is complete. To begin your journey, please provide your embark
             renderPreview();
 
             // Verification & Thank You handling
-                  $('#saveFinal').on('click', ()=> alert('Final message & checkbox saved (demo).'));
+                  $('#saveFinal').on('click', ()=> showAlert('Final message & checkbox saved (demo).'));
 
         });
+    </script>
+    <script>
+        //    ShowAlert
+            function showAlert(msg, type = 'success') {
+                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+                $('body').append(alert);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
+            }
     </script>
 </body>
 

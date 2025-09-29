@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RSI Customer • Manage Crew</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Libs -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+
+    <!-- Ripple + page CSS -->
+    <link href="../assets/ripple.css" rel="stylesheet">
+    <link href="page.css" rel="stylesheet">
+</head>
+<style>
+    .status-guide {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+
+    .status-guide .item {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+    }
+
+    .status-guide .label {
+        margin-right: 6px;
+    }
+</style>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder"></div>
+
+            <!-- Main content -->
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Manage Crew</h2>
+                    <p>View and manage crew profiles registered under this customer portal. You can edit details, reset
+                        passwords, and process deletion requests.</p>
+                </div>
+
+                <!-- Filter -->
+                <div class="form-inline" style="margin-bottom: 15px;">
+                    <label for="statusFilter">Filter by Status: </label>
+                    <select id="statusFilter" class="form-control select2" style="width: 200px; margin-left: 10px;">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="deletion">Deletion Requested</option>
+                    </select>
+                </div>
+                <!-- Status Legend -->
+                <div class="status-guide">
+                    <div class="item"><span class="label label-green">Active</span>
+                        Completed onboarding</div>
+                    <div class="item"><span class="label label-orange">Pending</span>
+                        Registered but not completed</div>
+                    <div class="item"><span class="label label-danger">Deletion
+                            Requested</span> Crew requested deletion</div>
+                </div>
+
+                <!-- Table -->
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <i class="fa fa-users"></i> Crew List
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped crew-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Rank / Position</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-status="active">
+                                    <td>Juan Dela Cruz</td>
+                                    <td>juan@example.com</td>
+                                    <td>Chief Officer</td>
+                                    <td><span class="label label-green">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-xs btn-default view-edit-btn" data-toggle="modal"
+                                            data-target="#editCrewModal" data-name="Juan Dela Cruz"
+                                            data-email="juan@example.com" data-rank="Chief Officer"
+                                            data-status="Active">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-light-orange"><i class="fa fa-refresh"></i> Reset
+                                            Password</button>
+                                        <button class="btn btn-xs btn-danger" data-toggle="modal"
+                                            data-target="#deleteCrewModal">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr data-status="pending">
+                                    <td>Maria Santos</td>
+                                    <td>maria@example.com</td>
+                                    <td>2nd Engineer</td>
+                                    <td><span class="label label-orange">Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-xs btn-default view-edit-btn" data-toggle="modal"
+                                            data-target="#editCrewModal" data-name="Maria Santos"
+                                            data-email="maria@example.com" data-rank="2nd Engineer"
+                                            data-status="Pending">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-light-orange"><i class="fa fa-refresh"></i> Reset
+                                            Password</button>
+                                        <button class="btn btn-xs btn-danger" data-toggle="modal"
+                                            data-target="#deleteCrewModal">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr data-status="deletion">
+                                    <td>Carlos Reyes</td>
+                                    <td>carlos@example.com</td>
+                                    <td>Able Seaman</td>
+                                    <td><span class="label label-danger">Deletion Requested</span></td>
+                                    <td>
+                                        <button class="btn btn-xs btn-default view-edit-btn" data-toggle="modal"
+                                            data-target="#editCrewModal" data-name="Carlos Reyes"
+                                            data-email="carlos@example.com" data-rank="Able Seaman"
+                                            data-status="Deletion Requested">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-light-orange"><i class="fa fa-refresh"></i> Reset
+                                            Password</button>
+                                        <button class="btn btn-xs btn-danger" data-toggle="modal"
+                                            data-target="#deleteCrewModal">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- /main -->
+        </div>
+    </div>
+
+    <!-- ============= Modals ============= -->
+
+    <!-- Edit Crew Modal -->
+    <div id="editCrewModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">View / Edit Crew Details</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="crewForm">
+                        <p class="text-muted small">Update crew profile details and save changes.</p>
+                        <div class="form-grid columns-2">
+                            <div class="form-group">
+                                <label>Full Name <span class="text-red">*</span></label>
+                                <input type="text" class="form-control" id="crewName">
+                            </div>
+                            <div class="form-group">
+                                <label>Email <span class="text-red">*</span></label>
+                                <input type="email" class="form-control" id="crewEmail">
+                            </div>
+                            <div class="form-group">
+                                <label>Rank / Position</label>
+                                <input type="text" class="form-control" id="crewRank">
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="form-control" id="crewStatus">
+                                    <option>Active</option>
+                                    <option>Pending</option>
+                                    <option>Deletion Requested</option>
+                                </select>
+                            </div>
+                        </div>
+                        <hr>
+                        <h5><input type="checkbox" id="togglePwd"> Change Password</h5>
+                        <div id="pwdSection" style="display:none;">
+                            <div class="form-grid columns-2">
+                                <div class="form-group">
+                                    <label>New Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirm Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-warning btn-sm"><i class="fa fa-refresh"></i> Send Reset
+                            Link</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="saveCrewBtn" class="btn btn-primary">Save Changes</button>
+                    <button class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation -->
+    <div id="deleteCrewModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Confirm Deletion</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this crew profile? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger">Yes, Delete</button>
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+        let currentRow;
+
+        // Open edit modal with data
+        $('.view-edit-btn').on('click', function () {
+            currentRow = $(this).closest('tr');
+            $('#crewName').val($(this).data('name'));
+            $('#crewEmail').val($(this).data('email'));
+            $('#crewRank').val($(this).data('rank'));
+            $('#crewStatus').val($(this).data('status'));
+        });
+
+        // Save changes
+        $('#saveCrewBtn').on('click', function () {
+            if (!currentRow) return;
+
+            const name = $('#crewName').val();
+            const email = $('#crewEmail').val();
+            const rank = $('#crewRank').val();
+            const status = $('#crewStatus').val();
+
+            // Update table
+            currentRow.find('td:eq(0)').text(name);
+            currentRow.find('td:eq(1)').text(email);
+            currentRow.find('td:eq(2)').text(rank);
+
+            let statusLabel = '';
+            if (status === 'Active') statusLabel = '<span class="label label-success">Active</span>';
+            else if (status === 'Pending') statusLabel = '<span class="label label-warning">Pending</span>';
+            else if (status === 'Deletion Requested') statusLabel = '<span class="label label-danger">Deletion Requested</span>';
+
+            currentRow.find('td:eq(3)').html(statusLabel);
+            currentRow.attr('data-status', status.toLowerCase().replace(/\s+/g, ''));
+
+            $('#editCrewModal').modal('hide');
+        });
+
+        // Sidebar load
+        fetch('customer-sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                sidebarPlaceholder.innerHTML = data;
+
+                const currentPage = 'customer-manage-crew';
+                const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            })
+            .catch(error => console.error('Error fetching sidebar:', error));
+
+        $('.select2').select2();
+        $('#togglePwd').on('change', function () {
+            $('#pwdSection').toggle(this.checked);
+        });
+
+        // Filter logic
+        $('#statusFilter').on('change', function () {
+            const value = $(this).val();
+            $('tbody tr').show();
+            if (value !== 'all') {
+                $('tbody tr').not(`[data-status="${value}"]`).hide();
+            }
+        });
+    </script>
+</body>
+
+</html>

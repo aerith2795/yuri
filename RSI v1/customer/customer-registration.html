@@ -382,10 +382,18 @@
             });
 
             $("#saveFields").on("click", function () {
-                alert("Registration field configuration saved (demo).");
+                showAlert("Registration field configuration saved (demo).");
             });
 
         });
+    </script>
+    <script>
+        //    ShowAlert
+            function showAlert(msg, type = 'success') {
+                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+                $('body').append(alert);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
+            }
     </script>
 </body>
 

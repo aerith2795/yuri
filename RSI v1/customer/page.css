@@ -307,3 +307,50 @@
   color: var(--r-green);
   font-weight: 600;
 }
+
+/* Vessel Information */
+  #aboutPreview {
+      height: 300px;
+      overflow-y: auto;
+    }
+
+    .vessel-carousel {
+      height: 300px;
+      overflow: hidden;
+    }
+
+    .vessel-carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    #photoPreview .thumb {
+      position: relative;
+      display: inline-block;
+      margin: 5px;
+    }
+
+    #photoPreview img {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+
+    #photoPreview button.remove-photo {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #e74c3c;
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      line-height: 16px;
+      cursor: pointer;
+    }

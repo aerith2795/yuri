@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>RSI Crew • GDPR</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="../assets/ripple.css" rel="stylesheet" />
+    <meta charset="UTF-8" />
+    <title>RSI Crew • GDPR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
 </head>
+
 <body>
-  <div class="container-fluid dashboard-layout">
-    <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder"></div>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder"></div>
 
-      <!-- Main -->
-      <div class="col-sm-9 col-md-10 main-content">
-        <div class="page-header">
-          <h2>GDPR & Data Privacy</h2>
-          <p id="gdprInstructionsText" class="text-muted"></p>
-        </div>
+            <!-- Main -->
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>GDPR & Data Privacy</h2>
+                    <p id="gdprInstructionsText" class="text-muted"></p>
+                </div>
 
-        <div id="gdprPanel" class="panel panel-default" style="display:none;">
-          <div class="panel-heading"><i class="fa fa-shield"></i> GDPR & Data Privacy</div>
-          <div class="panel-body" id="crewGdpr"></div>
-          <div class="panel-footer">
-            <button id="saveGdprCrew" class="btn btn-primary" disabled>
-              <i class="fa fa-save"></i> Acknowledge & Save
-            </button>
-            <button id="requestDeleteBtn" class="btn btn-danger pull-right" style="display:none;">
-              Request Profile Deletion
-            </button>
-          </div>
+                <div id="gdprPanel" class="panel panel-default" style="display:none;">
+                    <div class="panel-heading"><i class="fa fa-shield"></i> GDPR & Data Privacy</div>
+                    <div class="panel-body" id="crewGdpr"></div>
+                    <div class="panel-footer">
+                        <button id="saveGdprCrew" class="btn btn-primary" disabled>
+                            <i class="fa fa-save"></i> Acknowledge & Save
+                        </button>
+                        <button id="requestDeleteBtn" class="btn btn-danger pull-right" style="display:none;">
+                            Request Profile Deletion
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script>
-    $(function () {
-      let gdprConfig = JSON.parse(localStorage.getItem("gdprConfig")) || { texts: [], showPage: false };
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+        $(function () {
+            let gdprConfig = JSON.parse(localStorage.getItem("gdprConfig")) || { texts: [], showPage: false };
 
-      if (!gdprConfig.showPage) {
-        $("#crewGdpr").html("<p>The GDPR policy is not available at this time.</p>");
-        return;
-      }
+            if (!gdprConfig.showPage) {
+                $("#crewGdpr").html("<p>The GDPR policy is not available at this time.</p>");
+                return;
+            }
 
-      $("#gdprPanel").show();
+            $("#gdprPanel").show();
 
-      if (gdprConfig.instructions) {
-        $("#gdprInstructionsText").text(gdprConfig.instructions);
-      }
+            if (gdprConfig.instructions) {
+                $("#gdprInstructionsText").text(gdprConfig.instructions);
+            }
 
-      if (gdprConfig.texts.length > 0) {
-        gdprConfig.texts.forEach(t => {
-          $("#crewGdpr").append(`<h4>${t.title}</h4><p>${t.body}</p><hr/>`);
-        });
-      } else {
-        $("#crewGdpr").append("<p>No GDPR texts configured yet.</p>");
-      }
+            if (gdprConfig.texts.length > 0) {
+                gdprConfig.texts.forEach(t => {
+                    $("#crewGdpr").append(`<h4>${t.title}</h4><p>${t.body}</p><hr/>`);
+                });
+            } else {
+                $("#crewGdpr").append("<p>No GDPR texts configured yet.</p>");
+            }
 
-      // ✅ Show uploaded GDPR file (if any)
-      if (gdprConfig.fileUrl) {
-        $("#crewGdpr").append(`
+            // ✅ Show uploaded GDPR file (if any)
+            if (gdprConfig.fileUrl) {
+                $("#crewGdpr").append(`
           <div class="alert alert-info">
             <i class="fa fa-file-pdf-o"></i> File Attachment<br>
             <a href="${gdprConfig.fileUrl}" target="_blank" class="btn btn-xs btn-primary">
@@ -72,66 +74,67 @@
             </a>
           </div>
         `);
-      }
+            }
 
-      if (gdprConfig.requireAgree) {
-        $("#crewGdpr").append(`
+            if (gdprConfig.requireAgree) {
+                $("#crewGdpr").append(`
           <div class="checkbox">
             <label><input type="checkbox" id="gdprAgree"> I have read and agree to the GDPR policy</label>
           </div>
         `);
 
-        // Disable save until checkbox ticked
-        $(document).on("change", "#gdprAgree", function () {
-          $("#saveGdprCrew").prop("disabled", !this.checked);
+                // Disable save until checkbox ticked
+                $(document).on("change", "#gdprAgree", function () {
+                    $("#saveGdprCrew").prop("disabled", !this.checked);
+                });
+            } else {
+                $("#saveGdprCrew").prop("disabled", false);
+            }
+
+            if (gdprConfig.allowDeletion) {
+                $("#requestDeleteBtn").show();
+            }
+
+            // Save acknowledgement
+            $("#saveGdprCrew").on("click", function () {
+                alert("✅ Your acknowledgement has been saved.");
+            });
+
+            // Load deletion state
+            if (localStorage.getItem("crewDeletionRequested") === "true") {
+                $("#requestDeleteBtn")
+                    .text("Profile Deletion Requested")
+                    .removeClass("btn-danger")
+                    .addClass("btn-default")
+                    .prop("disabled", true);
+            }
+
+            // Profile deletion request
+            $("#requestDeleteBtn").on("click", function () {
+                localStorage.setItem("crewDeletionRequested", "true");
+                $(this)
+                    .text("Profile Deletion Requested")
+                    .removeClass("btn-danger")
+                    .addClass("btn-default")
+                    .prop("disabled", true);
+                alert("⚠️ Profile deletion request submitted.");
+            });
+
         });
-      } else {
-        $("#saveGdprCrew").prop("disabled", false);
-      }
+    </script>
 
-      if (gdprConfig.allowDeletion) {
-        $("#requestDeleteBtn").show();
-      }
-
-      // Save acknowledgement
-      $("#saveGdprCrew").on("click", function () {
-        alert("✅ Your acknowledgement has been saved.");
-      });
-
-     // Load deletion state
-if (localStorage.getItem("crewDeletionRequested") === "true") {
-  $("#requestDeleteBtn")
-    .text("Profile Deletion Requested")
-    .removeClass("btn-danger")
-    .addClass("btn-default")
-    .prop("disabled", true);
-}
-
-// Profile deletion request
-$("#requestDeleteBtn").on("click", function () {
-  localStorage.setItem("crewDeletionRequested", "true");
-  $(this)
-    .text("Profile Deletion Requested")
-    .removeClass("btn-danger")
-    .addClass("btn-default")
-    .prop("disabled", true);
-  alert("⚠️ Profile deletion request submitted.");
-});
-
-    });
-  </script>
-
-  <script>
-    // Load sidebar (demo only)
-    $(function () {
-      fetch('crew-sidebar.html')
-        .then(r => r.text())
-        .then(html => {
-          $('#sidebar-placeholder').html(html);
-          const activeLink = document.querySelector('[data-page="crew-gdpr"]');
-          if (activeLink) activeLink.classList.add('active');
+    <script>
+        // Load sidebar (demo only)
+        $(function () {
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-gdpr"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
         });
-    });
-  </script>
+    </script>
 </body>
+
 </html>

@@ -80,9 +80,9 @@
           <p>Maintain vessel details to ensure accurate information is displayed in the crew portal.</p>
         </div>
 
-        <!-- Next Voyage -->
+                <!-- Next Voyage -->
         <div class="panel panel-default">
-          <div class="panel-heading"><i class="fa fa-anchor"></i> Next Embarkation Schedule</div>
+          <div class="panel-heading"><i class="fa fa-calendar"></i> Next Embarkation Schedule</div>
           <div class="panel-body">
             <div class="row">
               <div class="col-sm-4 form-group">
@@ -98,7 +98,6 @@
                 <input type="text" id="embarkLocation" class="form-control" placeholder="e.g. Manila Port">
               </div>
             </div>
-            <button id="saveEmbarkation" class="btn btn-success"><i class="fa fa-save"></i> Save Embarkation</button>
           </div>
         </div>
 
@@ -180,13 +179,11 @@
               <div class="col-sm-8 form-group">
                 <label>Columns to display</label>
                 <select id="logColumns" class="form-control select2" multiple>
-                  <option value="Date">Date</option>
                   <option value="Activity" selected>Activity</option>
                   <option value="Vessel">Vessel</option>
                   <option value="Disembark Date">Disembark Date</option>
                   <option value="Embark Date">Embark Date</option>
                   <option value="Location">Location</option>
-                  <option value="Remarks">Remarks</option>
                 </select>
               </div>
             </div>
@@ -216,7 +213,6 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
   <script>
     $(function () {
@@ -230,11 +226,14 @@
           if (activeLink) activeLink.classList.add('active');
         });
 
+      // Select2
       $('.select2').select2();
-      
+
+      // Summernote
       $('#aboutVessel').summernote({ height: 150 });
 
-      let vesselConfig = {};
+      // --- SYNC LOGIC ---
+      let vesselConfig = {}; // FIX: initialize
 
       // Load existing config from localStorage
       const storedConfig = localStorage.getItem("vesselConfig");
@@ -242,60 +241,41 @@
         vesselConfig = JSON.parse(storedConfig);
       } else {
         // --- SEED DEFAULT SAMPLE DATA ---
-  vesselConfig = {
-    aboutVessel: `
-      <p><strong>M/V Yurisan Dozo</strong> is a state-of-the-art cargo and passenger vessel designed for
-      efficiency, comfort, and safety at sea. Built with advanced navigation systems and modern facilities,
-      it serves both regional and international routes. The vessel is known for its fuel efficiency,
-      spacious cabins, and reliable performance under varying weather conditions.</p>
+        vesselConfig = {
+          aboutVessel: `
+        <p><strong>M/V Yurisan Dozo</strong> is a state-of-the-art cargo and passenger vessel designed for
+        efficiency, comfort, and safety at sea. Built with advanced navigation systems and modern facilities,
+        it serves both regional and international routes. The vessel is known for its fuel efficiency,
+        spacious cabins, and reliable performance under varying weather conditions.</p>
 
-      <p>Onboard amenities include crew accommodations, passenger lounges, and a fully equipped bridge.
-      The <em>M/V Yurisan Dozo</em> reflects the latest standards in maritime engineering, offering
-      a balance between functionality and sustainability in ocean travel.</p>
+        <p>Onboard amenities include crew accommodations, passenger lounges, and a fully equipped bridge.
+        The <em>M/V Yurisan Dozo</em> reflects the latest standards in maritime engineering, offering
+        a balance between functionality and sustainability in ocean travel.</p>
 
-      <ul>
-        <li><strong>Length:</strong> 150 meters</li>
-        <li><strong>Beam:</strong> 25 meters</li>
-        <li><strong>Gross Tonnage:</strong> 20,000 GT</li>
-        <li><strong>Passenger Capacity:</strong> 200</li>
-        <li><strong>Crew Capacity:</strong> 50</li>
-        <li><strong>Maximum Speed:</strong> 22 knots</li>
-        <li><strong>Year Built:</strong> 2020</li>
-        <li><strong>Flag:</strong> Panama</li>
-      </ul>
-      <p><em>Note: This is sample text. Please update with actual vessel information.</em></p>
-    `,
-    photos: [
-      "https://cdn.prod.website-files.com/6246d8c921709e497eef110f/677cf09a70beff127b588b92_Understanding%20the%20Definition%20and%20Use%20of%20Vessel%20Number_11zon.jpg",
-      "https://orbitshub.com/wp-content/uploads/2022/05/Blogs-Pictures-Orbitshub-marine-vessel-management-system-1910x1074-1.jpeg"
-    ],
-    logs: {
-      count: 5,
-      columns: ["Activity", "Vessel", "Embark Date"]
-    },
-    embarkation: { date: "", time: "", location: "" }
-  };
-}
-
-      // Prefill embarkation if available
-      if (vesselConfig.embarkation) {
-        $('#embarkDate').val(vesselConfig.embarkation.date || "");
-        $('#embarkTime').val(vesselConfig.embarkation.time || "");
-        $('#embarkLocation').val(vesselConfig.embarkation.location || "");
+        <ul>
+          <li><strong>Length:</strong> 150 meters</li>
+          <li><strong>Beam:</strong> 25 meters</li>
+          <li><strong>Gross Tonnage:</strong> 20,000 GT</li>
+          <li><strong>Passenger Capacity:</strong> 200</li>
+          <li><strong>Crew Capacity:</strong> 50</li>
+          <li><strong>Maximum Speed:</strong> 22 knots</li>
+          <li><strong>Year Built:</strong> 2020</li>
+          <li><strong>Flag:</strong> Panama</li>
+        </ul>
+        <p><em>Note: This is sample text. Please update with actual vessel information.</em></p>
+      `,
+          photos: [
+            "https://cdn.prod.website-files.com/6246d8c921709e497eef110f/677cf09a70beff127b588b92_Understanding%20the%20Definition%20and%20Use%20of%20Vessel%20Number_11zon.jpg",
+            "https://orbitshub.com/wp-content/uploads/2022/05/Blogs-Pictures-Orbitshub-marine-vessel-management-system-1910x1074-1.jpeg"
+          ],
+          logs: {
+            count: 5,
+            columns: ["Activity", "Vessel", "Embark Date"]
+          }
+        };
       }
 
-      // Save embarkation button
-      $('#saveEmbarkation').on('click', function () {
-        vesselConfig.embarkation = {
-          date: $('#embarkDate').val(),
-          time: $('#embarkTime').val(),
-          location: $('#embarkLocation').val()
-        };
-        localStorage.setItem("vesselConfig", JSON.stringify(vesselConfig));
-        showAlert("Embarkation details saved!", "success");
-      });
-
-      // Render About + Carousel
+      // Render about + carousel
       $('#aboutPreview').html(vesselConfig.aboutVessel || '<p class="text-muted">No information available.</p>');
       renderCarousel();
 
@@ -304,7 +284,7 @@
       $('#logColumns').val(vesselConfig.logs.columns).trigger('change');
       renderLogsPreview();
 
-      // Edit button
+      // Pre-fill About when editing
       $('#editBtn').on('click', function () {
         $('#aboutVessel').summernote('code', vesselConfig.aboutVessel || '');
         renderPhotoPreview();
@@ -331,11 +311,11 @@
         $('#photoPreview').empty();
         vesselConfig.photos.forEach((src, i) => {
           $('#photoPreview').append(`
-            <div class="thumb">
-              <img src="${src}" alt="Vessel Photo ${i + 1}">
-              <button type="button" class="remove-photo" data-index="${i}">&times;</button>
-            </div>
-          `);
+        <div class="thumb">
+          <img src="${src}" alt="Vessel Photo ${i + 1}">
+          <button type="button" class="remove-photo" data-index="${i}">&times;</button>
+        </div>
+      `);
         });
       }
 
@@ -346,33 +326,46 @@
         renderPhotoPreview();
       });
 
-      // Save vessel form
+      // Save form
       $('#vesselForm').on('submit', function (e) {
         e.preventDefault();
-        vesselConfig.aboutVessel = $('#aboutVessel').summernote('code');
-        localStorage.setItem("vesselConfig", JSON.stringify(vesselConfig));
-        $('#aboutPreview').html(vesselConfig.aboutVessel || '<p class="text-muted">No information available.</p>');
+
+        // Load existing vesselConfig safely
+        let stored = localStorage.getItem('vesselConfig');
+        let config = stored ? JSON.parse(stored) : {};
+
+        // Update vessel fields
+        config.aboutVessel = $('#aboutVessel').summernote('code');
+        config.photos = vesselConfig.photos;  // keep existing photos
+        config.logs = vesselConfig.logs;      // keep logs setup
+
+        // Save merged config
+        localStorage.setItem("vesselConfig", JSON.stringify(config));
+
+        $('#aboutPreview').html(config.aboutVessel || '<p class="text-muted">No information available.</p>');
         renderCarousel();
         $('#vesselInfoForm').collapse('hide');
         showAlert('Vessel info saved and synced with Crew Portal!', 'success');
       });
 
+
+      // Render carousel
       function renderCarousel() {
         const carouselItems = $('#carouselItems').empty();
         if (vesselConfig.photos.length) {
           vesselConfig.photos.forEach((src, i) => {
             carouselItems.append(`
-              <div class="item ${i === 0 ? 'active' : ''}">
-                <img src="${src}" alt="Vessel Photo ${i + 1}">
-              </div>
-            `);
+          <div class="item ${i === 0 ? 'active' : ''}">
+            <img src="${src}" alt="Vessel Photo ${i + 1}">
+          </div>
+        `);
           });
         } else {
           carouselItems.append('<div class="item active"><div class="well text-center text-muted">No photos uploaded</div></div>');
         }
       }
 
-      // Logs preview
+      // Logs column preview
       $('#logColumns, #logCount').on('change', renderLogsPreview);
 
       function renderLogsPreview() {

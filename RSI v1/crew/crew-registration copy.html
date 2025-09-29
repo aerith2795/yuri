@@ -15,50 +15,42 @@
     <link href="../assets/ripple.css" rel="stylesheet" />
     <link href="page.css" rel="stylesheet" />
 
-    <style>
-        .panel-profile {
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            padding: 20px;
-            background: #fff;
-        }
-
-        .panel-profile .profile-photo {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border: 3px solid #3F91FF;
-            margin-bottom: 10px;
-        }
-
-        .panel-profile .crew-name {
-            margin: 5px 0;
-            font-weight: 600;
-            font-size: 1.4em;
-        }
-
-        .panel-profile .crew-rank {
-            color: #5D7FAC;
-            margin-bottom: 5px;
-        }
-
-        .panel-profile .crew-company {
-            font-size: 0.9em;
-            color: #777;
-        }
-
-        /* Align edit button with tabs */
-        .tab-actions {
-            float: right;
-            margin-top: -35px;
-        }
-
-        .tab-actions .btn {
-            margin-left: 5px;
-        }
-    </style>
 </head>
+<style>
+    .panel-profile {
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+        background: #fff;
+    }
+
+    .panel-profile .profile-photo {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border: 3px solid #3F91FF;
+        /* Ripple blue */
+        margin-bottom: 10px;
+    }
+
+    .panel-profile .crew-name {
+        margin: 5px 0;
+        font-weight: 600;
+        font-size: 1.4em;
+    }
+
+    .panel-profile .crew-rank {
+        color: #5D7FAC;
+        /* Ripple gray */
+        margin-bottom: 5px;
+    }
+
+    .panel-profile .crew-company {
+        font-size: 0.9em;
+        color: #777;
+    }
+</style>
 
 <body>
     <div class="container-fluid dashboard-layout">
@@ -74,6 +66,17 @@
                 </div>
 
                 <!-- Nav tabs -->
+                <!-- Crew Summary Card -->
+                <!-- <div class="panel panel-profile">
+                    <div class="panel-body text-center">
+                        <img src="../assets/avatar-sample.jpg" alt="Crew Photo" class="profile-photo img-circle">
+                        <h3 class="crew-name">Juan Dela Cruz</h3>
+                        <p class="crew-rank">Chief Engineer</p>
+                        <p class="crew-company"><i class="fa fa-building"></i> Ripple Shipping Inc.</p>
+                        <button class="btn btn-sm r-btn-primary"><i class="fa fa-upload"></i> Update Photo</button>
+                    </div>
+                </div> -->
+
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="active"><a href="#personal" role="tab" data-toggle="tab"><i class="fa fa-user"></i>
                             Personal</a></li>
@@ -81,13 +84,6 @@
                     <li><a href="#nok2" role="tab" data-toggle="tab"><i class="fa fa-users"></i> NOK 2</a></li>
                     <li><a href="#company" role="tab" data-toggle="tab"><i class="fa fa-building"></i> Company</a></li>
                 </ul>
-
-                <!-- Edit/Save/Cancel Controls -->
-                <div class="tab-actions">
-                    <button id="cancelBtn" class="btn btn-default btn-sm" style="display:none;"><i
-                            class="fa fa-times"></i> Cancel</button>
-                    <button id="editSaveBtn" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i> Edit</button>
-                </div>
 
                 <!-- Tab panes -->
                 <div class="tab-content">
@@ -97,6 +93,8 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <i class="fa fa-user"></i> Personal Information
+                                <button class="btn btn-xs btn-default pull-right toggle-edit"><i
+                                        class="fa fa-pencil"></i> Edit</button>
                             </div>
                             <div class="panel-body">
                                 <form id="personalForm">
@@ -161,6 +159,11 @@
                                         </div>
                                     </div>
                                 </form>
+                                <hr />
+                                <button class="btn btn-default cancel-btn action-buttons"><i class="fa fa-times"></i>
+                                    Cancel</button>
+                                <button class="btn btn-primary action-buttons"><i class="fa fa-save"></i>
+                                    Save</button>
                             </div>
                         </div>
                     </div>
@@ -168,7 +171,11 @@
                     <!-- NOK 1 -->
                     <div class="tab-pane" id="nok1">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><i class="fa fa-users"></i> Next of Kin 1</div>
+                            <div class="panel-heading">
+                                <i class="fa fa-users"></i> Next of Kin 1
+                                <button class="btn btn-xs btn-default pull-right toggle-edit"><i
+                                        class="fa fa-pencil"></i> Edit</button>
+                            </div>
                             <div class="panel-body">
                                 <form id="nok1Form">
                                     <div class="row">
@@ -211,16 +218,25 @@
                                         </div>
                                     </div>
                                 </form>
+                                <hr />
+                                <button class="btn btn-default cancel-btn action-buttons"><i class="fa fa-times"></i>
+                                    Cancel</button>
+                                <button class="btn btn-primary action-buttons"><i class="fa fa-save"></i>
+                                    Save</button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- NOK 2 -->
+                    <!-- NOK 2 (similar to NOK 1) -->
                     <div class="tab-pane" id="nok2">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><i class="fa fa-users"></i> Next of Kin 2</div>
+                            <div class="panel-heading">
+                                <i class="fa fa-users"></i> Next of Kin 2
+                                <button class="btn btn-xs btn-default pull-right toggle-edit"><i
+                                        class="fa fa-pencil"></i> Edit</button>
+                            </div>
                             <div class="panel-body">
-                                 <form id="nok2Form">
+                                <form id="nok2Form">
                                     <div class="row">
                                         <div class="col-sm-4 form-group">
                                             <label>Relationship</label>
@@ -261,6 +277,11 @@
                                         </div>
                                     </div>
                                 </form>
+                                <hr />
+                                <button class="btn btn-default cancel-btn action-buttons"><i class="fa fa-times"></i>
+                                    Cancel</button>
+                                <button class="btn btn-primary action-buttons"><i class="fa fa-save"></i>
+                                    Save</button>
                             </div>
                         </div>
                     </div>
@@ -268,7 +289,11 @@
                     <!-- Company -->
                     <div class="tab-pane" id="company">
                         <div class="panel panel-default">
-                            <div class="panel-heading"><i class="fa fa-building"></i> Company & Emergency Contact</div>
+                            <div class="panel-heading">
+                                <i class="fa fa-building"></i> Company & Emergency Contact
+                                <button class="btn btn-xs btn-default pull-right toggle-edit"><i
+                                        class="fa fa-pencil"></i> Edit</button>
+                            </div>
                             <div class="panel-body">
                                 <form id="companyForm">
                                     <div class="form-group">
@@ -284,12 +309,19 @@
                                         <input type="text" class="form-control" value="+63 2 765 4321" readonly>
                                     </div>
                                 </form>
+                                <hr />
+                                <button class="btn btn-default cancel-btn action-buttons"><i class="fa fa-times"></i>
+                                    Cancel</button>
+                                <button class="btn btn-primary action-buttons"><i class="fa fa-save"></i>
+                                    Save</button>
                             </div>
+
                         </div>
                     </div>
 
                 </div><!-- /tab-content -->
             </div>
+
         </div>
     </div>
 
@@ -297,72 +329,46 @@
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-    <script>
-        $(function () {
-            // Sidebar
-            fetch('crew-sidebar.html')
-                .then(res => res.text())
-                .then(html => {
-                    $('#sidebar-placeholder').html(html);
-                    $('[data-page="crew-registration"]').addClass('active');
-                });
-
-            let isEditing = false;
-            let originalValues = {};
-
-            // Toggle edit/save
-            $('#editSaveBtn').on('click', function () {
-                const activePanel = $('.tab-pane.active');
-                const inputs = activePanel.find('input');
-
-                if (!isEditing) {
-                    // Store original values before edit
-                    originalValues = {};
-                    inputs.each(function () {
-                        originalValues[$(this).attr('name') || $(this).index()] = $(this).val();
-                    });
-
-                    // Switch to edit mode
-                    inputs.prop('readonly', false);
-                    isEditing = true;
-                    $('#cancelBtn').show();
-                    $(this).html('<i class="fa fa-save"></i> Save')
-                        .removeClass('btn-primary')
-                        .addClass('btn-success');
-                } else {
-                    // Save mode
-                    inputs.prop('readonly', true);
-                    isEditing = false;
-                    $('#cancelBtn').hide();
-                    $(this).html('<i class="fa fa-pencil"></i> Edit')
-                        .removeClass('btn-success')
-                        .addClass('btn-primary');
-                    alert('Changes saved successfully');
-                }
+<script>
+    $(function () {
+        // Sidebar
+        fetch('crew-sidebar.html')
+            .then(res => res.text())
+            .then(html => {
+                $('#sidebar-placeholder').html(html);
+                $('[data-page="crew-registration"]').addClass('active');
             });
 
-            // Cancel
-            $('#cancelBtn').on('click', function () {
-                const activePanel = $('.tab-pane.active');
-                const inputs = activePanel.find('input');
+        // By default disable all save/cancel buttons
+        $('.action-buttons').prop('disabled', true);
 
-                // Restore original values
-                inputs.each(function () {
-                    const key = $(this).attr('name') || $(this).index();
-                    if (originalValues[key] !== undefined) {
-                        $(this).val(originalValues[key]);
-                    }
-                });
-
-                inputs.prop('readonly', true);
-                isEditing = false;
-                $('#cancelBtn').hide();
-                $('#editSaveBtn').html('<i class="fa fa-pencil"></i> Edit')
-                    .removeClass('btn-success')
-                    .addClass('btn-primary');
-            });
+        // Toggle edit
+        $('.toggle-edit').on('click', function () {
+            const panel = $(this).closest('.panel');
+            panel.find('input').prop('readonly', false);
+            panel.find('.action-buttons').prop('disabled', false); // enable save & cancel
+            $(this).hide(); // hide edit button
         });
-    </script>
+
+        // Cancel button
+        $('.cancel-btn').on('click', function () {
+            const panel = $(this).closest('.panel');
+            panel.find('input').prop('readonly', true);
+            panel.find('.action-buttons').prop('disabled', true); // disable again
+            panel.find('.toggle-edit').show();
+        });
+
+        // Save button (demo only)
+        $('form').on('submit', function (e) {
+            e.preventDefault();
+            const panel = $(this).closest('.panel');
+            panel.find('input').prop('readonly', true);
+            panel.find('.action-buttons').prop('disabled', true); // disable again
+            panel.find('.toggle-edit').show();
+            alert('Changes saved successfully');
+        });
+    });
+</script>
 
 
 </body>

@@ -62,11 +62,11 @@
 
       // load vessel config from localStorage (preferred)
       let cfg = {};
-      const stored = localStorage.getItem('vesselConfig');
+      const stored = localStorage.getItem('vesselConfigCert');
       if(stored){
-        try { cfg = JSON.parse(stored); } catch(e){ console.warn('bad vesselConfig'); cfg = window.vesselConfig || {}; }
+        try { cfg = JSON.parse(stored); } catch(e){ console.warn('bad vesselConfigCert'); cfg = window.vesselConfigCert || {}; }
       } else {
-        cfg = window.vesselConfig || {};
+        cfg = window.vesselConfigCert || {};
       }
 
       const certs = Array.isArray(cfg.certificatesRequired) ? cfg.certificatesRequired : [];
@@ -197,15 +197,15 @@
   </script>
   <script>
   $(function() {
-    const stored = localStorage.getItem('vesselConfig');
+    const stored = localStorage.getItem('vesselConfigCert');
     if (stored) {
-      try { window.vesselConfig = JSON.parse(stored); } catch(e){}
+      try { window.vesselConfigCert = JSON.parse(stored); } catch(e){}
     }
-    const certs = window.vesselConfig.certificatesRequired || [];
+    const certs = window.vesselConfigCert.certificatesRequired || [];
 
     // Display general instructions
-    if (window.vesselConfig.certInstructions) {
-      $('#crewCertInstructions').text(window.vesselConfig.certInstructions);
+    if (window.vesselConfigCert.certInstructions) {
+      $('#crewCertInstructions').text(window.vesselConfigCert.certInstructions);
     }
 
     // Render certs required

@@ -98,7 +98,7 @@
                             </div>
 
                             <hr />
-                            <button id="saveGdpr" class="btn btn-primary"><i class="fa fa-save"></i> Save
+                            <button id="saveGdpr" class="btn btn-primary"><i class="fa fa-save"></i> Save & Post
                                 Changes</button>
                         </div>
                     </div>
@@ -171,42 +171,42 @@
             const defaultText = `RSI collects and processes personal data including names, contact information, seafarer certificates, and employment history in compliance with the EU General Data Protection Regulation (GDPR). Data is retained only as long as necessary for regulatory compliance and crew management purposes. We employ encryption, secure servers, and strict access controls to ensure data protection. Crew members have the right to request data access, correction, or deletion at any time. For full details, please refer to the official GDPR policy document provided during onboarding.`;
 
             // Load config (or defaults)
-// Load config (or defaults)
-let gdprConfig = JSON.parse(localStorage.getItem("gdprConfig")) || {
-    texts: [
-        { title: "General Data Protection Policy", body: defaultText }
-    ],
-    showPage: true,
-    requireAgree: true,
-    allowDeletion: true,
-    instructions: "Please review the GDPR policy carefully before proceeding.",
-    documentName: "" // <--- add uploaded file name here
-};
+            // Load config (or defaults)
+            let gdprConfig = JSON.parse(localStorage.getItem("gdprConfig")) || {
+                texts: [
+                    { title: "General Data Protection Policy", body: defaultText }
+                ],
+                showPage: true,
+                requireAgree: true,
+                allowDeletion: true,
+                instructions: "Please review the GDPR policy carefully before proceeding.",
+                documentName: "" // <--- add uploaded file name here
+            };
 
-// Save GDPR config
-$("#saveGdpr").on("click", function () {
-    gdprConfig.instructions = $("#gdprInstructions").val();
-    gdprConfig.showPage = $("#showGdpr").prop("checked");
-    gdprConfig.requireAgree = $("#requireAgree").prop("checked");
-    gdprConfig.allowDeletion = $("#allowDeletion").prop("checked");
+            // Save GDPR config
+            $("#saveGdpr").on("click", function () {
+                gdprConfig.instructions = $("#gdprInstructions").val();
+                gdprConfig.showPage = $("#showGdpr").prop("checked");
+                gdprConfig.requireAgree = $("#requireAgree").prop("checked");
+                gdprConfig.allowDeletion = $("#allowDeletion").prop("checked");
 
-    // handle uploaded file name
-    const fileInput = $("input[type='file']")[0];
-    if (fileInput.files.length > 0) {
-        gdprConfig.documentName = fileInput.files[0].name;
-    }
+                // handle uploaded file name
+                const fileInput = $("input[type='file']")[0];
+                if (fileInput.files.length > 0) {
+                    gdprConfig.documentName = fileInput.files[0].name;
+                }
 
-    localStorage.setItem("gdprConfig", JSON.stringify(gdprConfig));
-    showAlert("GDPR configuration saved. Crew portal will reflect these settings.", "success");
-});
+                localStorage.setItem("gdprConfig", JSON.stringify(gdprConfig));
+                showAlert("GDPR configuration posted. Crew portal will be updated shortly!.", "success");
+            });
 
-// Render table (update to also show uploaded file)
-function renderTable() {
-    const tbody = $("#gdprTable tbody");
-    tbody.empty();
-    gdprConfig.texts.forEach((item, i) => {
-        const excerpt = item.body.length > 120 ? item.body.substr(0, 117) + "..." : item.body;
-        tbody.append(`
+            // Render table (update to also show uploaded file)
+            function renderTable() {
+                const tbody = $("#gdprTable tbody");
+                tbody.empty();
+                gdprConfig.texts.forEach((item, i) => {
+                    const excerpt = item.body.length > 120 ? item.body.substr(0, 117) + "..." : item.body;
+                    tbody.append(`
             <tr data-index="${i}">
                 <td>${item.title}</td>
                 <td>${excerpt}</td>
@@ -216,11 +216,11 @@ function renderTable() {
                 </td>
             </tr>
         `);
-    });
+                });
 
-    // If document uploaded, show below table
-    if (gdprConfig.documentName) {
-        tbody.append(`
+                // If document uploaded, show below table
+                if (gdprConfig.documentName) {
+                    tbody.append(`
             <tr class="active">
                 <td colspan="3">
                     <i class="fa fa-file-pdf-o text-danger"></i>
@@ -228,9 +228,9 @@ function renderTable() {
                 </td>
             </tr>
         `);
-    }
-}
-  // Initialize
+                }
+            }
+            // Initialize
             renderTable();
             $("#gdprInstructions").val(gdprConfig.instructions);
             $("#showGdpr").prop("checked", gdprConfig.showPage);
@@ -245,7 +245,7 @@ function renderTable() {
                 gdprConfig.allowDeletion = $("#allowDeletion").prop("checked");
 
                 localStorage.setItem("gdprConfig", JSON.stringify(gdprConfig));
-                showAlert("GDPR configuration saved. Crew portal will reflect these settings.", "success");
+                // showAlert("GDPR configuration saved. Crew portal will reflect these settings.", "success");
             });
 
             // Add new GDPR text
@@ -285,8 +285,16 @@ function renderTable() {
 
                 renderTable();
                 $("#modalText").modal("hide");
-                showAlert("GDPR text saved.", "success");
+                showAlert('GDPR info saved!', 'success');
+
             });
+
+            //    ShowAlert
+            function showAlert(msg, type = 'success') {
+                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+                $('body').append(alert);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
+            }
         });
     </script>
 

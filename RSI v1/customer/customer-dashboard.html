@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
-  <title>RSI Admin • Dashboard</title>
+  <title>RSI Customer • Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Libs -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-  <!-- Ripple core + Admin page CSS -->
+  <!-- Ripple Core + Customer Page CSS -->
   <link href="../assets/ripple.css" rel="stylesheet" />
-  <link href="admin-page.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
 </head>
 <style>
-  /* --- Button & KPI fixes --- */
+   /* --- Button & KPI fixes --- */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -33,10 +31,7 @@
   .kpi-row .panel {
     min-height: 220px;
   }
-
-  .progress {
-    margin-bottom: 22px;
-  }
+  /* Consistent KPI look */
 </style>
 
 <body>
@@ -47,93 +42,83 @@
 
       <!-- Main -->
       <div class="col-sm-9 col-md-10 main-content">
-        <div class="page-header">
-          <h2>Customers Dashboard</h2>
-          <p>Quick overview of vessels, customer admins, and certificate usage.</p>
-        </div>
+          <div class="page-header">
+            <h2>Hi, Cloud Strife!</h2>
+            <p>Welcome to Ripple Smart Induction for M/V Yurisan Dozo.</p>
+          </div>
 
-        <!-- KPI Cards -->
+               <!-- KPI Cards -->
         <div class="row kpi-row">
-          <div class="col-sm-4">
+          <div class="col-sm-6">
             <div class="panel kpi">
-              <div class="panel-heading"><i class="fa fa-ship"></i> Active Vessels</div>
+              <div class="panel-heading"><i class="fa fa-users"></i> Crew</div>
               <div class="panel-body">
-                <h3>5 <small>licensed</small></h3>
-                <span class="label label-blue">3 configured</span>
-                <span class="label label-orange">2 pending</span>
+                <h3>18 <small>Registered</small></h3>
+                <span class="label label-blue">5 Newly Registered</span>
+                <span class="label label-orange">2 Deletion Request(s)</span>
                 <hr>
-                <a href="admin-vessel-setup.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i> Update</a>
+                <a href="admin-vessel-setup.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i> Manage</a>
               </div>
             </div>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-6">
             <div class="panel kpi">
-              <div class="panel-heading"><i class="fa fa-user-secret"></i> Customer Admins</div>
+              <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates Storage</div>
               <div class="panel-body">
-                <h3>5 <small>active</small></h3>
-                <span class="label label-blue">1 pending invite</span>
-                <hr>
-                <a href="admin-customer-admins.html" class="btn btn-primary btn-sm"><i class="fa fa-cog"></i> Manage</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="panel kpi">
-              <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates</div>
-              <div class="panel-body">
-                <h3>82% <small>storage used</small></h3>
+                <h3>8mb<small> of 10mb storage used</small></h3>
                 <div class="progress">
                   <div class="progress-bar progress-bar-info" style="width:82%"></div>
                 </div>
                 <hr>
-                <a href="admin-certificates.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i>
+                <a href="customer-certificates.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i>
                   Configure</a>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Alerts & Recent Activity -->
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="panel">
-              <div class="panel-heading"><i class="fa fa-bell"></i> Alerts</div>
+        <div class="row kpi-row">
+          <div class="col-sm-12">
+            <div class="panel kpi">
+              <div class="panel-heading"><i class="fa fa-anchor"></i> Next Embarkation Schedule</div>
               <div class="panel-body">
-                <div class="alert alert-warning"><i class="fa fa-clock-o"></i> License for <strong>MV Ocean
-                    Star</strong> expires in 10 days.</div>
-                <div class="alert alert-danger"><i class="fa fa-database"></i> Certificate storage is above 80%
-                  capacity.</div>
-                <div class="alert alert-info"><i class="fa fa-envelope"></i> 1 pending customer admin invitation.</div>
+                <h3 id="embarkation-summary">Loading...</h3>
+                <p id="embarkation-location" class="text-muted"></p>
+                
+                <hr>
+                <a href="customer-vessel-info" class="btn btn-primary btn-sm"><i class="fa fa-calendar"></i>
+                  Set Schedule</a>
               </div>
             </div>
           </div>
-
-          <div class="col-sm-6">
+          </div>
+          
+        <div class="row">
+          <!-- Recent Activity -->
+          <div class="col-sm-12">
             <div class="panel">
               <div class="panel-heading"><i class="fa fa-history"></i> Recent Activity</div>
               <div class="panel-body">
-                <div class="table-responsive">
+                 <div class="table-responsive">
                   <table class="table table-striped">
                     <thead>
                       <tr>
                         <th>Date</th>
-                        <th>Action</th>
-                        <th>User</th>
-                        <th>Vessel</th>
+                        <th>Activity</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td>2025-09-09</td>
-                        <td>Invited customer admin</td>
-                        <td>Admin</td>
-                        <td>MV Horizon</td>
+                        <td>Crew member <strong>John Doe</strong> acknowledged GDPR policy</td>
                       </tr>
                       <tr>
                         <td>2025-09-08</td>
-                        <td>Updated welcome message</td>
-                        <td>Admin</td>
-                        <td>MV Explorer</td>
+                        <td>Uploaded Familiarization Video</td>
+                      </tr>
+                      <tr>
+                        <td>2025-09-08</td>
+                        <td>Updated Vessel Info for <strong>M/V Yurisan Dozo</strong></td>
                       </tr>
                     </tbody>
                   </table>
@@ -141,6 +126,7 @@
               </div>
             </div>
           </div>
+
         </div>
 
       </div><!-- /main-content -->
@@ -150,26 +136,72 @@
   <!-- JS -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
-  <script>
-    $(function () {
-      fetch('customer-sidebar.html')
-        .then(response => response.text())
-        .then(data => {
-          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
-          sidebarPlaceholder.innerHTML = data;
+ <script>
+  /// Function to display the next embarkation schedule in the KPI card
+      function displayEmbarkationKpi() {
+        // Retrieve vessel configuration from localStorage
+        const vesselConfigString = localStorage.getItem("vesselConfig");
+        const vesselConfig = vesselConfigString ? JSON.parse(vesselConfigString) : {};
+        const embarkation = vesselConfig.embarkation;
+        
+        const summaryElement = $('#embarkation-summary');
+        const locationElement = $('#embarkation-location');
 
-          // Script to set the active state after the sidebar is loaded
-          const currentPage = 'customer-dashboard';
-          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-          if (activeLink) {
-            activeLink.classList.add('active');
+        if (embarkation && embarkation.date) {
+          const dateParts = embarkation.date.split('-'); // YYYY-MM-DD
+          const formattedDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+          });
+
+          summaryElement.html(`<small class="text-muted">Next on:</small> <strong>${formattedDate}</strong>`);
+          
+          let locationText = 'Time: ';
+          if (embarkation.time) {
+            // Using toLocaleTimeString for simple time formatting (e.g., 10:00 AM)
+            const timeParts = embarkation.time.split(':');
+            const timeDate = new Date();
+            timeDate.setHours(timeParts[0], timeParts[1]);
+            locationText += timeDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          } else {
+            locationText += 'N/A';
           }
-        })
-        .catch(error => console.error('Error fetching sidebar:', error));
+          
+          if (embarkation.location) {
+             locationText += ` | Location: ${embarkation.location}`;
+          }
 
+          locationElement.html(`<strong>${locationText}</strong>`);
+
+        } else {
+          summaryElement.html('Not Configured <small>Set your schedule</small>');
+          locationElement.text('No upcoming embarkation is set yet.');
+        }
+      }
+      
+      // Call the new function when the page loads
+      displayEmbarkationKpi();
+
+ </script>
+
+ <script>
+    $(function () {
+      // Load sidebar dynamically
+      fetch('customer-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="customer-dashboard"]');
+          if (activeLink) activeLink.classList.add('active');
+        });
+
+      // Example KPI update (later from API/localStorage)
+      $("#kpiRegistered").text("18");
+      $("#kpiActive").text("15");
+      $("#kpiInactive").text("2");
+      $("#kpiDeletion").text("1");
     });
   </script>
 </body>
-
 </html>

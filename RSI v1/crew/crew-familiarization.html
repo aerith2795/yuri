@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Crew • Familiarization Video</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div id="sidebar-placeholder"></div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Familiarization Video</h2>
+          <p class="text-muted">Watch the required familiarization video and confirm once completed.</p>
+        </div>
+
+        <div id="videoPanel" class="panel panel-default" style="display:none;">
+          <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
+          <div class="panel-body text-center">
+            <!-- Video or placeholder -->
+            <div id="videoContainer" style="margin:20px 0;"></div>
+            <!-- Instructions -->
+            <p id="videoInstructions" class="text-muted"></p>
+            <div class="checkbox text-center">
+              <label><input type="checkbox" id="videoWatched"> I have watched the video</label>
+            </div>
+            <div class="text-center">
+              <button id="confirmWatchedBtn" class="btn btn-success" disabled>
+                <i class="fa fa-check"></i> Mark Complete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="noVideoMsg" class="alert alert-info" style="display:none;">
+          No familiarization video has been configured by the company.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script>
+    $(function () {
+      // Sidebar
+      fetch('crew-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="crew-familiarization"]');
+          if (activeLink) activeLink.classList.add('active');
+        });
+
+      // Load familiarization config
+      const config = JSON.parse(localStorage.getItem("familiarizationConfig")) || {
+        show: false,
+        instructions: "",
+        videoUrl: ""
+      };
+
+      if (!config.show) {
+        $("#noVideoMsg").show();
+        return;
+      }
+
+      $("#videoPanel").show();
+
+      if (config.instructions) {
+        $("#videoInstructions").text(config.instructions);
+      }
+
+      if (config.videoUrl) {
+        $("#videoContainer").html(`
+          <video width="640" controls>
+            <source src="${config.videoUrl}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        `);
+      } else {
+        $("#videoContainer").html(`
+          <div class="video-placeholder">
+            <i class="fa fa-play-circle fa-5x"></i>
+            <p>Video Placeholder - No video uploaded.</p>
+          </div>
+        `);
+      }
+
+      // Require watched checkbox before enabling button
+      $("#videoWatched").on("change", function () {
+        $("#confirmWatchedBtn").prop("disabled", !this.checked);
+      });
+
+      $("#confirmWatchedBtn").on("click", function () {
+        showAlert("✅ Your confirmation has been recorded.");
+      });
+    });
+  </script>
+      <script>
+        //    ShowAlert
+            function showAlert(msg, type = 'success') {
+                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+                $('body').append(alert);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
+            }
+        // Load sidebar (demo only)
+        $(function () {
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-gdpr"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
+        });
+        
+    </script>
+</body>
+</html>
