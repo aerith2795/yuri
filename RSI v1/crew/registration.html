@@ -5,26 +5,140 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RSI Client - Crew Registration</title>
   
-  <!-- Bootstrap 3 -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- FontAwesome 4 -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <!-- Select2 -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
   
-  <!-- Global + Scoped CSS -->
   <link rel="stylesheet" href="../assets/ripple.css">
   <link rel="stylesheet" href="page.css">
 
+  <style>
+    /* ------------------------------------------- */
+    /* THEMED & ENHANCED STYLES */
+    /* ------------------------------------------- */
+
+    /* Stepper Styling (Adapted to ripple.css colors) */
+    .side-stepper {
+        background-color: var(--r-dark); /* Using --r-dark for sidebar */
+        color: white;
+        padding-top: 20px;
+        min-height: 100vh;
+        box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .side-stepper .step {
+        padding: 15px 10px;
+        border-left: 5px solid transparent;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+        opacity: 0.7;
+    }
+    
+    .side-stepper .step.active {
+        border-left: 5px solid var(--r-orange); /* Highlight current step with --r-orange */
+        background-color: rgba(255, 255, 255, 0.1);
+        opacity: 1;
+    }
+    
+    .side-stepper .step.completed {
+        border-left: 5px solid var(--r-green); /* Green for completed steps */
+        opacity: 0.9;
+    }
+    
+    .side-stepper .step.completed .step-number {
+        background-color: var(--r-green);
+        border-color: var(--r-green);
+    }
+    
+    /* Form Section Enhancements */
+    .form-section h3 {
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--r-light); /* Use light color for separator */
+        margin-bottom: 20px;
+        color: var(--r-dark);
+    }
+
+    /* Review Panel Styling */
+    .panel-review .panel-heading {
+        background-color: var(--r-blue);
+        border-color: var(--r-blue);
+        color: white; 
+        font-weight: 600;
+        border-radius: 4px 4px 0 0;
+    }
+    .review-detail-row {
+        margin-bottom: 10px;
+        padding: 5px 0;
+        border-bottom: 1px dotted var(--r-light);
+    }
+    .review-detail-row strong {
+        color: var(--r-gray);
+        display: inline-block;
+        width: 150px;
+    }
+
+    /* File Upload Preview Style */
+    .upload-preview {
+        margin-top: 15px;
+        border: 1px solid var(--r-gray);
+        padding: 10px;
+        border-radius: 4px;
+        display: inline-block;
+        max-width: 250px;
+        text-align: center;
+        background-color: var(--r-light); 
+    }
+    .upload-preview img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 10px;
+    }
+    .upload-preview span {
+        font-size: 12px;
+        color: var(--r-dark);
+    }
+
+    /* Success Screen Style */
+    #successScreen {
+        text-align: center;
+        padding: 50px 0;
+        /* Removing position:relative from CSS as the inline style will handle full-page overlay */
+    }
+    .success-message i {
+        color: var(--r-green);
+        font-size: 80px;
+        margin-bottom: 20px;
+    }
+    .success-message h3 {
+        font-size: 28px;
+        margin-bottom: 15px;
+        color: var(--r-dark);
+    }
+    .success-message .list-unstyled {
+        display: inline-block;
+        text-align: left;
+        margin: 20px auto;
+        color: var(--r-dark);
+    }
+
+    /* Footer Button Style */
+    .footer-buttons {
+        padding: 20px 0 0;
+        border-top: 1px solid var(--r-light);
+        margin-top: 20px;
+        text-align: right;
+    }
+  </style>
 </head>
 <body>
   <div class="container-fluid">
-    <div class="row">
+    <div class="row" id="mainRow">
       
-      <!-- Side Stepper -->
-      <div class="col-sm-3 side-stepper">
+      <div class="col-sm-3 side-stepper" id="sideStepper">
          <div class="text-center logo">
-                <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px; height:auto;" />
+                <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px; height:auto; margin-bottom: 20px;" />
             </div>
         <div class="step active" data-step="1"><span class="step-number">1</span><span class="step-title">Personal Info</span></div>
         <div class="step" data-step="2"><span class="step-number">2</span><span class="step-title">Company Info</span></div>
@@ -33,174 +147,265 @@
         <div class="step" data-step="5"><span class="step-number">5</span><span class="step-title">Review & Submit</span></div>
       </div>
 
-      <!-- Form Sections -->
-      <div class="col-sm-9">
-        <div class="registration-container">
-                    <form id="registrationForm">
-            <!-- Step 1 -->
+      <div class="col-sm-9" id="mainContent">
+        <div class="registration-container" id="regContainer"> 
+          <form id="registrationForm">
             <div class="form-section active" id="step1_reg">
               <h3><i class="fa fa-user"></i> Personal Information</h3>
+              <div class="alert alert-danger" id="step1-alert" style="display:none;">Please fill out all required fields.</div>
               <div class="row">
-                <div class="col-sm-6 form-group"><label>First Name</label><input type="text" class="form-control" id="firstName"></div>
-                <div class="col-sm-6 form-group"><label>Surname</label><input type="text" class="form-control" id="lastName"></div>
+                  <div class="col-sm-6 form-group"><label class="required-field">First Name</label><input type="text" class="form-control" id="firstName" placeholder="Your first name" required></div>
+                  <div class="col-sm-6 form-group"><label class="required-field">Surname</label><input type="text" class="form-control" id="lastName" placeholder="Your last name" required></div>
               </div>
               <div class="row">
-                <div class="col-sm-4 form-group"><label>Gender</label>
-                  <select class="form-control" id="gender"><option></option><option>Male</option><option>Female</option><option>Other</option></select>
-                </div>
-                <div class="col-sm-4 form-group"><label>Date of Birth</label><input type="date" class="form-control" id="dob"></div>
-                <div class="col-sm-4 form-group"><label>Place of Birth</label><input type="text" class="form-control" id="birthPlace"></div>
+                  <div class="col-sm-4 form-group"><label class="required-field">Gender</label>
+                  <select class="form-control" id="gender" required><option value="">Select Gender</option><option>Male</option><option>Female</option><option>Other</option></select>
+                  </div>
+                  <div class="col-sm-4 form-group"><label class="required-field">Date of Birth</label><input type="date" class="form-control" id="dob" required></div>
+                  <div class="col-sm-4 form-group"><label>Place of Birth</label><input type="text" class="form-control" id="birthPlace" placeholder="City, Country"></div>
               </div>
-              <div class="form-group"><label>Nationality</label><select class="form-control select2" id="nationality"><option></option><option>Philippines</option><option>Norway</option><option>Greece</option></select></div>
+              <div class="form-group"><label class="required-field">Nationality</label><select class="form-control select2" id="nationality" required><option value="">Select Nationality</option><option>Philippines</option><option>Norway</option><option>Greece</option></select></div>
               <div class="row">
-                <div class="col-sm-6 form-group"><label>Phone</label><input type="text" class="form-control" id="phone"></div>
-                <div class="col-sm-6 form-group"><label>Mobile</label><input type="text" class="form-control" id="mobile"></div>
+                  <div class="col-sm-6 form-group"><label>Phone</label><input type="text" class="form-control" id="phone" placeholder="+00 000 0000"></div>
+                  <div class="col-sm-6 form-group"><label class="required-field">Mobile</label><input type="text" class="form-control" id="mobile" placeholder="+00 000 0000" required></div>
               </div>
-              <div class="form-group"><label>Residence Address</label><input type="text" class="form-control" id="address"></div>
+              <div class="form-group"><label class="required-field">Residence Address</label><input type="text" class="form-control" id="address" placeholder="Street address, City, Zip" required></div>
             </div>
 
-            <!-- Step 2 -->
             <div class="form-section" id="step2_reg">
               <h3><i class="fa fa-building"></i> Company Information</h3>
-              <div class="form-group"><label>Company</label><input type="text" class="form-control" id="company"></div>
-              <div class="form-group"><label>Position / Rank</label>
-                <select class="form-control select2" id="rank"><option></option><option>Captain</option><option>Chief Engineer</option><option>Deck Officer</option><option>Engineer</option><option>Electrician</option><option>AB Seaman</option><option>Other</option></select>
+              <div class="alert alert-danger" id="step2-alert" style="display:none;">Please fill out all required fields.</div>
+              <div class="form-group"><label class="required-field">Company</label><input type="text" class="form-control" id="company" placeholder="e.g. Maritime Solutions Inc." required></div>
+              <div class="form-group"><label class="required-field">Position / Rank</label>
+                  <select class="form-control select2" id="rank" required><option value="">Select Rank</option><option>Captain</option><option>Chief Engineer</option><option>Deck Officer</option><option>Engineer</option><option>Electrician</option><option>AB Seaman</option><option>Other</option></select>
               </div>
-              <div class="form-group"><label>Emergency Contact Number in Company</label><input type="text" class="form-control" id="emergencyContact"></div>
-              <div class="form-group"><label>Passport Upload</label><input type="file" class="form-control" id="passportFile"></div>
-              <div class="upload-preview" id="passportPreview" style="display:none;"><img src="#" alt="Passport Preview"></div>
+              <div class="form-group"><label>Emergency Contact Number in Company</label><input type="text" class="form-control" id="emergencyContact" placeholder="Contact number at office"></div>
+              <div class="form-group"><label class="required-field">Passport Upload</label><input type="file" class="form-control" id="passportFile" accept="image/*,.pdf" required></div>
+              <div class="upload-preview" id="passportPreview" style="display:none;">
+                  <img id="passportImg" src="" alt="Passport Preview">
+                  <span id="passportFileName"></span>
+              </div>
             </div>
 
-            <!-- Step 3 -->
             <div class="form-section" id="step3_reg">
               <h3><i class="fa fa-users"></i> Next of Kin</h3>
-              <h4>NOK 1</h4>
+              <div class="alert alert-danger" id="step3-alert" style="display:none;">Please fill out all required fields for NOK 1.</div>
+              <h4>NOK 1 (Primary)</h4>
               <div class="row">
-                <div class="col-sm-4 form-group"><label>Relationship</label><select class="form-control" id="nok1Relation"><option>Spouse</option><option>Parent</option><option>Sibling</option><option>Other</option></select></div>
-                <div class="col-sm-4 form-group"><label>First Name</label><input type="text" class="form-control" id="nok1FirstName"></div>
-                <div class="col-sm-4 form-group"><label>Surname</label><input type="text" class="form-control" id="nok1LastName"></div>
+                  <div class="col-sm-4 form-group"><label class="required-field">Relationship</label><select class="form-control" id="nok1Relation" required><option>Spouse</option><option>Parent</option><option>Sibling</option><option>Other</option></select></div>
+                  <div class="col-sm-4 form-group"><label class="required-field">First Name</label><input type="text" class="form-control" id="nok1FirstName" required></div>
+                  <div class="col-sm-4 form-group"><label class="required-field">Surname</label><input type="text" class="form-control" id="nok1LastName" required></div>
               </div>
-              <div class="form-group"><label>Address</label><input type="text" class="form-control" id="nok1Address"></div>
-              <div class="form-group"><label>Residence</label><select class="form-control select2" id="nok1Residence"><option></option><option>Philippines</option><option>Norway</option></select></div>
+              <div class="form-group"><label class="required-field">Address</label><input type="text" class="form-control" id="nok1Address" required></div>
+              <div class="form-group"><label class="required-field">Residence</label><select class="form-control select2" id="nok1Residence" required><option value="">Select Residence</option><option>Philippines</option><option>Norway</option></select></div>
               <div class="row">
-                <div class="col-sm-4 form-group"><label>Phone</label><input type="text" class="form-control" id="nok1Phone"></div>
-                <div class="col-sm-4 form-group"><label>Mobile</label><input type="text" class="form-control" id="nok1Mobile"></div>
-                <div class="col-sm-4 form-group"><label>Email</label><input type="email" class="form-control" id="nok1Email"></div>
+                  <div class="col-sm-4 form-group"><label>Phone</label><input type="text" class="form-control" id="nok1Phone"></div>
+                  <div class="col-sm-4 form-group"><label class="required-field">Mobile</label><input type="text" class="form-control" id="nok1Mobile" required></div>
+                  <div class="col-sm-4 form-group"><label>Email</label><input type="email" class="form-control" id="nok1Email"></div>
               </div>
               <hr>
-              <h4>NOK 2</h4>
+              <h4>NOK 2 (Optional Secondary)</h4>
               <div class="row">
-                <div class="col-sm-4 form-group"><label>Relationship</label><select class="form-control" id="nok2Relation"><option>Sibling</option><option>Friend</option><option>Other</option></select></div>
-                <div class="col-sm-4 form-group"><label>First Name</label><input type="text" class="form-control" id="nok2FirstName"></div>
-                <div class="col-sm-4 form-group"><label>Surname</label><input type="text" class="form-control" id="nok2LastName"></div>
+                  <div class="col-sm-4 form-group"><label>Relationship</label><select class="form-control" id="nok2Relation"><option>Sibling</option><option>Friend</option><option>Other</option></select></div>
+                  <div class="col-sm-4 form-group"><label>First Name</label><input type="text" class="form-control" id="nok2FirstName"></div>
+                  <div class="col-sm-4 form-group"><label>Surname</label><input type="text" class="form-control" id="nok2LastName"></div>
               </div>
               <div class="form-group"><label>Address</label><input type="text" class="form-control" id="nok2Address"></div>
-              <div class="form-group"><label>Residence</label><select class="form-control select2" id="nok2Residence"><option></option><option>Philippines</option><option>Norway</option></select></div>
+              <div class="form-group"><label>Residence</label><select class="form-control select2" id="nok2Residence"><option value="">Select Residence</option><option>Philippines</option><option>Norway</option></select></div>
               <div class="row">
-                <div class="col-sm-4 form-group"><label>Phone</label><input type="text" class="form-control" id="nok2Phone"></div>
-                <div class="col-sm-4 form-group"><label>Mobile</label><input type="text" class="form-control" id="nok2Mobile"></div>
-                <div class="col-sm-4 form-group"><label>Email</label><input type="email" class="form-control" id="nok2Email"></div>
+                  <div class="col-sm-4 form-group"><label>Phone</label><input type="text" class="form-control" id="nok2Phone"></div>
+                  <div class="col-sm-4 form-group"><label>Mobile</label><input type="text" class="form-control" id="nok2Mobile"></div>
+                  <div class="col-sm-4 form-group"><label>Email</label><input type="email" class="form-control" id="nok2Email"></div>
               </div>
             </div>
 
-            <!-- Step 4 -->
             <div class="form-section" id="step4_reg">
               <h3><i class="fa fa-lock"></i> Account Setup</h3>
-              <div class="form-group"><label>Email (Username)</label><input type="email" class="form-control" id="email"></div>
+              <div class="alert alert-danger" id="step4-alert" style="display:none;">Please fill out all fields and ensure passwords match.</div>
+              <div class="form-group"><label class="required-field">Email (Username)</label><input type="email" class="form-control" id="email" placeholder="used for login" required></div>
               <div class="row">
-                <div class="col-sm-6 form-group"><label>Password</label><input type="password" class="form-control" id="password"></div>
-                <div class="col-sm-6 form-group"><label>Confirm Password</label><input type="password" class="form-control" id="confirmPassword"></div>
+                  <div class="col-sm-6 form-group"><label class="required-field">Password</label><input type="password" class="form-control" id="password" required></div>
+                  <div class="col-sm-6 form-group"><label class="required-field">Confirm Password</label><input type="password" class="form-control" id="confirmPassword" required></div>
               </div>
             </div>
 
-            <!-- Step 5 -->
             <div class="form-section" id="step5_reg">
               <h3><i class="fa fa-check-circle"></i> Review & Submit</h3>
+              <p class="text-gray">Please review the information below before final submission. Click on any step in the sidebar to make changes.</p>
+              
               <div id="reviewContent">
-                <p><strong>Name:</strong> <span id="reviewName"></span></p>
-                <p><strong>Email:</strong> <span id="reviewEmail"></span></p>
-                <p><strong>Company:</strong> <span id="reviewCompany"></span></p>
-                <p><strong>Rank:</strong> <span id="reviewRank"></span></p>
-                <p><strong>Passport:</strong> <span id="reviewPassport"></span></p>
-                <p><strong>NOK1:</strong> <span id="reviewNok1"></span></p>
-                <p><strong>NOK2:</strong> <span id="reviewNok2"></span></p>
+                
+                  <div class="panel panel-primary panel-review">
+                      <div class="panel-heading"><i class="fa fa-user"></i> Personal & Contact Information</div>
+                      <div class="panel-body">
+                          <div class="review-detail-row"><strong>Full Name:</strong> <span id="reviewName"></span></div>
+                          <div class="review-detail-row"><strong>Nationality:</strong> <span id="reviewNationality"></span></div>
+                          <div class="review-detail-row"><strong>DOB / POB:</strong> <span id="reviewDobPlace"></span></div>
+                          <div class="review-detail-row"><strong>Mobile:</strong> <span id="reviewMobile"></span></div>
+                          <div class="review-detail-row"><strong>Address:</strong> <span id="reviewAddress"></span></div>
+                      </div>
+                  </div>
+
+                  <div class="panel panel-primary panel-review">
+                      <div class="panel-heading"><i class="fa fa-building"></i> Company & Rank</div>
+                      <div class="panel-body">
+                          <div class="review-detail-row"><strong>Company:</strong> <span id="reviewCompany"></span></div>
+                          <div class="review-detail-row"><strong>Rank:</strong> <span id="reviewRank"></span></div>
+                          <div class="review-detail-row"><strong>Passport:</strong> <span id="reviewPassport"></span></div>
+                      </div>
+                  </div>
+
+                  <div class="panel panel-primary panel-review">
+                      <div class="panel-heading"><i class="fa fa-users"></i> Next of Kin (NOK) Details</div>
+                      <div class="panel-body">
+                          <div class="review-detail-row"><strong>NOK 1 (Primary):</strong> <span id="reviewNok1"></span></div>
+                          <div class="review-detail-row"><strong>NOK 2 (Secondary):</strong> <span id="reviewNok2"></span></div>
+                      </div>
+                  </div>
+                  
+                  <div class="panel panel-primary panel-review">
+                      <div class="panel-heading"><i class="fa fa-lock"></i> Account Setup</div>
+                      <div class="panel-body">
+                          <div class="review-detail-row"><strong>Login Email:</strong> <span id="reviewEmail"></span></div>
+                          <div class="review-detail-row"><strong>Password Status:</strong> <span class="label label-green">Configured</span></div>
+                      </div>
+                  </div>
+
               </div>
-              <div class="checkbox"><label><input type="checkbox" id="confirmAccuracy"> I confirm all information is correct.</label></div>
+              <div class="checkbox mt-4"><label><input type="checkbox" id="confirmAccuracy"> I confirm all information is correct and I accept the <a href="#">terms of service</a>.</label></div>
             </div>
 
-            <!-- Success -->
-            <div class="form-section" id="successScreen">
-              <div class="success-message">
-                <i class="fa fa-check fa-3x text-success"></i>
-                <h3>Registration Complete!</h3>
-                <p>You can now log in to your <strong>RSI Dashboard</strong> to continue onboarding:</p>
-                <ul class="list-unstyled">
-                  <li><i class="fa fa-upload"></i> Upload Certificates (bulk upload)</li>
-                  <li><i class="fa fa-shield"></i> Review and Accept GDPR Policy</li>
-                  <li><i class="fa fa-video-camera"></i> Watch Familiarization Video</li>
-                </ul>
-                <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
-              </div>
-            </div>
-
-            <!-- Footer Buttons -->
             <div class="footer-buttons">
-              <button type="button" class="btn btn-default" id="prevBtn">Previous</button>
-              <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
-              <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;">Submit</button>
+              <button type="button" class="btn btn-default" id="prevBtn"><i class="fa fa-chevron-left"></i> Previous</button>
+              <button type="button" class="btn btn-primary" id="nextBtn">Next <i class="fa fa-chevron-right"></i></button>
+              <button type="submit" class="btn btn-success" id="submitBtn" style="display:none;"><i class="fa fa-send"></i> Submit Registration</button>
             </div>
           </form>
         </div>
+        
+        <div class="form-section" id="successScreen" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; z-index: 1000;">
+          <div class="success-message">
+              <i class="fa fa-check-circle"></i>
+              <h3>Registration Complete!</h3>
+              <p>Your account is set up. You will now be redirected to your dashboard to complete your onboarding:</p>
+              <ul class="list-unstyled">
+              <li><i class="fa fa-upload" style="font-size: 30px;"></i> Upload Certificates (bulk upload)</li>
+              <li><i class="fa fa-shield" style="font-size: 30px;"></i> Review and Accept GDPR Policy</li>
+              <li><i class="fa fa-video-camera" style="font-size: 30px;"></i> Watch Familiarization Video</li>
+              </ul>
+              <div>
+                <a href="crew-dashboard.html" class="btn btn-block btn-primary">Go to Dashboard</a>
+              </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
-  <!-- JS -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
 
-  <script>
+<script>
     $(function(){
-      $(".select2").select2({ width: "100%" });
+      $(".select2").select2({ width: "100%", placeholder: "Select an option", allowClear: true });
 
       let currentStep = 1;
       const totalSteps = 5;
 
+      // Function to validate the current step's required fields (UNCHANGED LOGIC)
+      function validateStep(step) {
+        let isValid = true;
+        const currentSection = $("#step" + step + "_reg");
+        const alertElement = $("#step" + step + "-alert");
+
+        currentSection.find('.form-group').removeClass('has-error');
+
+        // Note: The form only enforces validation on step 4 via JS.
+        if (step === 4) {
+            currentSection.find('[required]').each(function() {
+                if (($(this).is('select') && ($(this).val() === "" || $(this).val() === null)) || ($(this).val() === "")) {
+                    isValid = false;
+                    $(this).closest('.form-group').addClass('has-error');
+                }
+            });
+
+            const password = $("#password").val();
+            const confirmPassword = $("#confirmPassword").val();
+            
+            if (password !== confirmPassword || password === "") {
+                isValid = false;
+                $("#password, #confirmPassword").closest('.form-group').addClass('has-error');
+            }
+        } else {
+            // For Steps 1, 2, and 3, validation is currently bypassed in the click handler.
+            // If you wanted to enforce it, you would add logic here.
+            isValid = true;
+        }
+
+        if (isValid) {
+            alertElement.hide();
+        } else {
+            alertElement.show();
+        }
+
+        return isValid;
+      }
+
+      // 🌟 UPDATED FUNCTION: Re-enables all fields when navigating
       function showStep(n){
+        // 1. Re-enable all fields first, then selectively disable them later.
+        $(".form-section").find(':input').prop('disabled', false);
+
+        // Hide all steps, then show the current one
         $(".form-section").removeClass("active").hide();
         $("#step"+n+"_reg").addClass("active").show();
+        
+        // Hide the success screen when navigating steps
+        $("#successScreen").hide();
 
+        // 2. Disable inputs in all HIDDEN sections immediately after showing the active step
+        // This prevents the browser from trying to validate hidden fields when moving steps.
+        $(".form-section:not(#step"+n+"_reg)").find(':input').prop('disabled', true);
+
+
+        // Update stepper
         $(".step").removeClass("active");
         $('.step[data-step="'+n+'"]').addClass("active");
 
-        // mark previous steps as completed
         $(".step").each(function(){
           const stepNum = $(this).data("step");
           if(stepNum < n){
-            $(this).addClass("completed");
-            $(this).find(".step-number").html('<i class="fa fa-check"></i>');
-          } else if(stepNum === n){
-            $(this).removeClass("completed");
-            $(this).find(".step-number").text(stepNum);
+            $(this).addClass("completed").find(".step-number").html('<i class="fa fa-check"></i>');
           } else {
-            $(this).removeClass("completed");
-            $(this).find(".step-number").text(stepNum);
+            $(this).removeClass("completed").find(".step-number").text(stepNum);
           }
         });
 
+        // Toggle buttons
         $("#prevBtn").toggle(n>1);
         $("#nextBtn").toggle(n<totalSteps);
         $("#submitBtn").toggle(n===totalSteps);
+        
+        $('.alert-danger').hide();
+        $('.form-group').removeClass('has-error');
+        
+        // Ensure sidebar is visible and content column is correct size
+        $("#sideStepper").show();
+        $("#mainContent").removeClass("col-sm-12").addClass("col-sm-9");
       }
 
+      // --- NEXT/PREV/STEPPER HANDLERS (Unchanged logic) ---
       $("#nextBtn").on("click", function(){
-        if(currentStep < totalSteps){ 
+        let proceed = (currentStep === 4) ? validateStep(currentStep) : true;
+        if (proceed && currentStep < totalSteps) { 
           currentStep++; 
           if(currentStep===5) populateReview(); 
           showStep(currentStep); 
         }
       });
+
       $("#prevBtn").on("click", function(){
         if(currentStep > 1){ 
           currentStep--; 
@@ -210,36 +415,112 @@
 
       $(".step").on("click", function(){ 
         const s = $(this).data("step"); 
-        currentStep = s; 
-        if(s===5) populateReview(); 
-        showStep(s); 
+        let proceed = (currentStep === 4 && s > 4) ? validateStep(currentStep) : true;
+        if (proceed) {
+             currentStep = s; 
+             if(s===5) populateReview(); 
+             showStep(s); 
+        }
+      });
+      // ----------------------------------------
+      
+
+      // 🌟 CRITICAL FIX: Ensure ALL non-Step-5 fields are disabled for final submit
+      $("#registrationForm").on("submit", function(e){
+        e.preventDefault();
+        
+      if (!$("#confirmAccuracy").is(":checked")) {
+            // If the box is NOT checked, display an error and stop submission
+            alert("⚠️ Please confirm the accuracy of your information and accept the terms of service before submitting.");
+            
+            // Highlight the checkbox area to draw attention (optional, but helpful)
+            $("#step5_reg .checkbox").addClass('has-error'); 
+            return; 
+        }
+
+        // 1. Final Pass: Disable all fields *except* those in the review step (Step 5)
+        // This is the last safety net against the "not focusable" validation error.
+        $(".form-section:not(#step5_reg)").find(':input').prop('disabled', true);
+        
+        // 2. Hide the entire content container 
+        $("#regContainer").hide();
+
+        // 3. Hide sidebar and expand main content area
+        $("#sideStepper").hide(); 
+        $("#mainContent").removeClass("col-sm-9").addClass("col-sm-12");
+
+        // 4. Show success screen 
+        $("#successScreen").show();
+
+        // 5. Redirect
+        // setTimeout(function() {
+        //      window.location.href = "crew/crew-dashboard.html"; 
+        // }, 3000); 
+      });
+      // ----------------------------------------------------
+      
+      showStep(currentStep);
+      
+      // Supporting Functions (kept for context)
+      $("#passportFile").on("change", function(e) {
+          const file = e.target.files[0];
+          const previewDiv = $("#passportPreview");
+          const img = $("#passportImg");
+          const fileNameSpan = $("#passportFileName");
+          if (file) {
+              fileNameSpan.text(file.name);
+              if (file.type.startsWith('image/')) {
+                  const reader = new FileReader();
+                  reader.onload = function(e) { img.attr('src', e.target.result).show(); }
+                  reader.readAsDataURL(file);
+              } else {
+                  img.hide();
+                  if (fileNameSpan.find('.fa-file-text-o').length === 0) { fileNameSpan.prepend('<i class="fa fa-file-text-o"></i> '); }
+              }
+              previewDiv.show();
+          } else {
+              previewDiv.hide();
+          }
       });
 
       function populateReview(){
-        $("#reviewName").text($("#firstName").val()+" "+$("#lastName").val());
-        $("#reviewEmail").text($("#email").val());
-        $("#reviewCompany").text($("#company").val());
-        $("#reviewRank").text($("#rank").val());
-        $("#reviewPassport").text($("#passportFile")[0].files.length ? "Uploaded" : "Not Uploaded");
-        $("#reviewNok1").text($("#nok1FirstName").val()+" "+$("#nok1LastName").val()+" ("+$("#nok1Relation").val()+")");
-        $("#reviewNok2").text($("#nok2FirstName").val()+" "+$("#nok2LastName").val()+" ("+$("#nok2Relation").val()+")");
+        const firstName = $("#firstName").val() || "N/A";
+        const lastName = $("#lastName").val() || "N/A";
+        const gender = $("#gender").val() || "N/A";
+        const nationality = $("#nationality").val() || "N/A";
+        const dob = $("#dob").val() || "N/A";
+        const birthPlace = $("#birthPlace").val() || "N/A";
+        const mobile = $("#mobile").val() || "N/A";
+        const address = $("#address").val() || "N/A";
+        const company = $("#company").val() || "N/A";
+        const rank = $("#rank").val() || "N/A";
+        const passportFileName = $("#passportFile")[0].files.length ? $("#passportFile")[0].files[0].name : "Not Uploaded";
+        const email = $("#email").val() || "N/A";
+        const nok1FirstName = $("#nok1FirstName").val() || "N/A";
+        const nok1LastName = $("#nok1LastName").val() || "N/A";
+        const nok1Relation = $("#nok1Relation").val() || "N/A";
+        const nok1Mobile = $("#nok1Mobile").val() || "N/A";
+        const nok1Address = $("#nok1Address").val() || "N/A";
+        const nok1Residence = $("#nok1Residence").val() || "N/A";
+        const nok2FirstName = $("#nok2FirstName").val() || "";
+        const nok2LastName = $("#nok2LastName").val() || "";
+        const nok2Relation = $("#nok2Relation").val() || "";
+
+        $("#reviewName").text(`${firstName} ${lastName} (${gender})`);
+        $("#reviewNationality").text(nationality);
+        $("#reviewDobPlace").html(`${dob} ${birthPlace !== 'N/A' ? ' &middot; ' + birthPlace : ''}`);
+        $("#reviewMobile").text(mobile);
+        $("#reviewAddress").text(address);
+        $("#reviewCompany").text(company);
+        $("#reviewRank").text(rank);
+        $("#reviewPassport").text(passportFileName);
+        $("#reviewNok1").html(`${nok1FirstName} ${nok1LastName} (${nok1Relation})<br><small class="text-gray">${nok1Address}, ${nok1Residence} | Mobile: ${nok1Mobile}</small>`);
+        const nok2Details = nok2FirstName ? `${nok2FirstName} ${nok2LastName} (${nok2Relation})` : "Not Provided";
+        $("#reviewNok2").text(nok2Details);
+        $("#reviewEmail").text(email);
       }
-
-      $("#registrationForm").on("submit", function(e){
-        e.preventDefault();
-        $(".form-section").removeClass("active").hide();
-        $("#successScreen").addClass("active").show();
-        $(".footer-buttons").hide();
-
-        // mark all steps completed
-        $(".step").each(function(){
-          $(this).addClass("completed");
-          $(this).find(".step-number").html('<i class="fa fa-check"></i>');
-        });
-      });
-
-      showStep(currentStep);
     });
-  </script>
+  
+</script>
 </body>
 </html>

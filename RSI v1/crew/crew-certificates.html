@@ -23,7 +23,7 @@
       <div class="col-sm-9 col-md-10 main-content">
         <div class="page-header">
           <h2>Certificates</h2>
-          <p>Upload or manage your required certificates here. Bulk upload supported.</p>
+          <p>Please upload clear, readable copies of your documents. Mandatory certificates must be valid at least 6 months from embarkation.</p>
         </div>
 
         <div class="panel panel-default">
@@ -61,13 +61,34 @@
       });
 
       // load vessel config from localStorage (preferred)
-      let cfg = {};
-      const stored = localStorage.getItem('vesselConfigCert');
-      if(stored){
-        try { cfg = JSON.parse(stored); } catch(e){ console.warn('bad vesselConfigCert'); cfg = window.vesselConfigCert || {}; }
-      } else {
-        cfg = window.vesselConfigCert || {};
-      }
+      // let cfg = {};
+      // const stored = localStorage.getItem('vesselConfigCert');
+      // if(stored){
+      //   try { cfg = JSON.parse(stored); } catch(e){ console.warn('bad vesselConfigCert'); cfg = window.vesselConfigCert || {}; }
+      // } else {
+      //   cfg = window.vesselConfigCert || {};
+      // }
+      // Load vessel config (with defaults if none saved)
+let cfg = null;
+try {
+  cfg = JSON.parse(localStorage.getItem('vesselConfigCert'));
+} catch (e) {
+  cfg = null;
+}
+
+if (!cfg || !Array.isArray(cfg.certificatesRequired) || !cfg.certificatesRequired.length) {
+  // --- SEED SAMPLE CERTIFICATES ---
+  cfg = {
+    certificatesRequired: [
+      { name: "Passport", type: "Document", code: "DOC-001", category: "Identity", desc: "Valid passport for international travel.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 10, instructions: "Ensure validity of 6 months from embarkation." },
+      { name: "Seaman’s Book", type: "Document", code: "SBK-101", category: "Identity", desc: "Official seafarer identification booklet.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 5, instructions: "Upload scanned pages with details and previous contracts." },
+      { name: "Basic Safety Training (BST)", type: "Training", code: "BST-201", category: "Safety", desc: "Mandatory STCW safety training completion.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 5, instructions: "Upload your latest valid BST certificate." },
+      { name: "Medical Certificate", type: "Medical", code: "MED-310", category: "Health", desc: "Issued by approved maritime examiner.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 5, instructions: "Submit a scanned copy valid for at least 1 year." },
+      { name: "Yellow Fever Vaccination", type: "Medical", code: "VAC-111", category: "Health", desc: "International vaccination certificate.", isRequired: false, requireUpload: true, allowedFileType: "image", maxSizeMB: 3, instructions: "Upload if required by destination country." }
+    ]
+  };
+}
+
 
       const certs = Array.isArray(cfg.certificatesRequired) ? cfg.certificatesRequired : [];
       if(cfg.certInstructions) {

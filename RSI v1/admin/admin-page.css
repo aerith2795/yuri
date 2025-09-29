@@ -75,7 +75,7 @@
 }
 .panel .panel-heading i {
   margin-right: 6px;
-  color: var(--r-blue);
+  /* color: var(--r-blue); */
 }
 
 /* KPI cards */

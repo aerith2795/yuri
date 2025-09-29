@@ -20,7 +20,7 @@
     <div class="container-fluid dashboard-layout">
         <div class="row">
             <!-- Sidebar -->
-  <div id="sidebar-placeholder"></div>
+            <div id="sidebar-placeholder"></div>
 
 
             <!-- Main content -->
@@ -34,7 +34,7 @@
                 <div class="panel">
                     <div class="panel-heading">
                         <i class="fa fa-user-plus"></i> Customer Admins
-                        <button type="button" class="btn btn-primary btn-sm pull-right" data-toggle="modal"
+                        <button type="button" class="btn btn-primary btn-xs pull-right" data-toggle="modal"
                             data-target="#addAdminModal">
                             <i class="fa fa-plus"></i> Add Customer Admin
                         </button>
@@ -57,13 +57,17 @@
                                     <td>M/V Voyager</td>
                                     <td><span class="label label-green">Active</span></td>
                                     <td>
-                                        <button class="btn btn-xs btn-primary" data-toggle="modal"
-                                            data-target="#editAdminModal">
+                                        <button class="btn btn-xs btn-default view-edit-btn" data-toggle="modal"
+                                            data-target="#editAdminModal" data-name="John Doe"
+                                            data-email="john@example.com" data-role="M/V Voyager" data-status="Active">
                                             <i class="fa fa-pencil"></i>
                                         </button>
-                                        <button class="btn btn-xs btn-warning"><i class="fa fa-envelope"></i>
-                                            Reset</button>
-                                        <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-xs btn-light-orange"><i class="fa fa-refresh"></i> Reset
+                                            Password</button>
+                                        <button class="btn btn-xs btn-danger" data-toggle="modal"
+                                            data-target="#deleteCrewModal">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 <!-- more rows -->
@@ -178,7 +182,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-warning btn-sm"><i class="fa fa-envelope"></i> Send Reset
+
+                        <button type="button" class="btn btn-warning btn-sm"><i class="fa fa-refresh"></i> Send Reset
                             Link</button>
                     </form>
                 </div>
@@ -195,19 +200,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
     <script>
         fetch('admin-sidebar.html')
-      .then(response => response.text())
-      .then(data => {
-        const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
-        sidebarPlaceholder.innerHTML = data;
+            .then(response => response.text())
+            .then(data => {
+                const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                sidebarPlaceholder.innerHTML = data;
 
-        // Script to set the active state after the sidebar is loaded
-        const currentPage = 'admin-customer-admins';
-        const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-        if (activeLink) {
-          activeLink.classList.add('active');
-        }
-      })
-      .catch(error => console.error('Error fetching sidebar:', error));
+                // Script to set the active state after the sidebar is loaded
+                const currentPage = 'admin-customer-admins';
+                const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            })
+            .catch(error => console.error('Error fetching sidebar:', error));
 
         $('.select2').select2();
         $('#togglePwd').on('change', function () {

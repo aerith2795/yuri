@@ -97,13 +97,46 @@
                     $('[data-page="crew-vessel-info"]').addClass('active');
                 });
 
-            // Load vessel info from localStorage
+            // Load vessel info from localStorage or seed demo data
             let config = null;
             try {
                 config = JSON.parse(localStorage.getItem("vesselConfig"));
             } catch (e) {
                 config = null;
             }
+
+            if (!config) {
+                // --- SEED DEFAULT SAMPLE DATA ---
+                config = {
+                    aboutVessel: `
+     <p><strong>M/V Yurisan Dozo</strong> is a state-of-the-art cargo and passenger vessel designed for
+      efficiency, comfort, and safety at sea. Built with advanced navigation systems and modern facilities,
+      it serves both regional and international routes. The vessel is known for its fuel efficiency,
+      spacious cabins, and reliable performance under varying weather conditions.</p>
+
+      <p>Onboard amenities include crew accommodations, passenger lounges, and a fully equipped bridge.
+      The <em>M/V Yurisan Dozo</em> reflects the latest standards in maritime engineering, offering
+      a balance between functionality and sustainability in ocean travel.</p>
+
+      <ul>
+        <li><strong>Length:</strong> 150 meters</li>
+        <li><strong>Beam:</strong> 25 meters</li>
+        <li><strong>Gross Tonnage:</strong> 20,000 GT</li>
+        <li><strong>Passenger Capacity:</strong> 200</li>
+        <li><strong>Crew Capacity:</strong> 50</li>
+        <li><strong>Maximum Speed:</strong> 22 knots</li>
+        <li><strong>Year Built:</strong> 2020</li>
+        <li><strong>Flag:</strong> Panama</li>
+      </ul>
+      <p><em>Note: This is sample text. Please update with actual vessel information.</em></p>
+    `,
+                    photos: [
+                        "https://cdn.prod.website-files.com/6246d8c921709e497eef110f/677cf09a70beff127b588b92_Understanding%20the%20Definition%20and%20Use%20of%20Vessel%20Number_11zon.jpg",
+                        "https://orbitshub.com/wp-content/uploads/2022/05/Blogs-Pictures-Orbitshub-marine-vessel-management-system-1910x1074-1.jpeg"
+                    ],
+                };
+            }
+
 
             // About
             $('#aboutPreview').html(config && config.aboutVessel
