@@ -17,10 +17,13 @@
 </head>
 
 <body>
-  <div class="container-fluid dashboard-layout">
-    <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder"></div>
+   <button type="button" id="sidebar-toggle" class="mobile-toggle">
+        <i class="fa fa-bars"></i>
+    </button>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
       <!-- Main -->
       <div class="col-sm-9 col-md-10 main-content">
         <div class="page-header">
@@ -133,6 +136,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
   <script>
     $(function () {
+       $('#sidebar-toggle').on('click', function () {
+        $('.sidebar').toggleClass('active');
+      });
+
      fetch('admin-sidebar.html')
       .then(response => response.text())
       .then(data => {

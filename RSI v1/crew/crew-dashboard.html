@@ -3,296 +3,273 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>RSI Client • Dashboard</title>
+  <title>RSI Crew • Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Libs -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-  <!-- Ripple core + Page CSS -->
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
+  <style>
+    /* This style normalizes the font size of text from the Summernote editor */
+    .welcome-content p,
+    .welcome-content li,
+    .welcome-content span {
+      font-size: 16px;
+      color: var(--r-gray);
+    }
 
+    .welcome-content h1,
+    .welcome-content h2,
+    .welcome-content h3,
+    .welcome-content h4,
+    .welcome-content h5,
+    .welcome-content h6 {
+      color: var(--r-dark);
+      margin-top: 15px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container-fluid dashboard-layout">
     <div class="row">
-      <!-- Sidebar -->
       <div id="sidebar-placeholder"></div>
 
-      <!-- Main -->
       <div class="col-sm-9 col-md-10 main-content">
 
-        <!-- Onboarding Progress -->
         <div class="progress-container">
           <div class="clearfix">
             <span class="pull-left"><strong>Onboarding Progress</strong></span>
-            <span class="pull-right" id="progressText">0 of 4 tasks completed</span>
+            <span class="pull-right" id="progressText">0 of 3 tasks completed</span>
           </div>
           <div class="progress progress-with-steps">
-            <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar"
-              style="width: 0%;"></div>
+            <div id="progressBar" class="progress-bar progress-bar-success progress-bar-striped active"
+              role="progressbar" style="width: 0%;"></div>
             <div class="progress-steps">
-              <span class="step" style="left: 0%;">Embarkation</span>
-              <span class="step" style="left: 33%;">Certificates</span>
-              <span class="step" style="left: 66%;">GDPR</span>
+              <span class="step" style="left: 0%;">Certificates</span>
+              <span class="step" style="left: 50%;">GDPR</span>
               <span class="step" style="left: 100%;">Video</span>
             </div>
           </div>
         </div>
 
-        <!-- Welcome + Alerts -->
-        <div class="tab-pane active" id="welcome">
-          <div class="page-header">
-            <h2>Hi, Cloud Strife!</h2>
-            <p>Welcome to MV Yuri Smart Induction. Your registration is complete. To continue, please complete your
-              onboarding tasks below.</p>
-          </div>
-
-          <!-- Next Voyage -->
-          <div class="panel panel-default voyage-panel">
-            <div class="panel-heading">
-              <h4 class="panel-title"><i class="fa fa-calendar"></i> Your Embarkation Details</h4>
-            </div>
-            <div class="panel-body">
-              <div class="voyage-details">
-                <div><strong>Date</strong> <span id="embarkDateDisplay">—</span></div>
-                <div><strong>Time</strong> <span id="embarkTimeDisplay">—</span></div>
-                <div><strong>Location</strong> <span id="embarkLocationDisplay">—</span></div>
-              </div>
-            </div>
-            <div class="text-right" style="margin-top:10px;">
-              <a href="crew-vessel-info.html" class="btn btn-default btn-block">
-                <i class="fa fa-ship"></i> Explore M/V Yurisan Dozo
-              </a>
-            </div>
-          </div>
-
-          <!-- Alerts Panel -->
-          <div class="row" id="alertsRow">
-            <div class="panel alerts-panel">
-              <div class="panel-heading"><i class="fa fa-bell"></i> Alerts</div>
-              <div class="panel-body">
-                <div id="reminders">
-                  <!-- <div class="alert alert-info" id="embarkReminder">
-                    <span><i class="fa fa-info-circle"></i> Fill out your embarkation details.</span>
-                    <button class="btn btn-xs btn-primary complete-task" data-task="embark">Go</button>
-                  </div> -->
-                  <div class="alert alert-warning" id="certReminder">
-                    <span><i class="fa fa-upload"></i> Upload your certificates.</span>
-                    <button class="btn btn-xs btn-primary complete-task" data-task="cert">Upload</button>
-                  </div>
-                  <div class="alert alert-info" id="gdprReminder">
-                    <span><i class="fa fa-shield"></i> Review GDPR.</span>
-                    <button class="btn btn-xs btn-primary complete-task" data-task="gdpr">Review</button>
-                  </div>
-                  <div class="alert alert-success" id="videoReminder">
-                    <span><i class="fa fa-video-camera"></i> Watch familiarization video.</span>
-                    <button class="btn btn-xs btn-primary complete-task" data-task="video">Watch</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Activity Logs -->
-          <div class="panel">
-            <div class="panel-heading"><i class="fa fa-history"></i> Activity Logs / History</div>
-            <div class="panel-body">
-              <table class="table table-bordered" id="crewLogsTable">
-                <thead>
-                  <tr></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td colspan="5" class="text-center text-muted">No logs available</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
+        <div class="page-header" id="welcome-container">
+          <h2>Hi, Crew Member!</h2>
+          <p>Welcome to the M/V Yurisan Dozo Smart Induction Portal.</p>
         </div>
-      </div><!-- /main -->
+
+        <div class="voyage-panel">
+          <h4><i class="fa fa-calendar"></i> Your Embarkation Details</h4>
+          <div class="voyage-details">
+            <div><strong>Date</strong><span id="embarkDateDisplay">—</span></div>
+            <div><strong>Time</strong><span id="embarkTimeDisplay">—</span></div>
+            <div><strong>Location</strong><span id="embarkLocationDisplay">—</span></div>
+          </div>
+          <div class="text-right" style="margin-top:15px;">
+            <a href="crew-vessel-info.html" class="btn btn-light-blue btn-block">
+              <i class="fa fa-ship"></i> Explore M/V Yurisan Dozo
+            </a>
+          </div>
+        </div>
+
+        <div class="panel alerts-panel">
+          <div class="panel-heading"><i class="fa fa-bell"></i> Alerts & Notifications</div>
+          <div class="panel-body">
+            <div id="reminders">
+              <div class="alert alert-info">
+                <span><i class="fa fa-info-circle"></i> <b>FYI:</b> New safety protocols will be discussed during the
+                  briefing on Monday.</span>
+              </div>
+              <div class="alert alert-warning" id="certReminder">
+                <span><i class="fa fa-upload"></i> <b>FYA:</b> Upload your certificates.</span>
+                <button class="btn btn-xs btn-primary complete-task" data-task="cert">Upload</button>
+              </div>
+              <div class="alert alert-warning" id="gdprReminder">
+                <span><i class="fa fa-shield"></i> <b>FYA:</b> Review GDPR agreement.</span>
+                <button class="btn btn-xs btn-primary complete-task" data-task="gdpr">Review</button>
+              </div>
+              <div class="alert alert-warning" id="videoReminder">
+                <span><i class="fa fa-video-camera"></i> <b>FYA:</b> Watch familiarization video.</span>
+                <button class="btn btn-xs btn-primary complete-task" data-task="video">Watch</button>
+              </div>
+              <div class="alert alert-success" id="onboardingSuccess" style="display: none;">
+                <i class="fa fa-check-circle"></i> <b>Onboarding Complete!</b> All tasks are done.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="activityLogsPanel">
+          <div class="panel-heading"><i class="fa fa-history"></i> Activity Logs</div>
+          <div class="panel-body">
+            <table class="table table-striped table-bordered" id="crewLogsTable">
+              <thead>
+                <tr></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel" id="vesselHistoryPanel">
+          <div class="panel-heading"><i class="fa fa-ship"></i> Vessel History</div>
+          <div class="panel-body">
+            <table class="table table-striped table-bordered" id="vesselHistoryTable">
+              <thead>
+                <tr></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- JS -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-<script>
-  function showAlert(msg, type = 'success') {
-    const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
-    $('body').append(alert);
-    setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
-  }
-
-  // Utility: log crew activity
-  function logCrewActivity(activity, remarks = '') {
-    const stored = localStorage.getItem("vesselConfig");
-    let config = stored ? JSON.parse(stored) : { logs: {} };
-
-    if (!config.logs) config.logs = {};
-    if (!config.logs.entries) config.logs.entries = [];
-
-    // Default columns (fallback)
-    const cols = config.logs.columns || ["Date", "Activity", "Remarks"];
-
-    // Build row object
-    const now = new Date();
-    const row = {};
-    cols.forEach(c => {
-      if (c.toLowerCase() === "date") row[c] = now.toLocaleString();
-      else if (c.toLowerCase() === "activity") row[c] = activity;
-      else if (c.toLowerCase() === "remarks") row[c] = remarks;
-      else row[c] = "—";
-    });
-
-    // Add new log to top
-    config.logs.entries.unshift(row);
-
-    // Keep only max `count`
-    if (config.logs.count && config.logs.entries.length > config.logs.count) {
-      config.logs.entries = config.logs.entries.slice(0, config.logs.count);
+  <script>
+    // --- UTILITY & DATA FUNCTIONS ---
+    function showAlert(msg, type = 'success') {
+      const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+      $('body').append(alert);
+      setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
     }
 
-    localStorage.setItem("vesselConfig", JSON.stringify(config));
-    renderCrewLogs(config.logs);
-  }
+    function logCrewActivity(activity, remarks = '') {
+      const storedData = localStorage.getItem("vesselPageData");
+      let config = storedData ? JSON.parse(storedData) : {};
+      if (!config.logs) config.logs = { columns: ['Date', 'Activity', 'Remarks'], entries: [] };
+      if (!config.logs.entries) config.logs.entries = [];
+      const cols = config.logs.columns || ['Date', 'Activity', 'Remarks'];
+      const newEntry = {};
+      const now = new Date();
+      cols.forEach(col => {
+        const lowerCol = col.toLowerCase();
+        if (lowerCol === 'date') newEntry[col] = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        else if (lowerCol === 'activity') newEntry[col] = activity;
+        else if (lowerCol === 'remarks') newEntry[col] = remarks;
+        else newEntry[col] = 'N/A';
+      });
+      config.logs.entries.unshift(newEntry);
+      localStorage.setItem("vesselPageData", JSON.stringify(config));
+    }
 
-  // Load vesselConfig
-  const stored = localStorage.getItem("vesselConfig");
-  const config = stored ? JSON.parse(stored) : {};
-  if (config.embarkation) {
-    $('#embarkDateDisplay').text(config.embarkation.date || '—');
-    $('#embarkTimeDisplay').text(config.embarkation.time || '—');
-    $('#embarkLocationDisplay').text(config.embarkation.location || '—');
-  }
-
-  // Render Activity Logs
-  function renderCrewLogs(logsConfig) {
-    const cols = (logsConfig && logsConfig.columns) || [];
-    const entries = (logsConfig && logsConfig.entries) || [];
-    const count = (logsConfig && logsConfig.count) || 0;
-
-    const headerRow = $('#crewLogsTable thead tr').empty();
-    const tbody = $('#crewLogsTable tbody').empty();
-
-    if (cols.length && (entries.length || count > 0)) {
-      cols.forEach(c => headerRow.append(`<th>${c}</th>`));
-
-      if (entries.length) {
-        // Show saved (real) entries
-        entries.forEach(row => {
-          let tr = '<tr>';
-          cols.forEach(c => tr += `<td>${row[c] || '—'}</td>`);
-          tr += '</tr>';
-          tbody.append(tr);
+    function renderTable(tableId, config, defaultCols, noDataMsg) {
+      const table = $(`#${tableId}`);
+      const thead = table.find('thead tr').empty();
+      const tbody = table.find('tbody').empty();
+      const columns = (config && config.columns && config.columns.length > 0) ? config.columns : defaultCols;
+      const entries = (config && config.entries) || [];
+      const count = (config && config.count) || 5;
+      columns.forEach(col => thead.append(`<th>${col}</th>`));
+      if (entries.length > 0) {
+        entries.slice(0, count).forEach(entry => {
+          let rowHtml = '<tr>';
+          columns.forEach(col => { rowHtml += `<td>${entry[col] || '—'}</td>`; });
+          rowHtml += '</tr>';
+          tbody.append(rowHtml);
         });
       } else {
-        // Fallback: demo/sample rows
-        for (let i = 0; i < count; i++) {
-          let tr = '<tr>';
-          cols.forEach(c => tr += `<td>${c} sample ${i+1}</td>`);
-          tr += '</tr>';
-          tbody.append(tr);
-        }
-      }
-    } else {
-      tbody.html('<tr><td colspan="5" class="text-center text-muted">No logs available</td></tr>');
-    }
-  }
-
-  $(function () {
-    // Load sidebar
-    fetch('crew-sidebar.html')
-      .then(r => r.text())
-      .then(data => {
-        $('#sidebar-placeholder').html(data);
-        $('[data-page="crew-dashboard"]').addClass('active');
-      });
-
-    // Load vessel info
-    const stored = localStorage.getItem("vesselConfig");
-    let config = stored ? JSON.parse(stored) : { aboutVessel: '', photos: [] };
-
-    // Render activity logs from config
-    renderCrewLogs(config.logs);
-
-    // Onboarding tasks
-    const tasks = ['cert', 'gdpr', 'video'];
-    let progress = JSON.parse(localStorage.getItem("progress")) || {};
-
-    function saveProgress() {
-      localStorage.setItem("progress", JSON.stringify(progress));
-    }
-
-    function updateProgress() {
-      const completed = tasks.filter(t => progress[t]).length;
-      $('#progressBar').css('width', (completed / tasks.length * 100) + '%');
-      $('#progressText').text(`${completed} of ${tasks.length} tasks completed`);
-
-      tasks.forEach(task => {
-        if (progress[task]) {
-          $(`#${task}Reminder`).hide();
-        } else {
-          $(`#${task}Reminder`).show();
-        }
-      });
-
-      if (completed === tasks.length) {
-        $('.progress-container').hide();
-        $('#alertsRow').hide();
-        $('.page-header p').text("Welcome to MV Yuri Smart Induction. Your onboarding is complete. You can now fully use the dashboard.");
-        $('#onboardingSuccess').fadeIn();
-        showAlert('Onboarding complete! You can now fully use the dashboard.', 'success');
-        logCrewActivity("Onboarding completed", "All tasks done");
-      } else {
-        $('.progress-container').show();
-        $('#alertsRow').show();
-        $('#onboardingSuccess').hide();
-        $('.page-header p').text(
-          "Welcome to MV Yuri Smart Induction. Your registration is complete. To continue, please complete your onboarding tasks below."
-        );
+        tbody.html(`<tr><td colspan="${columns.length}" class="text-center text-muted">${noDataMsg}</td></tr>`);
       }
     }
 
-    updateProgress();
+    $(function () {
+      $('#sidebar-toggle').on('click', function () {
+        $('.sidebar').toggleClass('active');
+      });
+      // Load sidebar
+      fetch('crew-sidebar.html')
+        .then(r => r.text())
+        .then(data => {
+          $('#sidebar-placeholder').html(data);
+          $('[data-page="crew-dashboard"]').addClass('active');
+        });
 
-    // CTA click
-    $('.complete-task').on('click', function () {
-      const task = $(this).data('task');
-      progress[task] = true;
-      saveProgress();
+      const vesselData = JSON.parse(localStorage.getItem("vesselPageData")) || {};
+      const settingsData = JSON.parse(localStorage.getItem("customerSettings")) || {};
+
+      // --- ONBOARDING LOGIC ---
+      const tasks = ['cert', 'gdpr', 'video'];
+      let progress = JSON.parse(localStorage.getItem("progress")) || {};
+
+      function saveProgress() {
+        localStorage.setItem("progress", JSON.stringify(progress));
+      }
+
+      function updateProgress() {
+        const completed = tasks.filter(t => progress[t]).length;
+        const progressPercent = (completed / tasks.length) * 100;
+        $('#progressBar').css('width', progressPercent + '%');
+        $('#progressText').text(`${completed} of ${tasks.length} tasks completed`);
+
+        tasks.forEach(task => {
+          $(`#${task}Reminder`).toggle(!progress[task]);
+        });
+
+        if (completed === tasks.length) {
+          $('.progress-container').hide();
+          $('#onboardingSuccess').show();
+        }
+      }
+
+      $('.complete-task').on('click', function () {
+        const task = $(this).data('task');
+        progress[task] = true;
+        saveProgress();
+        showAlert(`Task "${task.toUpperCase()}" marked as complete!`, 'success');
+        logCrewActivity(`Onboarding task completed: ${task}`);
+        updateProgress();
+      });
+
+
+      // --- PAGE INITIALIZATION ---
+      // 1. Display Welcome Message
+      if (settingsData.welcomeText) {
+        let welcomeMsg = settingsData.welcomeText.replace(/{User}/g, 'Cloud Strife').replace(/{Vessel}/g, 'M/V Yurisan Dozo');
+        $('#welcome-container').html(`<div class="welcome-content">${welcomeMsg}</div>`);
+      }
+
+      // 2. Display Embarkation Details
+      if (vesselData.embarkation) {
+        $('#embarkDateDisplay').text(vesselData.embarkation.date || '—');
+        $('#embarkTimeDisplay').text(vesselData.embarkation.time || '—');
+        $('#embarkLocationDisplay').text(vesselData.embarkation.location || '—');
+      }
+
+      // 3. Initialize Onboarding Progress
       updateProgress();
-      showAlert(`Task "${task}" completed!`, 'success');
 
-      logCrewActivity(`Completed task: ${task}`);
+      // 4. Display Activity Logs (if enabled)
+      if (settingsData.showActivityLogs) {
+        $('#activityLogsPanel').show();
+        const logConfig = vesselData.logs || {};
+        logConfig.count = settingsData.activityLogCount;
+        renderTable('crewLogsTable', logConfig, ['Date', 'Activity', 'Remarks'], 'No activity logs found.');
+      } else {
+        $('#activityLogsPanel').hide();
+      }
 
-      const urlMap = {
-        embark: 'crew-registration.html',
-        cert: 'crew-certificates.html',
-        gdpr: 'crew-gdpr.html',
-        video: 'crew-familiarization.html'
-      };
-      window.location.href = urlMap[task];
-    });
-
-    // Auto-sync if config changes in another tab
-    window.addEventListener('storage', function (e) {
-      if (e.key === 'vesselConfig') {
-        const updated = JSON.parse(e.newValue);
-        renderCrewLogs(updated.logs);
+      // 5. Display Vessel History (if enabled)
+      if (settingsData.showVesselHistory) {
+        $('#vesselHistoryPanel').show();
+        const historyConfig = {
+          columns: ['Vessel', 'Embark Date', 'Disembark Date'],
+          entries: [
+            { 'Vessel': 'M/V Ocean Dream', 'Embark Date': '2024-01-15', 'Disembark Date': '2024-07-20' },
+            { 'Vessel': 'M/V Sea Spirit', 'Embark Date': '2023-05-10', 'Disembark Date': '2023-11-25' },
+          ],
+          count: settingsData.vesselHistoryCount
+        };
+        renderTable('vesselHistoryTable', historyConfig, ['Vessel', 'Embark Date', 'Disembark Date'], 'No vessel history found.');
+      } else {
+        $('#vesselHistoryPanel').hide();
       }
     });
-  });
-</script>
-
-
+  </script>
 </body>
 
 </html>

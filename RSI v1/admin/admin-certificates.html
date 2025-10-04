@@ -23,10 +23,13 @@
 </head>
 
 <body>
+  <button type="button" id="sidebar-toggle" class="mobile-toggle">
+    <i class="fa fa-bars"></i>
+  </button>
   <div class="container-fluid dashboard-layout">
     <div class="row">
       <!-- Sidebar -->
-        <div id="sidebar-placeholder"></div>
+      <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
 
       <!-- Main -->
       <div class="col-sm-9 col-md-10 main-content">
@@ -38,7 +41,7 @@
         <div class="panel">
           <div class="panel-heading">
             <i class="fa fa-list"></i> File Upload
-           
+
           </div>
           <div class="panel-body">
             <!-- File size/type rule -->
@@ -75,20 +78,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
   <script>
     $(function () {
-      fetch('admin-sidebar.html')
-      .then(response => response.text())
-      .then(data => {
-        const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
-        sidebarPlaceholder.innerHTML = data;
+      $('#sidebar-toggle').on('click', function () {
+        $('.sidebar').toggleClass('active');
+      });
 
-        // Script to set the active state after the sidebar is loaded
-        const currentPage = 'admin-certificates';
-        const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-        if (activeLink) {
-          activeLink.classList.add('active');
-        }
-      })
-      .catch(error => console.error('Error fetching sidebar:', error));
+      fetch('admin-sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+          sidebarPlaceholder.innerHTML = data;
+
+          // Script to set the active state after the sidebar is loaded
+          const currentPage = 'admin-certificates';
+          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+          }
+        })
+        .catch(error => console.error('Error fetching sidebar:', error));
 
       $(".select2").select2({ width: "100%" });
 

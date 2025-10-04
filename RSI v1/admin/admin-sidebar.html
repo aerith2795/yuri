@@ -6,40 +6,121 @@
   <title>RSI Admin • Vessel Setup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Libs -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
-  <!-- Ripple + Admin CSS -->
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="admin-page.css" rel="stylesheet" />
 </head>
+<style>
+  /* --- Base Styles --- */
+body {
+  overflow-x: hidden; /* Prevents horizontal scrollbar */
+}
+
+.main-content {
+  padding: 20px;
+}
+
+/* --- Desktop Styles (screens wider than 768px) --- */
+@media (min-width: 768px) {
+  .mobile-toggle {
+    display: none; /* Hide hamburger menu on desktop */
+  }
+
+  .sidebar {
+    position: fixed; /* Keep sidebar fixed on the left */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+  }
+
+  .main-content {
+    /* Offset main content by the width of the sidebar */
+    margin-left: 16.66666667%; /* This matches Bootstrap's .col-md-2 width */
+  }
+}
+
+
+/* --- Mobile & Tablet Styles (screens smaller than 768px) --- */
+@media (max-width: 767px) {
+  .mobile-toggle {
+    display: block; /* Show the hamburger toggle button */
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1001; /* Ensure it's above the sidebar */
+    background-color: #337ab7; /* Example color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 18px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 250px; /* A fixed width for the slide-out menu */
+    left: -250px; /* Hide it off-screen by default */
+    z-index: 1000;
+    transition: left 0.3s ease-in-out; /* Smooth slide animation */
+    /* Override Bootstrap column styles */
+    float: none;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  /* This class will be toggled by jQuery to show the sidebar */
+  .sidebar.active {
+    left: 0; /* Slide the sidebar into view */
+  }
+
+  .main-content {
+    width: 100%;
+    margin-left: 0; /* Content takes full width */
+  }
+}
+</style>
 
 <body>
 
-  <!-- Sidebar -->
-  <div class="col-sm-3 col-md-2 sidebar">
-    <div class="text-center logo">
-      <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px;height:auto;" />
-    </div>
-    <ul class="nav nav-pills nav-stacked">
-      <li data-page="admin-dashboard"><a href="admin-dashboard.html"><i class="fa fa-tachometer"></i> Dashboard</a>
-      </li>
-      <hr />
-      <h5 class="text-uppercase text-gray" style="letter-spacing: 0.1rem;"><i class="fa fa-cog"></i>
-        Configurations</h5>
-      <li data-page="admin-settings"><a href="admin-settings.html"><i class="fa fa-cog"></i> Welcome Text</a></li>
-      <li data-page="admin-vessel-setup"><a href="admin-vessel-setup.html"><i class="fa fa-ship"></i> Vessel </a></li>
-      <li data-page="admin-certificates"><a href="admin-certificates.html"><i class="fa fa-file-text-o"></i> Certificates</a></li>
-      <li data-page="admin-customer-admins"><a href="admin-customer-admins.html"><i class="fa fa-user-secret"></i> Customer Admin</a></li>
-    </ul>
+  <button type="button" id="sidebar-toggle" class="mobile-toggle">
+    <i class="fa fa-bars"></i>
+  </button>
+
+  <div class="page-container">
+    <div class="col-sm-3 col-md-2 sidebar">
+      <div class="text-center logo">
+        <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px;height:auto;" />
+      </div>
+      <ul class="nav nav-pills nav-stacked">
+        <li data-page="admin-dashboard"><a href="admin-dashboard.html"><i class="fa fa-tachometer"></i> Dashboard</a></li>
+        <hr />
+        <h5 class="text-uppercase text-gray" style="letter-spacing: 0.1rem;"><i class="fa fa-cog"></i> Configurations</h5>
+        <li data-page="admin-settings"><a href="admin-settings.html"><i class="fa fa-cog"></i> Welcome Text</a></li>
+        <li data-page="admin-vessel-setup"><a href="admin-vessel-setup.html"><i class="fa fa-ship"></i> Vessel </a></li>
+        <li data-page="admin-certificates"><a href="admin-certificates.html"><i class="fa fa-file-text-o"></i> Certificates</a></li>
+        <li data-page="admin-customer-admins"><a href="admin-customer-admins.html"><i class="fa fa-user-secret"></i> Customer Admin</a></li>
+      </ul>
   </div>
 
-  <!-- JS -->
+
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Toggle sidebar on button click
+      $('#sidebar-toggle').on('click', function() {
+        $('.sidebar').toggleClass('active');
+      });
+    });
+  </script>
 
 </body>
 

@@ -1,127 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>RSI Crew • Familiarization Video</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Libs -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="../assets/ripple.css" rel="stylesheet" />
+    <meta charset="UTF-8" />
+    <title>RSI Crew • Familiarization Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
 </head>
-
 <body>
-  <div class="container-fluid dashboard-layout">
-    <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder"></div>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
 
-      <!-- Main -->
-      <div class="col-sm-9 col-md-10 main-content">
-        <div class="page-header">
-          <h2>Familiarization Video</h2>
-          <p class="text-muted">Watch the required familiarization video and confirm once completed.</p>
-        </div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Familiarization Video</h2>
+                    <p id="instructionsText" class="lead" style="font-size: 16px;">Watch the required video and confirm once completed.</p>
+                </div>
 
-        <div id="videoPanel" class="panel panel-default" style="display:none;">
-          <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
-          <div class="panel-body text-center">
-            <!-- Video or placeholder -->
-            <div id="videoContainer" style="margin:20px 0;"></div>
-            <!-- Instructions -->
-            <p id="videoInstructions" class="text-muted"></p>
-            <div class="checkbox text-center">
-              <label><input type="checkbox" id="videoWatched"> I have watched the video</label>
+                <div id="videoPanel" class="panel panel-default" style="display:none;">
+                    <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
+                    <div class="panel-body text-center" style="padding: 25px;">
+                        <div id="videoContainer" style="margin-bottom:20px; background-color: #000; border-radius: 4px;"></div>
+                        
+                        <div class="checkbox" style="margin-top: 20px;">
+                            <label style="font-size: 16px;">
+                                <input type="checkbox" id="videoWatched" style="width: 18px; height: 18px; vertical-align: bottom;"> 
+                                I confirm I have watched and understood the entire video.
+                            </label>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <button id="confirmWatchedBtn" class="btn btn-success" disabled>
+                                <i class="fa fa-check-circle"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="noVideoMsg" class="alert alert-info" style="display:none;"></div>
             </div>
-            <div class="text-center">
-              <button id="confirmWatchedBtn" class="btn btn-success" disabled>
-                <i class="fa fa-check"></i> Mark Complete
-              </button>
-            </div>
-          </div>
         </div>
-
-        <div id="noVideoMsg" class="alert alert-info" style="display:none;">
-          No familiarization video has been configured by the company.
-        </div>
-      </div>
     </div>
-  </div>
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-<script>
-  $(function () {
-    // Sidebar
-    fetch('crew-sidebar.html')
-      .then(r => r.text())
-      .then(html => {
-        $('#sidebar-placeholder').html(html);
-        const activeLink = document.querySelector('[data-page="crew-familiarization"]');
-        if (activeLink) activeLink.classList.add('active');
-      });
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            // --- SIDEBAR ---
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-familiarization"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
 
-    // 🔹 Default config (will be used if nothing in localStorage)
-    const defaultConfig = {
-      show: true,
-      instructions: "Please watch this familiarization video carefully before proceeding with your onboarding.",
-      videoUrl: "../assets/loader-2.mov" // sample video for demo
-    };
+            // --- PAGE LOGIC ---
+            const familiarizationConfig = JSON.parse(localStorage.getItem("familiarizationConfig"));
+            let progress = JSON.parse(localStorage.getItem("progress")) || {};
 
-    // 🔹 Load config or create with default
-    let familiarizationConfig = JSON.parse(localStorage.getItem("familiarizationConfig"));
+            // 1. Check if this step is enabled by the customer
+            if (!familiarizationConfig || !familiarizationConfig.show) {
+                $("#noVideoMsg").text("The familiarization video step is not required for this vessel.").show();
+                return; // Stop if not configured to show
+            }
 
-    if (!familiarizationConfig || familiarizationConfig.videoUrl === undefined) {
-      familiarizationConfig = defaultConfig;
-      localStorage.setItem("familiarizationConfig", JSON.stringify(familiarizationConfig));
-    }
+            $("#videoPanel").show();
 
-    // 🔹 Apply settings
-    if (!familiarizationConfig.show) {
-      $("#noVideoMsg").show();
-      return;
-    }
+            // 2. Display instructions
+            if (familiarizationConfig.instructions) {
+                $("#instructionsText").text(familiarizationConfig.instructions);
+            }
 
-    $("#videoPanel").show();
+            // 3. Display the video
+            if (familiarizationConfig.videoUrl) {
+                // Use the data:URL saved from the customer portal
+                const videoHtml = `<video style="max-width:100%; border-radius: 4px;" controls><source src="${familiarizationConfig.videoUrl}"></video>`;
+                $("#videoContainer").html(videoHtml);
+            } else {
+                $("#videoContainer").html('<div class="alert alert-warning">No video has been uploaded by the administrator.</div>');
+            }
 
-    if (familiarizationConfig.instructions) {
-      $("#videoInstructions").text(familiarizationConfig.instructions);
-    }
+            // 4. Handle interaction logic
+            $("#videoWatched").on("change", function () {
+                $("#confirmWatchedBtn").prop("disabled", !this.checked);
+            });
 
-    if (familiarizationConfig.videoUrl) {
-      $("#videoContainer").html(`
-        <video width="640" controls>
-          <source src="${familiarizationConfig.videoUrl}" type="video/mp4">
-          Your browser does not support the video tag.
-        </video>
-      `);
-    } else {
-      $("#videoContainer").html(`
-        <div class="video-placeholder">
-          <i class="fa fa-play-circle fa-5x"></i>
-          <p>Video Placeholder - No video uploaded.</p>
-        </div>
-      `);
-    }
+            $("#confirmWatchedBtn").on("click", function () {
+                progress['video'] = true;
+                localStorage.setItem("progress", JSON.stringify(progress));
+                
+                $(this).prop('disabled', true).removeClass('btn-success').addClass('btn-default').html('<i class="fa fa-check"></i> Completed');
+                $('#videoWatched').prop('disabled', true);
+                
+                showAlert("Confirmation saved. Thank you!", "success");
+            });
 
-    // 🔹 Require watched checkbox before enabling button
-    $("#videoWatched").on("change", function () {
-      $("#confirmWatchedBtn").prop("disabled", !this.checked);
-    });
+            // 5. Check for prior completion on page load
+            if (progress['video']) {
+                $('#videoWatched').prop('checked', true).prop('disabled', true);
+                $('#confirmWatchedBtn').prop('disabled', true).removeClass('btn-success').addClass('btn-default').html('<i class="fa fa-check"></i> Completed');
+            }
 
-    $("#confirmWatchedBtn").on("click", function () {
-      showAlert("✅ Your confirmation has been recorded.");
-    });
-  });
-
-  // 🔹 Alert function
-  function showAlert(msg, type = 'success') {
-    const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
-    $('body').append(alert);
-    setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
-  }
-</script>
-
+            function showAlert(msg, type = 'success') {
+                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+                $('body').append(alert);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
+            }
+        });
+    </script>
 </body>
 </html>

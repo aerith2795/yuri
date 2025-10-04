@@ -1,118 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <title>RSI Customer • Familiarization Video</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Libs -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="../assets/ripple.css" rel="stylesheet" />
-  <link href="page.css" rel="stylesheet" />
-  <style>
-    .alert-compact {
-      padding: 6px 10px;
-      margin: 10px 0;
-      font-size: 12px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>RSI Customer • Familiarization Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+    <style>
+        body { padding-bottom: 80px; }
+        .sticky-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #f5f5f5;
+            border-top: 1px solid #ddd;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+        .footer-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .preview-container {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        .preview-container video {
+            max-width: 100%;
+            border-radius: 4px;
+            background-color: #000;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container-fluid dashboard-layout">
-    <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder"></div>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
 
-      <!-- Main -->
-      <div class="col-sm-9 col-md-10 main-content">
-        <div class="page-header">
-          <h2>Familiarization Video Configuration</h2>
-          <p>Upload/replace the video shown in the Crew portal. You can also hide this step if not needed.</p>
-        </div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Familiarization Video Configuration</h2>
+                    <p>Set the video and instructions for the crew's familiarization onboarding step.</p>
+                </div>
 
-        <!-- Alerts -->
-        <div id="alertArea"></div>
-
-        <!-- Familiarization Video -->
-        <div class="tab-pane" id="video">
-          <div class="panel">
-            <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
-            <div class="panel-body">
-              <div class="form-group">
-                <label>Upload Video</label>
-                <input id="videoFile" type="file" class="form-control" accept="video/*">
-              </div>
-              <div class="form-group">
-                <label>Instructions for Crew</label>
-                <textarea id="videoInstructions" class="form-control" rows="3"
-                  placeholder="Provide instructions about watching the familiarization video."></textarea>
-              </div>
-              <div class="checkbox">
-                <label><input type="checkbox" id="showVideo"> Show Familiarization Video in crew portal</label>
-              </div>
-              <hr />
-              <button id="saveVideo" class="btn btn-primary"><i class="fa fa-save"></i> Save & Post Changes</button>
+                <div class="panel">
+                    <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
+                    <div class="panel-body">
+                        <div id="edit-view">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Upload/Replace Video</label>
+                                        <input id="videoFile" type="file" class="form-control" accept="video/mp4,video/webm">
+                                        <p class="help-block" id="currentFileName"></p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Instructions for Crew</label>
+                                        <textarea id="videoInstructions" class="form-control" rows="5"
+                                        placeholder="Provide instructions about watching the familiarization video."></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Settings</label>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" id="showVideo"> Show Familiarization Video page in crew portal</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="preview-view" style="display:none;">
+                            <h4>Preview</h4>
+                            <div class="preview-container">
+                                <video id="videoPreview" controls muted playsinline></video>
+                                <hr>
+                                <strong>Instructions:</strong>
+                                <blockquote id="instructionsPreview" style="font-size:14px; margin-top:5px;"></blockquote>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <div class="sticky-footer">
+        <div class="footer-container" id="footer-btn-container"></div>
+    </div>
 
-  <script>
-    $(function () {
-      // Sidebar
-      fetch('customer-sidebar.html')
-        .then(r => r.text())
-        .then(data => {
-          $('#sidebar-placeholder').html(data);
-          const activeLink = document.querySelector('[data-page="customer-familiarization"]');
-          if (activeLink) activeLink.classList.add('active');
-        });
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            // Sidebar
+            fetch('customer-sidebar.html')
+                .then(r => r.text())
+                .then(data => {
+                    $('#sidebar-placeholder').html(data);
+                    const activeLink = document.querySelector('[data-page="customer-familiarization"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
 
-//    ShowAlert
+            const configKey = "familiarizationConfig";
+            let tempVideoDataUrl = null; // Holds the new video data until save
+
+            function toggleViewMode(isEditing) {
+                if (isEditing) {
+                    $('#edit-view').show();
+                    $('#preview-view').hide();
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block"><i class="fa fa-save"></i> Save Changes</button>');
+                } else {
+                    $('#edit-view').hide();
+                    $('#preview-view').show();
+                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit Configuration</button>');
+                }
+            }
+
+            function saveConfig() {
+                const config = {
+                    instructions: $("#videoInstructions").val(),
+                    show: $("#showVideo").prop("checked"),
+                    videoUrl: tempVideoDataUrl || (JSON.parse(localStorage.getItem(configKey)) || {}).videoUrl,
+                    fileName: $("#videoFile")[0].files[0]?.name || (JSON.parse(localStorage.getItem(configKey)) || {}).fileName
+                };
+                
+                localStorage.setItem(configKey, JSON.stringify(config));
+                showAlert("Familiarization configuration saved.", "success");
+                loadConfig(); // Reload to update preview
+                toggleViewMode(false);
+            }
+
+            function loadConfig() {
+                const savedConfig = JSON.parse(localStorage.getItem(configKey));
+                if (savedConfig) {
+                    $("#videoInstructions").val(savedConfig.instructions);
+                    $("#showVideo").prop("checked", savedConfig.show);
+                    
+                    // Update Previews
+                    $('#instructionsPreview').html(savedConfig.instructions.replace(/\n/g, '<br>') || "<em>No instructions provided.</em>");
+                    $('#videoPreview').attr('src', savedConfig.videoUrl || "");
+                    
+                    if (savedConfig.fileName) {
+                        $('#currentFileName').text(`Current file: ${savedConfig.fileName}`);
+                    }
+                    return true;
+                } else {
+                    // Default values
+                    $("#showVideo").prop("checked", true);
+                    $("#videoInstructions").val("Please watch the entire familiarization video below before proceeding.");
+                    return false;
+                }
+            }
+            
+            // Handle new video file selection
+            $("#videoFile").on("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        tempVideoDataUrl = e.target.result; // Store base64 data URL
+                        $('#currentFileName').text(`New file selected: ${file.name}`);
+                        showAlert("Video file is ready to be saved.", "info");
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Event Handlers
+            $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
+            $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
+
+            // Initial Load
+            const hasData = loadConfig();
+            toggleViewMode(!hasData);
+            
             function showAlert(msg, type = 'success') {
                 const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
                 $('body').append(alert);
-                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 2000);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
             }
-
-      // Load existing config
-      let familiarizationConfig = JSON.parse(localStorage.getItem("familiarizationConfig")) || {
-        show: true,
-        instructions: "",
-        videoUrl: ""
-      };
-
-      // Apply config
-      $("#videoInstructions").val(familiarizationConfig.instructions);
-      $("#showVideo").prop("checked", familiarizationConfig.show);
-
-      // Save config
-      $("#saveVideo").on("click", function () {
-        familiarizationConfig.instructions = $("#videoInstructions").val();
-        familiarizationConfig.show = $("#showVideo").prop("checked");
-
-        // If a new file was uploaded, convert to a local blob URL
-        const file = $("#videoFile")[0].files[0];
-        if (file) {
-          const url = URL.createObjectURL(file);
-          familiarizationConfig.videoUrl = url;
-        }
-
-        // Save to localStorage
-        localStorage.setItem("familiarizationConfig", JSON.stringify(familiarizationConfig));
-        showAlert("Familiarization Video configuration saved. Crew portal will reflect these settings.", "success");
-      });
-    });
-  </script>
-    
+        });
+    </script>
 </body>
 </html>
