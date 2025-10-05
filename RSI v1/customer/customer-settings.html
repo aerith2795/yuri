@@ -176,9 +176,9 @@
                 $('#finalMessage').summernote(isEditing ? 'enable' : 'disable');
                 $('#finalCheckbox, #showActivityLogs, #activityLogCount, #showVesselHistory, #vesselHistoryCount').prop('disabled', !isEditing);
                 if (isEditing) {
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block"><i class="fa fa-save"></i> Save All Settings</button>');
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
                 } else {
-                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit Settings</button>');
+                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Settings</button>');
                 }
             }
 

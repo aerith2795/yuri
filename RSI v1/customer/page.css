@@ -354,3 +354,27 @@
       line-height: 16px;
       cursor: pointer;
     }
+
+        /* Sticky Footer */
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--r-dark);
+      /* background-color: #f5f5f5; */
+      border-top: 1px solid #ddd;
+      padding: 10px 0;
+      z-index: 1000;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    .footer-container .row .col-xs-6 {
+      padding: 0 5px;
+    }

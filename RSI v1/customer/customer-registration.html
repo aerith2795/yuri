@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>RSI Customer • Registration Config</title>
@@ -9,26 +10,72 @@
     <link href="../assets/ripple.css" rel="stylesheet" />
     <link href="page.css" rel="stylesheet" />
     <style>
-        body { padding-bottom: 80px; }
-        .sticky-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #f5f5f5; border-top: 1px solid #ddd; padding: 10px 0; z-index: 1000; }
-        .footer-container { max-width: 900px; margin: 0 auto; padding: 0 15px; }
-        
-        .nav-tabs>li>a { cursor: pointer; }
-        .nav-tabs>li.add-tab>a { color: var(--r-green); font-weight: bold; }
-        .tab-content { background-color: #fff; padding: 20px; border: 1px solid #ddd; border-top: none; }
+        body {
+            padding-bottom: 80px;
+        }
 
-        .field-item { display: flex; align-items: center; padding: 8px; margin-bottom: 5px; border-radius: 3px; background-color: #f9f9f9; border: 1px solid #eee; }
-        .field-item:hover { background-color: #f0f0f0; }
-        .field-info { flex-grow: 1; }
-        .drag-handle { cursor: grab; color: #ccc; margin-right: 15px; }
 
-        #clientPreviewModal .modal-dialog { width: 90%; max-width: 900px; }
-        #clientPreviewModal .form-group label.required-field::after { content: " *"; color: var(--r-red); }
+        .nav-tabs>li>a {
+            cursor: pointer;
+        }
 
-        .edit-controls { display: none; } /* Hidden by default */
-        .edit-mode .edit-controls { display: inline-block; }
+        .nav-tabs>li.add-tab>a {
+            color: var(--r-green);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .field-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 3px;
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+        }
+
+        .field-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .field-info {
+            flex-grow: 1;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: #ccc;
+            margin-right: 15px;
+        }
+
+        #clientPreviewModal .modal-dialog {
+            width: 90%;
+            max-width: 900px;
+        }
+
+        #clientPreviewModal .form-group label.required-field::after {
+            content: " *";
+            color: var(--r-red);
+        }
+
+        .edit-controls {
+            display: none;
+        }
+
+        .edit-mode .edit-controls {
+            display: inline-block;
+        }
     </style>
 </head>
+
 <body>
     <div class="container-fluid dashboard-layout">
         <div class="row">
@@ -36,14 +83,16 @@
             <div class="col-sm-9 col-md-10 main-content">
                 <div class="page-header">
                     <h2>Registration Form Configuration</h2>
-                    <p>Organize the registration form into sections using the tabs below. Drag and drop fields and tabs to reorder.</p>
+                    <p>Organize the registration form into sections using the tabs below. Drag and drop to reorder.</p>
                 </div>
 
-                <div class="alert alert-info"><i class="fa fa-lock"></i> <strong>Locked Fields:</strong> First Name, Surname, Email, Password, etc., are always included by default.</div>
-                
+                <div class="alert alert-info"><i class="fa fa-lock"></i> <strong>Locked Fields:</strong> First Name,
+                    Surname, Email, Password, etc., are always included by default.</div>
+
                 <div class="panel panel-default">
                     <div class="panel-heading"><i class="fa fa-info-circle"></i> General Instructions for Crew</div>
-                    <div class="panel-body"><textarea class="form-control" id="generalInstructions" rows="3" disabled></textarea></div>
+                    <div class="panel-body"><textarea class="form-control" id="generalInstructions" rows="3"
+                            disabled></textarea></div>
                 </div>
 
                 <div>
@@ -54,18 +103,105 @@
             </div>
         </div>
     </div>
-    
+<!-- 
     <div class="sticky-footer">
         <div class="footer-container clearfix">
-             <button id="clientPreviewBtn" class="btn btn-info pull-left"><i class="fa fa-eye"></i> Client Preview</button>
+            <button id="clientPreviewBtn" class="btn btn-info pull-left btn-block btn-sm"><i class="fa fa-eye"></i> Client
+                Preview</button>
             <div class="pull-right" id="footer-btn-container" style="width: 200px;"></div>
         </div>
-    </div>
+    </div> -->
 
-    <div class="modal fade" id="clientPreviewModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button class="close" data-dismiss="modal">&times;</button><h4 class="modal-title">Crew Registration Form Preview</h4></div><div class="modal-body" id="modal-preview-body"></div><div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Close</button></div></div></div></div>
-    <div class="modal fade" id="addEditSectionModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title" id="sectionModalTitle"></h4></div><div class="modal-body"><input type="hidden" id="editSectionId"><div class="form-group"><label>Section Title</label><input type="text" id="sectionTitleInput" class="form-control"></div></div><div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button class="btn btn-primary" id="saveSectionBtn">Save</button></div></div></div></div>
-    <div class="modal fade" id="addFieldModal"><div class="modal-dialog"><div class="modal-content"><form id="formField"><div class="modal-header"><h4 class="modal-title" id="fieldModalTitle"></h4></div><div class="modal-body"><input type="hidden" id="fieldSectionId"><input type="hidden" id="fieldUniqueId"><div class="form-group"><label>Field Label</label><input type="text" class="form-control" id="fldLabel" required /></div><div class="form-group"><label>Field Type</label><select id="fldType" class="form-control"><option value="text">Text</option><option value="date">Date</option><option value="email">Email</option><option value="select">Dropdown</option><option value="file">File Upload</option><option value="textarea">Text Area</option></select></div><div class="row"><div class="col-sm-6"><label>Visible</label><select id="fldVisible" class="form-control"><option value="true">Yes</option><option value="false">No</option></select></div><div class="col-sm-6"><label>Required</label><select id="fldRequired" class="form-control"><option value="false">No</option><option value="true">Yes</option></select></div></div><div class="form-group" style="margin-top:10px;"><label>Validation / Notes</label><input type="text" class="form-control" id="fldValidation" placeholder="For Dropdowns, use comma-separated values" /></div></div><div class="modal-footer"><button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save Field</button></div></form></div></div></div>
-    <div class="modal fade" id="quickAddFieldsModal"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h4 class="modal-title">Quick Add PO Fields</h4></div><div class="modal-body" id="quickAddFieldsBody"></div><div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button class="btn btn-primary" id="saveQuickAddBtn">Add Selected Fields</button></div></div></div></div>
+      <div class="sticky-footer">
+    <div class="footer-container">
+      <div class="row">
+        <div class="col-xs-6">
+          <button id="clientPreviewBtn" class="btn btn-info btn-block btn-sm"><i class="fa fa-eye"></i> Client
+            Preview</button>
+        </div>
+        <div class="col-xs-6" id="footer-btn-container"></div>
+      </div>
+    </div>
+  </div>
+
+    <div class="modal fade" id="clientPreviewModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Crew Registration Form Preview</h4>
+                </div>
+                <div class="modal-body" id="modal-preview-body"></div>
+                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Close</button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addEditSectionModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="sectionModalTitle"></h4>
+                </div>
+                <div class="modal-body"><input type="hidden" id="editSectionId">
+                    <div class="form-group"><label>Section Title</label><input type="text" id="sectionTitleInput"
+                            class="form-control"></div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
+                        class="btn btn-primary" id="saveSectionBtn">Save</button></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addFieldModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formField">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="fieldModalTitle"></h4>
+                    </div>
+                    <div class="modal-body"><input type="hidden" id="fieldSectionId"><input type="hidden"
+                            id="fieldUniqueId">
+                        <div class="form-group"><label>Field Label</label><input type="text" class="form-control"
+                                id="fldLabel" required /></div>
+                        <div class="form-group"><label>Field Type</label><select id="fldType" class="form-control">
+                                <option value="text">Text</option>
+                                <option value="date">Date</option>
+                                <option value="email">Email</option>
+                                <option value="select">Dropdown</option>
+                                <option value="file">File Upload</option>
+                                <option value="textarea">Text Area</option>
+                            </select></div>
+                        <div class="row">
+                            <div class="col-sm-6"><label>Visible</label><select id="fldVisible" class="form-control">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select></div>
+                            <div class="col-sm-6"><label>Required</label><select id="fldRequired" class="form-control">
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select></div>
+                        </div>
+                        <div class="form-group" style="margin-top:10px;"><label>Validation / Notes</label><input
+                                type="text" class="form-control" id="fldValidation"
+                                placeholder="For Dropdowns, use comma-separated values" /></div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-default"
+                            data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save
+                            Field</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="quickAddFieldsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Quick Add PO Fields</h4>
+                </div>
+                <div class="modal-body" id="quickAddFieldsBody"></div>
+                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
+                        class="btn btn-primary" id="saveQuickAddBtn">Add Selected Fields</button></div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -73,10 +209,23 @@
     <script>
         $(function () {
             // --- INITIALIZATION & DATA ---
-            $('#sidebar-placeholder').html('<div class="well">Customer Sidebar</div>');
+            fetch('customer-sidebar.html')
+                .then(response => response.text())
+                .then(data => {
+                    const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                    sidebarPlaceholder.innerHTML = data;
+
+                    // Script to set the active state after the sidebar is loaded
+                    const currentPage = 'customer-registration';
+                    const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                    if (activeLink) {
+                        activeLink.classList.add('active');
+                    }
+                })
+                .catch(error => console.error('Error fetching sidebar:', error));
             const configKey = "registrationFormConfig_v4";
             let formConfig = {};
-            const poFields = [ { id: 'pob', label: 'Place of Birth', type: 'text' }, { id: 'nationality', label: 'Nationality', type: 'select' }, { id: 'phone', label: 'Phone', type: 'text' }, { id: 'mobile', label: 'Mobile', type: 'text' }, { id: 'address', label: 'Residence Address', type: 'text' }, { id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text' }, { id: 'passport', label: 'Passport Upload', type: 'file' }, { id: 'nok_rel', label: 'NOK Relationship', type: 'select' }, { id: 'nok_fname', label: 'NOK First Name', type: 'text' }, { id: 'nok_lname', label: 'NOK Surname', type: 'text' }, { id: 'nok_address', label: 'NOK Address', type: 'text' }, { id: 'nok_residence', label: 'NOK Residence', type: 'select' }, { id: 'nok_phone', label: 'NOK Phone', type: 'text' }, { id: 'nok_mobile', label: 'NOK Mobile', type: 'text' }, { id: 'nok_email', label: 'NOK Email', type: 'email' } ];
+            const poFields = [{ id: 'pob', label: 'Place of Birth', type: 'text' }, { id: 'nationality', label: 'Nationality', type: 'select' }, { id: 'phone', label: 'Phone', type: 'text' }, { id: 'mobile', label: 'Mobile', type: 'text' }, { id: 'address', label: 'Residence Address', type: 'text' }, { id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text' }, { id: 'passport', label: 'Passport Upload', type: 'file' }, { id: 'nok_rel', label: 'NOK Relationship', type: 'select' }, { id: 'nok_fname', label: 'NOK First Name', type: 'text' }, { id: 'nok_lname', label: 'NOK Surname', type: 'text' }, { id: 'nok_address', label: 'NOK Address', type: 'text' }, { id: 'nok_residence', label: 'NOK Residence', type: 'select' }, { id: 'nok_phone', label: 'NOK Phone', type: 'text' }, { id: 'nok_mobile', label: 'NOK Mobile', type: 'text' }, { id: 'nok_email', label: 'NOK Email', type: 'email' }];
 
             // --- CORE FUNCTIONS ---
             function generateUniqueId(prefix = 'id_') { return prefix + Date.now() + Math.floor(Math.random() * 1000); }
@@ -86,68 +235,79 @@
                 $('#generalInstructions').prop('disabled', !isEditing);
                 renderForm();
                 if (isEditing) {
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success"><i class="fa fa-save"></i> Save Configuration</button>');
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
                 } else {
-                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit Configuration</button>');
+                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
                 }
             }
 
-            function renderForm() {
+            function renderForm(activeTabId = null) {
                 const tabs = $('#sectionTabs').empty();
                 const content = $('#sectionTabContent').empty();
-                
+
                 formConfig.sections.forEach((section, index) => {
-                    tabs.append(`<li class="${index === 0 ? 'active' : ''}"><a data-toggle="tab" href="#tab_${section.id}">${section.title}</a></li>`);
-                    
-                    const addFieldBtn = `<button class="btn btn-primary btn-xs btn-add-field edit-controls"><i class="fa fa-plus"></i> Add Field</button>`;
-                    const quickAddBtn = `<button class="btn btn-default btn-xs btn-quick-add edit-controls" style="margin-left:5px;"><i class="fa fa-bolt"></i> Quick Add PO Fields</button>`;
+                    const isActive = activeTabId ? `#tab_${section.id}` === activeTabId : index === 0;
+                    tabs.append(`<li class="${isActive ? 'active' : ''}"><a data-toggle="tab" href="#tab_${section.id}">${section.title}</a></li>`);
+
+                    const tabPane = $(`<div id="tab_${section.id}" class="tab-pane fade ${isActive ? 'in active' : ''}"></div>`).appendTo(content);
+
                     const sectionControls = `<div class="pull-right edit-controls"><button class="btn btn-default btn-xs btn-edit-section"><i class="fa fa-pencil"></i></button> <button class="btn btn-danger btn-xs btn-delete-section"><i class="fa fa-trash"></i></button></div>`;
-                    
-                    const tabPane = $(`<div id="tab_${section.id}" class="tab-pane fade ${index === 0 ? 'in active' : ''}"><h4>${section.title} ${sectionControls}</h4><ul class="field-list"></ul><hr class="edit-controls">${addFieldBtn} ${quickAddBtn}</div>`).appendTo(content);
-                    const fieldList = tabPane.find('.field-list');
-                    
+                    tabPane.append(`<h4>${section.title} ${sectionControls}</h4>`);
+
+                    const fieldList = $('<ul class="field-list"></ul>').appendTo(tabPane);
                     section.fields.forEach(field => {
                         $(`<li class="field-item" data-unique-id="${field.uniqueId}"><span class="drag-handle edit-controls"><i class="fa fa-bars"></i></span><div class="field-info"><strong>${field.label}</strong> <small class="text-muted">(${field.type})</small> <span class="label ${field.visible ? 'label-blue' : 'label-default'}">${field.visible ? 'Visible' : 'Hidden'}</span> <span class="label ${field.required ? 'label-red' : 'label-default'}">${field.required ? 'Required' : 'Optional'}</span></div><div class="field-actions edit-controls"><button class="btn btn-xs btn-default btn-edit-field"><i class="fa fa-pencil"></i></button><button class="btn btn-xs btn-danger btn-delete-field"><i class="fa fa-trash"></i></button></div></li>`).appendTo(fieldList);
                     });
+
+                    const addButtons = `<div class="edit-controls" style="margin-top:15px;"><button class="btn btn-primary btn-xs btn-add-field"><i class="fa fa-plus"></i> Add Field</button> <button class="btn btn-default btn-xs btn-quick-add" style="margin-left:5px;"><i class="fa fa-bolt"></i> Quick Add PO Fields</button></div>`;
+                    tabPane.append(addButtons);
+
                     initSortable(fieldList[0]);
                 });
-                tabs.append(`<li class="add-tab edit-controls"><a id="btnAddSection"><i class="fa fa-plus"></i></a></li>`);
+                tabs.append(`<li class="add-tab edit-controls"><a id="btnAddSection" title="Add New Section"><i class="fa fa-plus"></i></a></li>`);
                 initSortable(tabs[0]);
             }
 
             function renderClientPreview() {
-                const container = $('#modal-preview-body').empty();
-                if (formConfig.instructions) { container.append(`<p class="lead">${formConfig.instructions}</p><hr>`); }
-                formConfig.sections.forEach(section => {
-                     const visibleFields = section.fields.filter(f => f.visible);
-                     if (visibleFields.length === 0) return;
-                     const panel = $(`<div class="panel panel-primary"><div class="panel-heading"><h4>${section.title}</h4></div><div class="panel-body"><div class="row"></div></div></div>`).appendTo(container);
-                     const panelBodyRow = panel.find('.panel-body .row');
-                     visibleFields.forEach(field => {
+                const modalBody = $('#modal-preview-body').empty();
+                if (formConfig.instructions) { modalBody.append(`<p class="lead">${formConfig.instructions}</p>`); }
+
+                const previewTabs = $('<ul class="nav nav-tabs"></ul>').appendTo(modalBody);
+                const previewContent = $('<div class="tab-content" style="padding-top:20px;"></div>').appendTo(modalBody);
+
+                formConfig.sections.forEach((section, index) => {
+                    const visibleFields = section.fields.filter(f => f.visible);
+                    if (visibleFields.length === 0) return;
+
+                    previewTabs.append(`<li class="${index === 0 ? 'active' : ''}"><a data-toggle="tab" href="#prev_tab_${section.id}">${section.title}</a></li>`);
+                    const tabPane = $(`<div id="prev_tab_${section.id}" class="tab-pane fade ${index === 0 ? 'in active' : ''}"><div class="row"></div></div>`).appendTo(previewContent);
+                    const panelBodyRow = tabPane.find('.row');
+
+                    visibleFields.forEach(field => {
                         const requiredClass = field.required ? 'required-field' : '';
                         let inputHtml = '';
-                        switch(field.type){
-                             case 'select': inputHtml = `<select class="form-control" disabled></select>`; break;
-                             case 'file': inputHtml = `<input type="file" class="form-control" disabled>`; break;
-                             case 'textarea': inputHtml = `<textarea class="form-control" rows="3" disabled></textarea>`; break;
-                             default: inputHtml = `<input type="${field.type}" class="form-control" disabled>`;
+                        switch (field.type) {
+                            case 'select': inputHtml = `<select class="form-control" disabled></select>`; break;
+                            case 'file': inputHtml = `<input type="file" class="form-control" disabled>`; break;
+                            case 'textarea': inputHtml = `<textarea class="form-control" rows="3" disabled></textarea>`; break;
+                            default: inputHtml = `<input type="${field.type}" class="form-control" disabled>`;
                         }
                         panelBodyRow.append(`<div class="col-sm-6"><div class="form-group"><label class="${requiredClass}">${field.label}</label>${inputHtml}</div></div>`);
-                     });
+                    });
                 });
                 $('#clientPreviewModal').modal('show');
             }
-            
+
             function initSortable(element) { if (element) new Sortable(element, { animation: 150 }); }
-            
+
             function saveConfig() {
                 const newSections = [];
-                $('#sectionTabs li:not(.add-tab) a').each(function() {
+                $('#sectionTabs li:not(.add-tab) a').each(function () {
                     const sectionId = $(this).attr('href').substring(5);
                     let section = formConfig.sections.find(s => s.id === sectionId);
                     if (!section) return;
                     const newFields = [];
-                    $(`#tab_${sectionId} .field-item`).each(function() {
+                    $(`#tab_${sectionId} .field-item`).each(function () {
                         const fieldUniqueId = $(this).data('unique-id');
                         const field = section.fields.find(f => f.uniqueId === fieldUniqueId);
                         if (field) newFields.push(field);
@@ -161,46 +321,57 @@
                 alert("Configuration saved!");
                 toggleViewMode(false);
             }
-            
+
             function loadConfig() {
                 const savedConfig = JSON.parse(localStorage.getItem(configKey));
                 if (savedConfig) {
                     formConfig = savedConfig;
                 } else {
-                    formConfig = { instructions: "Welcome. Please prepare scanned documents before starting.", sections: [ { id: generateUniqueId('sec'), title: 'Personal Information', fields: [ { uniqueId: generateUniqueId('fld'), label: 'Nationality', type: 'select', visible: true, required: true, validation: 'Filipino, American, Spanish' }, { uniqueId: generateUniqueId('fld'), label: 'Residence Address', type: 'text', visible: true, required: true, validation: '' } ] }, { id: generateUniqueId('sec'), title: 'Company Information', fields: [ { uniqueId: generateUniqueId('fld'), label: 'Passport Upload', type: 'file', visible: true, required: true, validation: 'PDF/JPG/PNG only' } ] }] };
+                    formConfig = { instructions: "Welcome. Please prepare scanned documents before starting.", sections: [{ id: generateUniqueId('sec'), title: 'Personal Information', fields: [{ uniqueId: generateUniqueId('fld'), label: 'Nationality', type: 'select', visible: true, required: true, validation: 'Filipino, American, Spanish' }, { uniqueId: generateUniqueId('fld'), label: 'Residence Address', type: 'text', visible: true, required: true, validation: '' }] }, { id: generateUniqueId('sec'), title: 'Company Information', fields: [{ uniqueId: generateUniqueId('fld'), label: 'Passport Upload', type: 'file', visible: true, required: true, validation: 'PDF/JPG/PNG only' }] }] };
                 }
             }
-            
+
+            function handleFormUpdate(rerender, callback) {
+                const activeTabId = $('#sectionTabs li.active a').attr('href');
+                callback();
+                if (rerender) renderForm(activeTabId);
+            }
+
             // --- EVENT HANDLERS ---
             $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
             $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
             $('#clientPreviewBtn').on('click', renderClientPreview);
 
             $('#sectionTabs').on('click', '#btnAddSection', () => { $('#sectionModalTitle').text('Add Section'); $('#sectionTitleInput').val(''); $('#editSectionId').val(''); $('#addEditSectionModal').modal('show'); });
-            $('#saveSectionBtn').on('click', function() {
+            $('#saveSectionBtn').on('click', function () {
                 const title = $('#sectionTitleInput').val().trim();
                 const sectionId = $('#editSectionId').val();
-                if (title) {
-                    if (sectionId) { const section = formConfig.sections.find(s => s.id === sectionId); if (section) section.title = title; }
-                    else { formConfig.sections.push({ id: generateUniqueId('sec'), title: title, fields: [] }); }
-                    renderForm();
-                }
+                handleFormUpdate(true, () => {
+                    if (title) {
+                        if (sectionId) { const section = formConfig.sections.find(s => s.id === sectionId); if (section) section.title = title; }
+                        else { formConfig.sections.push({ id: generateUniqueId('sec'), title: title, fields: [] }); }
+                    }
+                });
                 $('#addEditSectionModal').modal('hide');
             });
-            $('#sectionTabContent').on('click', '.btn-edit-section', function() {
+            $('#sectionTabContent').on('click', '.btn-edit-section', function () {
                 const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
                 $('#sectionModalTitle').text('Edit Section Title'); $('#sectionTitleInput').val(section.title); $('#editSectionId').val(section.id); $('#addEditSectionModal').modal('show');
             });
-            $('#sectionTabContent').on('click', '.btn-delete-section', function() {
-                const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
-                if (confirm('Are you sure?')) { formConfig.sections = formConfig.sections.filter(s => s.id !== sectionId); renderForm(); }
+            $('#sectionTabContent').on('click', '.btn-delete-section', function () {
+                if (confirm('Are you sure?')) {
+                    handleFormUpdate(true, () => {
+                        const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
+                        formConfig.sections = formConfig.sections.filter(s => s.id !== sectionId);
+                    });
+                }
             });
-
-            $('#sectionTabContent').on('click', '.btn-add-field', function() {
+            $('#sectionTabContent').on('click', '.btn-add-field', function () {
                 $('#formField')[0].reset(); $('#fieldSectionId').val($(this).closest('.tab-pane').attr('id').substring(4)); $('#fieldUniqueId').val('');
                 $('#fieldModalTitle').text('Add Field'); $('#addFieldModal').modal('show');
+                á
             });
-            $('#sectionTabContent').on('click', '.btn-edit-field', function() {
+            $('#sectionTabContent').on('click', '.btn-edit-field', function () {
                 const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
                 const field = section.fields.find(f => f.uniqueId === $(this).closest('.field-item').data('unique-id'));
                 if (field) {
@@ -209,46 +380,47 @@
                     $('#fldValidation').val(field.validation); $('#fieldModalTitle').text('Edit Field'); $('#addFieldModal').modal('show');
                 }
             });
-            $('#formField').on('submit', function(e) {
+            $('#formField').on('submit', function (e) {
                 e.preventDefault();
-                const section = formConfig.sections.find(s => s.id === $('#fieldSectionId').val());
-                if (!section) return;
-                const fieldData = { label: $('#fldLabel').val(), type: $('#fldType').val(), visible: $('#fldVisible').val() === 'true', required: $('#fldRequired').val() === 'true', validation: $('#fldValidation').val() };
-                const fieldUniqueId = $('#fieldUniqueId').val();
-                if (fieldUniqueId) { Object.assign(section.fields.find(f => f.uniqueId === fieldUniqueId), fieldData); }
-                else { section.fields.push({ ...fieldData, uniqueId: generateUniqueId('fld') }); }
-                renderForm();
+                handleFormUpdate(true, () => {
+                    const section = formConfig.sections.find(s => s.id === $('#fieldSectionId').val());
+                    if (!section) return;
+                    const fieldData = { label: $('#fldLabel').val(), type: $('#fldType').val(), visible: $('#fldVisible').val() === 'true', required: $('#fldRequired').val() === 'true', validation: $('#fldValidation').val() };
+                    const fieldUniqueId = $('#fieldUniqueId').val();
+                    if (fieldUniqueId) { Object.assign(section.fields.find(f => f.uniqueId === fieldUniqueId), fieldData); }
+                    else { section.fields.push({ ...fieldData, uniqueId: generateUniqueId('fld') }); }
+                });
                 $('#addFieldModal').modal('hide');
             });
-            $('#sectionTabContent').on('click', '.btn-delete-field', function() {
-                const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
-                const fieldUniqueId = $(this).closest('.field-item').data('unique-id');
-                if (section && confirm('Are you sure?')) { section.fields = section.fields.filter(f => f.uniqueId !== fieldUniqueId); renderForm(); }
+            $('#sectionTabContent').on('click', '.btn-delete-field', function () {
+                if (confirm('Are you sure?')) {
+                    handleFormUpdate(true, () => {
+                        const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
+                        const fieldUniqueId = $(this).closest('.field-item').data('unique-id');
+                        if (section) section.fields = section.fields.filter(f => f.uniqueId !== fieldUniqueId);
+                    });
+                }
             });
-            $('#sectionTabContent').on('click', '.btn-quick-add', function() {
+            $('#sectionTabContent').on('click', '.btn-quick-add', function () {
                 const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
                 const section = formConfig.sections.find(s => s.id === sectionId);
-                const existingFieldIds = section.fields.map(f => f.id);
+                const existingFieldIds = section.fields.map(f => f.id).filter(Boolean);
                 const availableFields = poFields.filter(pf => !existingFieldIds.includes(pf.id));
-                
-                let checkboxHtml = '';
-                availableFields.forEach(field => {
-                    checkboxHtml += `<div class="checkbox"><label><input type="checkbox" value="${field.id}"> ${field.label}</label></div>`;
-                });
+                let checkboxHtml = availableFields.length ? '' : '<p>No more PO fields to add.</p>';
+                availableFields.forEach(field => { checkboxHtml += `<div class="checkbox"><label><input type="checkbox" value="${field.id}"> ${field.label}</label></div>`; });
                 $('#quickAddFieldsBody').html(checkboxHtml);
                 $('#quickAddFieldsModal').data('sectionId', sectionId).modal('show');
             });
-            $('#saveQuickAddBtn').on('click', function() {
-                const sectionId = $('#quickAddFieldsModal').data('sectionId');
-                const section = formConfig.sections.find(s => s.id === sectionId);
-                $('#quickAddFieldsBody input:checked').each(function() {
-                    const fieldId = $(this).val();
-                    const fieldTemplate = poFields.find(f => f.id === fieldId);
-                    if(fieldTemplate) {
-                         section.fields.push({ ...fieldTemplate, uniqueId: generateUniqueId('fld'), visible: true, required: false, validation: '' });
-                    }
+            $('#saveQuickAddBtn').on('click', function () {
+                handleFormUpdate(true, () => {
+                    const sectionId = $('#quickAddFieldsModal').data('sectionId');
+                    const section = formConfig.sections.find(s => s.id === sectionId);
+                    $('#quickAddFieldsBody input:checked').each(function () {
+                        const fieldId = $(this).val();
+                        const fieldTemplate = poFields.find(f => f.id === fieldId);
+                        if (fieldTemplate) { section.fields.push({ ...fieldTemplate, uniqueId: generateUniqueId('fld'), visible: true, required: false, validation: '' }); }
+                    });
                 });
-                renderForm();
                 $('#quickAddFieldsModal').modal('hide');
             });
 
@@ -259,4 +431,5 @@
         });
     </script>
 </body>
+
 </html>

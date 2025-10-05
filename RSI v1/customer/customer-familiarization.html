@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <title>RSI Customer • Familiarization Video</title>
@@ -9,28 +10,17 @@
     <link href="../assets/ripple.css" rel="stylesheet" />
     <link href="page.css" rel="stylesheet" />
     <style>
-        body { padding-bottom: 80px; }
-        .sticky-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #f5f5f5;
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-            z-index: 1000;
+        body {
+            padding-bottom: 80px;
         }
-        .footer-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
+
         .preview-container {
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 4px;
             padding: 15px;
         }
+
         .preview-container video {
             max-width: 100%;
             border-radius: 4px;
@@ -38,6 +28,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid dashboard-layout">
         <div class="row">
@@ -57,31 +48,34 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Upload/Replace Video</label>
-                                        <input id="videoFile" type="file" class="form-control" accept="video/mp4,video/webm">
+                                        <input id="videoFile" type="file" class="form-control"
+                                            accept="video/mp4,video/webm">
                                         <p class="help-block" id="currentFileName"></p>
                                     </div>
                                     <div class="form-group">
                                         <label>Instructions for Crew</label>
                                         <textarea id="videoInstructions" class="form-control" rows="5"
-                                        placeholder="Provide instructions about watching the familiarization video."></textarea>
+                                            placeholder="Provide instructions about watching the familiarization video."></textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label>Settings</label>
                                     <div class="checkbox">
-                                        <label><input type="checkbox" id="showVideo"> Show Familiarization Video page in crew portal</label>
+                                        <label><input type="checkbox" id="showVideo"> Show Familiarization Video page in
+                                            crew portal</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div id="preview-view" style="display:none;">
                             <h4>Preview</h4>
                             <div class="preview-container">
                                 <video id="videoPreview" controls muted playsinline></video>
                                 <hr>
                                 <strong>Instructions:</strong>
-                                <blockquote id="instructionsPreview" style="font-size:14px; margin-top:5px;"></blockquote>
+                                <blockquote id="instructionsPreview" style="font-size:14px; margin-top:5px;">
+                                </blockquote>
                             </div>
                         </div>
                     </div>
@@ -114,11 +108,11 @@
                 if (isEditing) {
                     $('#edit-view').show();
                     $('#preview-view').hide();
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block"><i class="fa fa-save"></i> Save Changes</button>');
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
                 } else {
                     $('#edit-view').hide();
                     $('#preview-view').show();
-                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit Configuration</button>');
+                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
                 }
             }
 
@@ -129,7 +123,7 @@
                     videoUrl: tempVideoDataUrl || (JSON.parse(localStorage.getItem(configKey)) || {}).videoUrl,
                     fileName: $("#videoFile")[0].files[0]?.name || (JSON.parse(localStorage.getItem(configKey)) || {}).fileName
                 };
-                
+
                 localStorage.setItem(configKey, JSON.stringify(config));
                 showAlert("Familiarization configuration saved.", "success");
                 loadConfig(); // Reload to update preview
@@ -141,11 +135,11 @@
                 if (savedConfig) {
                     $("#videoInstructions").val(savedConfig.instructions);
                     $("#showVideo").prop("checked", savedConfig.show);
-                    
+
                     // Update Previews
                     $('#instructionsPreview').html(savedConfig.instructions.replace(/\n/g, '<br>') || "<em>No instructions provided.</em>");
                     $('#videoPreview').attr('src', savedConfig.videoUrl || "");
-                    
+
                     if (savedConfig.fileName) {
                         $('#currentFileName').text(`Current file: ${savedConfig.fileName}`);
                     }
@@ -157,7 +151,7 @@
                     return false;
                 }
             }
-            
+
             // Handle new video file selection
             $("#videoFile").on("change", function () {
                 const file = this.files[0];
@@ -179,7 +173,7 @@
             // Initial Load
             const hasData = loadConfig();
             toggleViewMode(!hasData);
-            
+
             function showAlert(msg, type = 'success') {
                 const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
                 $('body').append(alert);
@@ -188,4 +182,5 @@
         });
     </script>
 </body>
+
 </html>

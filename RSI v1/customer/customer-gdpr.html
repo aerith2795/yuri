@@ -11,21 +11,7 @@
     <link href="page.css" rel="stylesheet" />
     <style>
         body { padding-bottom: 80px; }
-        .sticky-footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #f5f5f5;
-            border-top: 1px solid #ddd;
-            padding: 10px 0;
-            z-index: 1000;
-        }
-        .footer-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
+        
         /* Style for Summernote when disabled (Preview Mode) */
         .note-editor.note-frame.panel-disabled {
             background-color: #fff;
@@ -129,9 +115,9 @@
                 // Added #showGdpr to the list of elements to be toggled
                 $('#gdprFile, #gdprInstructions, #showGdpr, #requireAgree, #allowDeletion').prop('disabled', !isEditing);
                 if (isEditing) {
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block"><i class="fa fa-save"></i> Save GDPR Configuration</button>');
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
                 } else {
-                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit Configuration</button>');
+                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
                 }
             }
 
