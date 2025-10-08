@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Customer • Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+  <style>
+    .stat-card {
+      text-align: center;
+      padding: 15px;
+      border-right: 1px solid #f0f0f0;
+    }
+
+    .stat-card:last-child {
+      border-right: none;
+    }
+
+    .stat-card .stat-number {
+      font-size: 2.5em;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    .stat-card .stat-label {
+      font-size: 1.1em;
+      color: var(--r-gray);
+    }
+
+    .list-group-item .badge {
+      background-color: var(--r-blue);
+    }
+
+    .list-group-item-action:hover {
+      background-color: #f9f9f9;
+    }
+
+    .config-status .label {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
+    /* --- New Timeline UI for Activity Log --- */
+    .timeline {
+      list-style: none;
+      padding: 10px 0 10px;
+      position: relative;
+    }
+
+    .timeline:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20px;
+      width: 2px;
+      background-color: #f0f0f0;
+    }
+
+    .timeline-item {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .timeline-item:before,
+    .timeline-item:after {
+      content: " ";
+      display: table;
+    }
+
+    .timeline-item:after {
+      clear: both;
+    }
+
+    .timeline-icon {
+      position: absolute;
+      left: 13px;
+      top: 5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--r-blue);
+      color: white;
+      text-align: center;
+      line-height: 16px;
+      font-size: 8px;
+    }
+
+    .timeline-content {
+      margin-left: 50px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      padding: 10px 15px;
+    }
+
+    .timeline-content .action {
+      font-weight: 500;
+    }
+
+    .timeline-content .time {
+      color: #777;
+      font-size: 12px;
+      cursor: help;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Customer Dashboard</h2>
+          <p>Here is a quick overview of your crew management and portal configuration.</p>
+        </div>
+
+        <div class="row">
+          <div class="col-md-7">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-users"></i> Crew Overview</div>
+              <div class="panel-body">
+                <div class="row">
+                  <div class="col-sm-4 stat-card">
+                    <div id="stat-total-crew" class="stat-number text-blue">0</div>
+                    <div class="stat-label">Total Crew</div>
+                  </div>
+                  <div class="col-sm-4 stat-card">
+                    <div id="stat-new-applicants" class="stat-number text-orange">0</div>
+                    <div class="stat-label">New Applicants</div>
+                  </div>
+                  <div class="col-sm-4 stat-card">
+                    <div id="stat-deletion-requests" class="stat-number text-red">0</div>
+                    <div class="stat-label">Deletion Requests</div>
+                  </div>
+                </div>
+                <hr>
+                <h4><i class="fa fa-inbox"></i> Awaiting Action</h4>
+                <div class="list-group" id="crew-action-list"></div>
+              </div>
+              <div class="panel-footer text-right"><a href="customer-manage.html" class="btn btn-primary btn-sm">Manage All
+                  Crew <i class="fa fa-arrow-right"></i></a></div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-history"></i> Recent Activity</div>
+              <div class="panel-body">
+                <ul class="timeline" id="activity-log-list">
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+
+          <div class="col-md-5">
+             <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-cogs"></i> Portal Setup Status</div>
+              <ul class="list-group config-status" id="config-status-list"></ul>
+              <div class="panel-footer text-right"><a href="customer-settings.html" class="btn btn-default btn-sm">Configure
+                  Other Settings</a></div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-anchor"></i> Next Embarkation</div>
+              <div class="panel-body" id="embarkation-summary"></div>
+              <div class="panel-footer text-right"><a href="customer-vessel-info.html" class="btn btn-default btn-sm">Manage
+                  Vessel Info</a></div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-hdd-o"></i> Certificate Storage Quota</div>
+              <div class="panel-body">
+                <h5>82% of 500 MB Used</h5>
+                <div class="progress" style="margin-bottom:0;">
+                  <div class="progress-bar progress-bar-info" style="width:82%" title="410 MB Used"></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    $(function () {
+      // --- INITIALIZATION & MOCK DATA ---
+     fetch('customer-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="customer-dashboard"]');
+          if (activeLink) activeLink.classList.add('active');
+        });
+      const crewData = [{ id: 1, firstName: 'Anya', lastName: 'Bautista', status: 'blue', rank: 'Deck Cadet' }, { id: 2, firstName: 'Liam', lastName: 'Smith', status: 'green', rank: 'Chief Officer' }, { id: 3, firstName: 'Isabella', lastName: 'Garcia', status: 'orange', rank: '2nd Engineer' }, { id: 4, firstName: 'Carlos', lastName: 'Dela Cruz', status: 'red', rank: 'Able Seaman' }, { id: 8, firstName: 'Chloe', lastName: 'Nguyen', status: 'blue', rank: 'Stewardess' }];
+      const customerActivityLog = [
+        { icon: 'fa-user-plus', action: "Accepted applicant <strong>Anya Bautista</strong>.", timestamp: new Date(Date.now() - 3 * 60000) }, // 3 minutes ago
+        { icon: 'fa-shield', action: "Updated <strong>GDPR Policy</strong> content.", timestamp: new Date(Date.now() - 2 * 3600000) }, // 2 hours ago
+        { icon: 'fa-ship', action: "Added 2 new blocks to <strong>Visual Journey</strong>.", timestamp: new Date(Date.now() - 24 * 3600000) }, // 1 day ago
+        { icon: 'fa-paper-plane', action: "Invited 3 new crew members.", timestamp: new Date(Date.now() - 3 * 24 * 3600000) }, // 3 days ago
+      ];
+
+      // --- RENDER FUNCTIONS ---
+      function renderCrewSummary() {
+        $('#stat-total-crew').text(crewData.length);
+        const newApplicants = crewData.filter(c => c.status === 'blue');
+        $('#stat-new-applicants').text(newApplicants.length);
+        $('#stat-deletion-requests').text(crewData.filter(c => c.status === 'red').length);
+        const actionList = $('#crew-action-list').empty();
+        if (newApplicants.length > 0) {
+          newApplicants.slice(0, 3).forEach(crew => { actionList.append(`<a href="customer-manage.html" class="list-group-item list-group-item-action"><strong>${crew.firstName} ${crew.lastName}</strong> <small class="text-muted">- ${crew.rank}</small><span class="label label-blue pull-right">New Applicant</span></a>`); });
+        } else {
+          actionList.html('<p class="text-muted text-center" style="padding: 15px;">No new applicants requiring action.</p>');
+        }
+      }
+
+      function renderEmbarkationSummary() {
+        const vesselData = JSON.parse(localStorage.getItem("vesselPageData"));
+        if (vesselData && vesselData.embarkation && vesselData.embarkation.date) {
+          $('#embarkation-summary').html(`<p><strong>Date:</strong> ${vesselData.embarkation.date}</p><p><strong>Time:</strong> ${vesselData.embarkation.time}</p><p><strong>Location:</strong> ${vesselData.embarkation.location}</p>`);
+        } else {
+          $('#embarkation-summary').html('<p class="text-muted">Next embarkation schedule is not set.</p>');
+        }
+      }
+
+      function renderActivityLog() {
+        const logList = $('#activity-log-list').empty();
+        if (customerActivityLog.length > 0) {
+          customerActivityLog.forEach(log => {
+            const absoluteTime = log.timestamp.toLocaleString();
+            const relativeTime = timeAgo(log.timestamp);
+            logList.append(`
+                            <li class="timeline-item">
+                                <div class="timeline-icon"><i class="fa ${log.icon}"></i></div>
+                                <div class="timeline-content">
+                                    <span class="action">${log.action}</span>
+                                    <span class="time pull-right" data-toggle="tooltip" title="${absoluteTime}">${relativeTime}</span>
+                                </div>
+                            </li>`);
+          });
+        } else {
+          logList.html('<li class="text-muted" style="padding:15px;">No recent activity.</li>');
+        }
+        $('[data-toggle="tooltip"]').tooltip(); // Re-initialize tooltips
+      }
+
+      function renderConfigStatus() {
+        const statusList = $('#config-status-list').empty();
+        const configs = { 'Visual Journey': { key: 'vesselPageData', check: d => d.journey && d.journey.length > 0, link: 'customer-vessel-info.html', value: d => `${d.journey.length} Blocks` }, 'Registration Form': { key: 'registrationFormConfig_v4', check: d => d.sections && d.sections.length > 0, link: 'customer-registration.html', value: () => 'Configured' }, 'GDPR Policy': { key: 'gdprConfig', check: d => d.policyContent, link: 'customer-gdpr.html', value: () => 'Configured' }, 'Certificates': { key: 'certificatesConfig', check: d => d.certificates && d.certificates.length > 0, link: 'customer-certificates.html', value: d => `${d.certificates.length} Defined` }, 'Familiarization Video': { key: 'familiarizationConfig', check: d => d.videoUrl, link: 'customer-familiarization.html', value: () => 'Video Uploaded' } };
+        for (const [name, config] of Object.entries(configs)) {
+          const data = JSON.parse(localStorage.getItem(config.key));
+          const isConfigured = data && config.check(data);
+          const statusLabel = isConfigured ? `<span class="label label-green">OK</span>` : `<span class="label label-orange">Not Set</span>`;
+          const valueText = isConfigured ? `<span class="badge">${config.value(data)}</span>` : '';
+          statusList.append(`<li class="list-group-item"><a href="${config.link}" style="text-decoration:none; color:inherit;">${name} ${valueText} ${statusLabel}</a></li>`);
+        }
+      }
+
+      function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes ago";
+        return "Just now";
+      }
+
+      // --- INITIAL LOAD ---
+      renderCrewSummary();
+      renderEmbarkationSummary();
+      renderConfigStatus();
+      renderActivityLog();
+    });
+  </script>
+</body>
+
+</html>

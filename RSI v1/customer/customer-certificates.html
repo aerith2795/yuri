@@ -14,23 +14,7 @@
       padding-bottom: 80px;
     }
 
-    .sticky-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background-color: #f5f5f5;
-      border-top: 1px solid #ddd;
-      padding: 10px 0;
-      z-index: 1000;
-    }
-
-    .footer-container {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 15px;
-    }
-
+    
     .cert-description {
       color: #777;
       font-size: 12px;
@@ -188,7 +172,12 @@
   <script>
     $(function () {
       // --- INITIALIZATION & DATA ---
-      $('#sidebar-placeholder').html('<div class="well">Customer Sidebar</div>');
+        // load sidebar
+      fetch('customer-sidebar.html').then(r => r.text()).then(html => {
+        $('#sidebar-placeholder').html(html);
+        const active = $('#sidebar-placeholder').find('[data-page="customer-certificates"]');
+        if (active.length) active.addClass('active');
+      });
       $('[data-toggle="tooltip"]').tooltip();
 
       const configKey = "certificatesConfig";
@@ -201,9 +190,9 @@
         $('#btnAddCert, .edit-cert, .delete-cert').prop('disabled', !isEditing); // Disable/enable buttons
 
         if (isEditing) {
-          $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block"><i class="fa fa-save"></i> Save Changes</button>');
+          $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
         } else {
-          $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit Configuration</button>');
+          $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
         }
       }
 

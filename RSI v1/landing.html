@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>RSI Portal Demo</title>
@@ -10,119 +11,338 @@
   <link href="assets/ripple.css" rel="stylesheet">
 
   <style>
+    :root {
+      --r-dark: #0b0f24;
+      --r-gray: #5d7fac;
+      --r-blue: #3f91ff;
+      --r-red: #e32f31;
+      --r-orange: #ff783f;
+      --r-light: #eff4fa;
+      --r-green: #2d8548;
+    }
+
     body {
       font-family: 'Overpass', sans-serif;
-      background: var(--r-light);
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
       color: var(--r-dark);
       margin: 0;
       padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .demo-banner {
+      background: linear-gradient(135deg, var(--r-orange) 0%, var(--r-red) 100%);
+      color: white;
+      width: 100%;
+      padding: 12px 0;
       text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .demo-banner i {
+      margin-right: 8px;
+    }
+
+    .header-container {
+      text-align: center;
+      padding: 30px 20px 20px;
+      max-width: 800px;
     }
 
     h1 {
-      margin: 40px 0 20px;
+      margin: 0 0 10px;
       color: var(--r-dark);
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, var(--r-blue) 0%, var(--r-dark) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--r-gray);
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .demo-note {
+      background: rgba(255, 120, 63, 0.1);
+      border-left: 4px solid var(--r-orange);
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px auto;
+      max-width: 600px;
+      text-align: left;
+    }
+
+    .demo-note h3 {
+      margin: 0 0 8px;
+      color: var(--r-orange);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .demo-note h3 i {
+      margin-right: 8px;
+    }
+
+    .demo-note p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--r-dark);
     }
 
     .portal-container {
       display: flex;
-      flex-wrap: wrap-reverse;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 20px;
+      gap: 25px;
       padding: 20px;
+      max-width: 1200px;
     }
 
     .portal-card {
       background: #fff;
-      border: 1px solid var(--r-gray);
-      border-radius: 16px;
-      padding: 30px 20px;
-      width: 260px;
+      border-radius: 20px;
+      padding: 35px 25px;
+      width: 280px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      transition: all 0.4s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--r-blue), var(--r-green));
     }
 
     .portal-card:hover {
-      background: var(--r-light);
-      transform: translateY(-5px);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
     }
 
     .portal-card h2 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: var(--r-blue);
+      font-size: 1.5rem;
+      margin: 20px 0 12px;
+      color: var(--r-dark);
+      font-weight: 600;
     }
 
     .portal-card p {
-      font-size: 14px;
+      font-size: 0.95rem;
       color: var(--r-gray);
       margin: 0;
+      line-height: 1.5;
     }
 
     .portal-card i {
-      font-size: 36px;
-      margin-bottom: 10px;
+      font-size: 42px;
+      margin-bottom: 15px;
       display: block;
-      color: var(--r-blue);
+      background: linear-gradient(135deg, var(--r-blue) 0%, var(--r-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: transform 0.3s ease;
     }
 
-    .reset-btn {
+    .portal-card:hover i {
+      transform: scale(1.1);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--r-blue);
+      color: white;
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .login-card {
+      border-top: 4px solid var(--r-gray);
+    }
+
+    .customer-card {
+      border-top: 4px solid var(--r-blue);
+    }
+
+    .crew-reg-card {
+      border-top: 4px solid var(--r-green);
+    }
+
+    .crew-portal-card {
+      border-top: 4px solid var(--r-orange);
+    }
+
+    .admin-card {
+      border-top: 4px solid var(--r-red);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
       margin: 30px auto;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
       padding: 12px 24px;
       border: none;
       border-radius: 30px;
-      font-size: 14px;
+      font-size: 0.9rem;
       font-weight: 600;
-      color: #fff;
-      background: var(--r-red);
       cursor: pointer;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reset-btn {
+      background: var(--r-red);
+      color: white;
     }
 
     .reset-btn:hover {
       background: #c62828;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(227, 47, 49, 0.3);
+    }
+
+    .docs-btn {
+      background: var(--r-light);
+      color: var(--r-blue);
+      border: 1px solid var(--r-blue);
+    }
+
+    .docs-btn:hover {
+      background: var(--r-blue);
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(63, 145, 255, 0.3);
+    }
+
+    .footer {
+      margin-top: 40px;
+      padding: 20px;
+      color: var(--r-gray);
+      font-size: 0.85rem;
+      text-align: center;
+      border-top: 1px solid rgba(93, 127, 172, 0.2);
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .portal-container {
+        gap: 20px;
+      }
+
+      .portal-card {
+        width: 100%;
+        max-width: 320px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
+
 <body>
-  <h1>Ripple Smart Induction Demo Portal</h1>
+  <div class="demo-banner">
+    <i class="fa fa-info-circle"></i> DEMO PORTAL - This interface is for demonstration purposes only
+  </div>
 
-  <div class="portal-container">
+  <div class="header-container">
+    <h1>Ripple Smart Induction v1.0</h1>
+    <p class="subtitle">Digital Crew Management Platform</p>
 
-    <div class="portal-card" onclick="window.open('customer/customer-dashboard.html')">
-      <i class="fa fa-ship"></i>
-      <h2>Customer Portal</h2>
-      <p>Configure crew requirements</p>
-    </div>
-
-    <div class="portal-card" onclick="window.open('crew/registration.html')">
-      <i class="fa fa-users"></i>
-      <h2>Crew Registration</h2>
-      <p>Test registration flow</p>
-    </div>
-
-    <div class="portal-card" onclick="window.open('crew/crew-dashboard.html')">
-      <i class="fa fa-users"></i>
-      <h2>Crew Portal</h2>
-      <p>Test Crew Dashboard</p>
-    </div>
-
-     <div class="portal-card" onclick="window.open('admin/admin-dashboard.html')">
-      <i class="fa fa-cogs"></i>
-      <h2>Admin Portal</h2>
-      <p>Manage vessels and licenses</p>
+    <div class="demo-note">
+      <h3><i class="fa fa-flask"></i> Demo Environment</h3>
+      <p>This portal showcases the RSI platform capabilities. All data is temporary and will not persist. This interface
+        will be replaced with proper authentication in the production environment.</p>
     </div>
   </div>
 
-  <!-- <button class="reset-btn" onclick="resetDemo()">
-    <i class="fa fa-refresh"></i> Reset All Data
-  </button> -->
+  <div class="portal-container">
+    
+    <div class="portal-card login-card" onclick="window.open('index.html', '_self')">
+      <span class="card-badge">Auth</span>
+      <i class="fa fa-sign-in"></i>
+      <h2>Login Portal</h2>
+      <p>Experience the authentication flow and login process</p>
+    </div>
 
-  <!-- <script>
+     <div class="portal-card admin-card" onclick="window.open('admin/admin-dashboard.html')">
+      <span class="card-badge">Admin</span>
+      <i class="fa fa-cogs"></i>
+      <h2>Admin Portal</h2>
+      <p>Manage system settings, vessels, and user licenses</p>
+    </div>
+
+     <div class="portal-card customer-card" onclick="window.open('customer/customer-dashboard.html')">
+      <span class="card-badge">Vessel Mgmt</span>
+      <i class="fa fa-ship"></i>
+      <h2>Customer Portal</h2>
+      <p>Configure crew requirements and manage vessel operations</p>
+    </div>
+
+   
+
+
+    <div class="portal-card crew-reg-card" onclick="window.open('crew/registration.html')">
+      <span class="card-badge">Onboarding</span>
+      <i class="fa fa-user-plus"></i>
+      <h2>Crew Registration</h2>
+      <p>Test the complete crew registration and onboarding flow</p>
+    </div>
+
+    <div class="portal-card crew-portal-card" onclick="window.open('crew/crew-dashboard.html')">
+      <span class="card-badge">Crew Portal</span>
+      <i class="fa fa-users"></i>
+      <h2>Crew Dashboard</h2>
+      <p>Experience the crew portal with task management</p>
+    </div>
+
+    
+
+  </div>
+
+  <div class="action-buttons">
+    <button class="action-btn reset-btn" onclick="resetDemo()">
+      <i class="fa fa-refresh"></i> Reset Demo Data
+    </button>
+
+    <button class="action-btn docs-btn" onclick="openDocs()">
+      <i class="fa fa-book"></i> View Documentation
+    </button>
+  </div>
+
+  <div class="footer">
+    <p>Ripple Smart Induction &copy; 2023 | Demo Environment v2.1</p>
+  </div>
+
+  <script>
     function setDefaultData() {
       // Sample crew list
       const crew = [
@@ -138,18 +358,49 @@
         registrationFields: ["passport", "seamansBook", "medicalCert"]
       };
       localStorage.setItem("vesselConfig", JSON.stringify(vesselConfig));
+
+      // Demo settings
+      const demoSettings = {
+        lastReset: new Date().toISOString(),
+        demoMode: true
+      };
+      localStorage.setItem("demoSettings", JSON.stringify(demoSettings));
     }
 
     function resetDemo() {
       localStorage.clear();
       setDefaultData();
-      alert("Demo data has been reset and reloaded!");
+      alert("Demo data has been reset! The page will now reload.");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    }
+
+    function openDocs() {
+      alert("Documentation would open in a real implementation.");
+      // In a real app: window.open('https://docs.ripple-smart-induction.com', '_blank');
     }
 
     // Initialize demo data if not set
     if (!localStorage.getItem("crewList")) {
       setDefaultData();
     }
-  </script> -->
+
+    // Add animation to cards on load
+    document.addEventListener('DOMContentLoaded', function () {
+      const cards = document.querySelectorAll('.portal-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, 100 * index);
+      });
+    });
+  </script>
 </body>
+
 </html>

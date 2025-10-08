@@ -5,193 +5,184 @@
   <meta charset="UTF-8">
   <title>RSI Admin • Welcome Text</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Libs -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-
-  <!-- Ripple + Admin CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
   <link href="../assets/ripple.css" rel="stylesheet">
   <link href="admin-page.css" rel="stylesheet">
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
+
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #f5f5f5;
+      border-top: 1px solid #ddd;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    .footer-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    .note-editor.note-frame.panel-disabled {
+      background-color: #eee;
+    }
+
+    blockquote.live-preview {
+      font-size: 14px;
+      padding: 10px 15px;
+      background-color: #f9f9f9;
+      border-left: 5px solid #eee;
+      margin: 0 0 15px 0;
+      min-height: 50px;
+    }
+  </style>
 </head>
 
 <body>
-  <button type="button" id="sidebar-toggle" class="mobile-toggle">
-    <i class="fa fa-bars"></i>
-  </button>
   <div class="container-fluid dashboard-layout">
     <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
-
-      <!-- Main -->
+      <div id="sidebar-placeholder"></div>
       <div class="col-sm-9 col-md-10 main-content">
         <div class="page-header">
-          <h2>Welcome Text</h2>
-          <p>Set a default Welcome Text in the Client Portal. This message can also be set in the Customer
-            Portal.</p>
+          <h2>Welcome Text Configuration</h2>
+          <p>Set a default Welcome Text for the Crew Portal. This can be overridden by Customer Admins.</p>
         </div>
 
-        <!-- Welcome text (shown to Customer page for viewing only) -->
         <div class="panel">
-          <div class="panel-heading">
-            <i class="fa fa-home"></i>Welcome Text
-          </div>
+          <div class="panel-heading"><i class="fa fa-pencil-square-o"></i> Welcome Text Editor</div>
           <div class="panel-body">
-
-            <!-- Live Preview -->
-            <div class="form-group">
-              <label>Preview (displayed in Client Portal)</label>
-              <blockquote id="welcomePreview" class="blockquote-note" style="margin-top:0;">
-                <em>The welcome text will appear here…</em>
-              </blockquote>
-            </div>
-            <hr />
-
-            <!-- Target Vessel -->
-            <div class="form-group">
+            <label>Live Preview:</label>
+            <blockquote id="welcomePreview" class="live-preview"></blockquote>
+            <hr/>
+             <div class="form-group">
               <label for="targetVessel">Target Vessel</label>
-              <select id="targetVessel" class="form-control" style="width:100%">
-                <option value="all" selected>All Vessels (Default)</option>
+              <select id="targetVessel" class="form-control" style="width:100%" disabled>
+                <option value="all">All Vessels (Default)</option>
                 <option value="v1">MV Ocean Star</option>
                 <option value="v2">MV Horizon</option>
                 <option value="v3">MV Explorer</option>
               </select>
-              <small class="help-block">
-                Choose a vessel to set a custom message, or leave <b>All Vessels</b> for the default.
-              </small>
             </div>
-
-            <!-- Textarea -->
             <div class="form-group">
-              <label for="welcomeText">Edit Welcome Text</label>
-              <textarea id="welcomeText" class="form-control" rows="4"
-                placeholder="Write the welcome text for the selected vessel or for all vessels..."></textarea>
-              <p class="help-block" id="fallbackNote" style="display:none;">
-                No custom message for this vessel — the default text will be used.
-              </p>
+              <label for="welcomeText">Editor</label>
+              <textarea id="welcomeText" class="form-control"></textarea>
+              <p class="help-block">Use placeholders <code>{User}</code> and <code>{Vessel}</code> which will be
+                auto-filled.</p>
             </div>
-
-            <button class="btn btn-primary" id="saveWelcome">
-              <i class="fa fa-save"></i> Save Welcome Text
-            </button>
-
+           
           </div>
         </div>
 
-
-      </div><!-- /main -->
+      </div>
     </div>
   </div>
 
+  <div class="sticky-footer">
+    <div class="footer-container" id="footer-btn-container"></div>
+  </div>
 
-  <!-- JS -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script>
     $(function () {
-      $('#sidebar-toggle').on('click', function () {
-        $('.sidebar').toggleClass('active');
-      });
-
+      // --- INITIALIZATION ---
       fetch('admin-sidebar.html')
         .then(response => response.text())
         .then(data => {
           const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
           sidebarPlaceholder.innerHTML = data;
-
-          // Script to set the active state after the sidebar is loaded
           const currentPage = 'admin-settings';
           const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-          if (activeLink) {
-            activeLink.classList.add('active');
-          }
+          if (activeLink) activeLink.classList.add('active');
         })
         .catch(error => console.error('Error fetching sidebar:', error));
 
-      $('#saveWelcome').on('click', () => alert('Welcome text saved (demo).'));
-      $('#saveFinal').on('click', () => alert('Final message & checkbox saved (demo).'));
-
-      let editRow = null;
-      $('#formUser').on('submit', function (e) {
-        e.preventDefault();
-        const idx = $('#userIndex').val();
-        const name = $('#userName').val(), email = $('#userEmail').val(), role = $('#userRole').val();
-        const row = `<tr>
-          <td>${name}</td><td>${email}</td>
-          <td><span class="label ${role === 'Super Admin' ? 'label-blue' : (role === 'Editor' ? 'label-gray' : 'label-light')}">${role}</span></td>
-          <td>
-            <button class="btn btn-xs btn-default edit-user"><i class="fa fa-pencil"></i></button>
-            <button class="btn btn-xs btn-danger del-user"><i class="fa fa-trash"></i></button>
-          </td>
-        </tr>`;
-        if (idx === '') $('#tblUsers tbody').append(row);
-        else $('#tblUsers tbody tr').eq(parseInt(idx, 10)).replaceWith(row);
-        $('#modalUser').modal('hide');
-        this.reset();
-        $('#userIndex').val('');
+      $('#targetVessel').select2();
+      $('#welcomeText').summernote({
+        height: 150,
+        toolbar: [
+          ['style', ['style']], ['font', ['bold', 'italic', 'underline']],
+          ['para', ['ul', 'ol', 'paragraph']], ['view', ['codeview']]
+        ],
+        callbacks: {
+          onKeyup: function () { renderPreview(); }
+        }
       });
 
-      $(document).on('click', '.edit-user', function () {
-        editRow = $(this).closest('tr');
-        const i = editRow.index();
-        $('#userIndex').val(i);
-        $('#userName').val(editRow.children().eq(0).text().trim());
-        $('#userEmail').val(editRow.children().eq(1).text().trim());
-        $('#userRole').val(editRow.find('.label').text().trim());
-        $('#modalUser').modal('show');
-      });
+      const configKey = "adminWelcomeTexts";
+      let welcomeTexts = {}; // To store text for 'all' and specific vessels
 
-      $(document).on('click', '.del-user', function () {
-        if (confirm('Remove this admin user?')) $(this).closest('tr').remove();
-      });
-    });
-  </script>
-  <script>
-    $(function () {
-      $('#targetVessel').select2({ placeholder: 'Select Vessel', minimumResultsForSearch: 5 });
-
-      const welcomeTexts = {
-        all: 'Hi, {User}! Welcome to {Vessel} Smart Induction. \nYour registration is complete. To begin your journey, please provide your embarkation details and finish the onboarding process'
-      };
-
-      function renderPreview() {
-        const txt = $('#welcomeText').val().trim();
-        $('#welcomePreview').html(
-          txt ? txt.replace(/\n/g, '<br>') : '<em>The welcome text will appear here…</em>'
-        );
+      // --- CORE FUNCTIONS ---
+      function toggleViewMode(isEditing) {
+        $('#welcomeText').summernote(isEditing ? 'enable' : 'disable');
+        $('#targetVessel').prop('disabled', !isEditing);
+        if (isEditing) {
+          $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block"><i class="fa fa-save"></i> Save Welcome Text</button>');
+        } else {
+          $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block"><i class="fa fa-pencil"></i> Edit</button>');
+        }
       }
 
-      function loadText(vessel) {
-        const txt = welcomeTexts[vessel];
-        $('#welcomeText').val(txt || '');
-        $('#fallbackNote').toggle(!txt && vessel !== 'all');
+      function saveConfig() {
+        const selectedVessel = $('#targetVessel').val();
+        welcomeTexts[selectedVessel] = $('#welcomeText').summernote('code');
+        localStorage.setItem(configKey, JSON.stringify(welcomeTexts));
+        alert('Welcome Text saved!');
+        toggleViewMode(false);
+      }
+
+      function loadConfig() {
+        const savedTexts = JSON.parse(localStorage.getItem(configKey));
+        if (savedTexts) {
+          welcomeTexts = savedTexts;
+        } else {
+          // Default text for 'all'
+          welcomeTexts = {
+            all: '<h1>Hi, {User}!</h1><p>Welcome to <b>{Vessel}</b> Smart Induction.</p>This is your central hub for vessel information and onboarding tasks</p>'
+          };
+        }
+        // Load text for the currently selected vessel
+        const selectedVessel = $('#targetVessel').val();
+        loadTextForVessel(selectedVessel);
+        return !!savedTexts;
+      }
+
+      function renderPreview() {
+        const content = $('#welcomeText').summernote('code');
+        $('#welcomePreview').html(content || '<p class="text-muted"><em>Preview will appear here...</em></p>');
+      }
+
+      function loadTextForVessel(vesselId) {
+        // If a specific vessel has no text, fall back to the 'all' text
+        const content = welcomeTexts[vesselId] || welcomeTexts['all'] || '';
+        $('#welcomeText').summernote('code', content);
         renderPreview();
       }
 
+      // --- EVENT HANDLERS ---
+      $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
+      $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
       $('#targetVessel').on('change', function () {
-        loadText(this.value);
+        loadTextForVessel(this.value);
       });
 
-      $('#welcomeText').on('input', renderPreview);
-
-      $('#saveWelcome').on('click', function () {
-        const vessel = $('#targetVessel').val();
-        welcomeTexts[vessel] = $('#welcomeText').val().trim();
-        alert('Welcome text saved for ' + (vessel === 'all' ? 'All Vessels' : vessel) + ' (demo).');
-        loadText(vessel);
-      });
-
-      // Init
-      loadText($('#targetVessel').val());
+      // --- INITIAL LOAD ---
+      const hasData = loadConfig();
+      toggleViewMode(!hasData);
     });
-
   </script>
-
-
-
 </body>
 
 </html>

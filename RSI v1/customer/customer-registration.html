@@ -14,7 +14,6 @@
             padding-bottom: 80px;
         }
 
-
         .nav-tabs>li>a {
             cursor: pointer;
         }
@@ -103,16 +102,8 @@
             </div>
         </div>
     </div>
-<!-- 
-    <div class="sticky-footer">
-        <div class="footer-container clearfix">
-            <button id="clientPreviewBtn" class="btn btn-info pull-left btn-block btn-sm"><i class="fa fa-eye"></i> Client
-                Preview</button>
-            <div class="pull-right" id="footer-btn-container" style="width: 200px;"></div>
-        </div>
-    </div> -->
 
-      <div class="sticky-footer">
+    <div class="sticky-footer">
     <div class="footer-container">
       <div class="row">
         <div class="col-xs-6">
@@ -194,7 +185,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Quick Add PO Fields</h4>
+                    <h4 class="modal-title">Quick Add Fields</h4>
                 </div>
                 <div class="modal-body" id="quickAddFieldsBody"></div>
                 <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
@@ -210,22 +201,15 @@
         $(function () {
             // --- INITIALIZATION & DATA ---
             fetch('customer-sidebar.html')
-                .then(response => response.text())
-                .then(data => {
-                    const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
-                    sidebarPlaceholder.innerHTML = data;
-
-                    // Script to set the active state after the sidebar is loaded
-                    const currentPage = 'customer-registration';
-                    const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-                    if (activeLink) {
-                        activeLink.classList.add('active');
-                    }
-                })
-                .catch(error => console.error('Error fetching sidebar:', error));
+                .then(res => res.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    $('[data-page="customer-registration"]').addClass('active');
+                });
             const configKey = "registrationFormConfig_v4";
             let formConfig = {};
             const poFields = [{ id: 'pob', label: 'Place of Birth', type: 'text' }, { id: 'nationality', label: 'Nationality', type: 'select' }, { id: 'phone', label: 'Phone', type: 'text' }, { id: 'mobile', label: 'Mobile', type: 'text' }, { id: 'address', label: 'Residence Address', type: 'text' }, { id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text' }, { id: 'passport', label: 'Passport Upload', type: 'file' }, { id: 'nok_rel', label: 'NOK Relationship', type: 'select' }, { id: 'nok_fname', label: 'NOK First Name', type: 'text' }, { id: 'nok_lname', label: 'NOK Surname', type: 'text' }, { id: 'nok_address', label: 'NOK Address', type: 'text' }, { id: 'nok_residence', label: 'NOK Residence', type: 'select' }, { id: 'nok_phone', label: 'NOK Phone', type: 'text' }, { id: 'nok_mobile', label: 'NOK Mobile', type: 'text' }, { id: 'nok_email', label: 'NOK Email', type: 'email' }];
+            const nokFieldTemplates = [{ id: 'nok_rel', label: 'Relationship', type: 'select', visible: true, required: true, validation: 'Spouse, Parent, Sibling, Other' }, { id: 'nok_fname', label: 'First Name', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_lname', label: 'Surname', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_address', label: 'Address', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_residence', label: 'Residence', type: 'select', visible: true, required: true, validation: 'Philippines, Norway, Greece' }, { id: 'nok_phone', label: 'Phone', type: 'text', visible: true, required: false, validation: '' }, { id: 'nok_mobile', label: 'Mobile', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_email', label: 'Email', type: 'email', visible: true, required: false, validation: '' }];
 
             // --- CORE FUNCTIONS ---
             function generateUniqueId(prefix = 'id_') { return prefix + Date.now() + Math.floor(Math.random() * 1000); }
@@ -235,7 +219,7 @@
                 $('#generalInstructions').prop('disabled', !isEditing);
                 renderForm();
                 if (isEditing) {
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save Configuration</button>');
                 } else {
                     $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
                 }
@@ -259,7 +243,7 @@
                         $(`<li class="field-item" data-unique-id="${field.uniqueId}"><span class="drag-handle edit-controls"><i class="fa fa-bars"></i></span><div class="field-info"><strong>${field.label}</strong> <small class="text-muted">(${field.type})</small> <span class="label ${field.visible ? 'label-blue' : 'label-default'}">${field.visible ? 'Visible' : 'Hidden'}</span> <span class="label ${field.required ? 'label-red' : 'label-default'}">${field.required ? 'Required' : 'Optional'}</span></div><div class="field-actions edit-controls"><button class="btn btn-xs btn-default btn-edit-field"><i class="fa fa-pencil"></i></button><button class="btn btn-xs btn-danger btn-delete-field"><i class="fa fa-trash"></i></button></div></li>`).appendTo(fieldList);
                     });
 
-                    const addButtons = `<div class="edit-controls" style="margin-top:15px;"><button class="btn btn-primary btn-xs btn-add-field"><i class="fa fa-plus"></i> Add Field</button> <button class="btn btn-default btn-xs btn-quick-add" style="margin-left:5px;"><i class="fa fa-bolt"></i> Quick Add PO Fields</button></div>`;
+                    const addButtons = `<div class="edit-controls" style="margin-top:15px;"><button class="btn btn-primary btn-xs btn-add-field"><i class="fa fa-plus"></i> Add Field</button> <button class="btn btn-default btn-xs btn-quick-add" style="margin-left:5px;"><i class="fa fa-bolt"></i> Quick Add Fields</button></div>`;
                     tabPane.append(addButtons);
 
                     initSortable(fieldList[0]);
@@ -271,18 +255,15 @@
             function renderClientPreview() {
                 const modalBody = $('#modal-preview-body').empty();
                 if (formConfig.instructions) { modalBody.append(`<p class="lead">${formConfig.instructions}</p>`); }
-
                 const previewTabs = $('<ul class="nav nav-tabs"></ul>').appendTo(modalBody);
                 const previewContent = $('<div class="tab-content" style="padding-top:20px;"></div>').appendTo(modalBody);
 
                 formConfig.sections.forEach((section, index) => {
                     const visibleFields = section.fields.filter(f => f.visible);
                     if (visibleFields.length === 0) return;
-
                     previewTabs.append(`<li class="${index === 0 ? 'active' : ''}"><a data-toggle="tab" href="#prev_tab_${section.id}">${section.title}</a></li>`);
                     const tabPane = $(`<div id="prev_tab_${section.id}" class="tab-pane fade ${index === 0 ? 'in active' : ''}"><div class="row"></div></div>`).appendTo(previewContent);
                     const panelBodyRow = tabPane.find('.row');
-
                     visibleFields.forEach(field => {
                         const requiredClass = field.required ? 'required-field' : '';
                         let inputHtml = '';
@@ -327,7 +308,29 @@
                 if (savedConfig) {
                     formConfig = savedConfig;
                 } else {
-                    formConfig = { instructions: "Welcome. Please prepare scanned documents before starting.", sections: [{ id: generateUniqueId('sec'), title: 'Personal Information', fields: [{ uniqueId: generateUniqueId('fld'), label: 'Nationality', type: 'select', visible: true, required: true, validation: 'Filipino, American, Spanish' }, { uniqueId: generateUniqueId('fld'), label: 'Residence Address', type: 'text', visible: true, required: true, validation: '' }] }, { id: generateUniqueId('sec'), title: 'Company Information', fields: [{ uniqueId: generateUniqueId('fld'), label: 'Passport Upload', type: 'file', visible: true, required: true, validation: 'PDF/JPG/PNG only' }] }] };
+                    // *** NEW DEFAULT CONFIG FOR DEMO PURPOSES ***
+                    formConfig = {
+                        instructions: "Welcome. For demo purposes, this form is pre-configured with the standard fields. Click Save to apply.",
+                        sections: [
+                            {
+                                id: generateUniqueId('sec'), title: 'Personal Details', type: 'custom', fields: [
+                                    { uniqueId: generateUniqueId('fld'), id: 'pob', label: 'Place of Birth', type: 'text', visible: true, required: false, validation: '' },
+                                    { uniqueId: generateUniqueId('fld'), id: 'nationality', label: 'Nationality', type: 'select', visible: true, required: true, validation: 'Filipino, American, Spanish, Japanese' },
+                                    { uniqueId: generateUniqueId('fld'), id: 'address', label: 'Residence Address', type: 'text', visible: true, required: true, validation: '' },
+                                    { uniqueId: generateUniqueId('fld'), id: 'phone', label: 'Phone', type: 'text', visible: true, required: false, validation: '' },
+                                    { uniqueId: generateUniqueId('fld'), id: 'mobile', label: 'Mobile Number', type: 'text', visible: true, required: true, validation: '' }
+                                ]
+                            },
+                            {
+                                id: generateUniqueId('sec'), title: 'Company Information', type: 'custom', fields: [
+                                    { uniqueId: generateUniqueId('fld'), id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text', visible: true, required: false, validation: '' },
+                                    { uniqueId: generateUniqueId('fld'), id: 'passport', label: 'Passport Upload', type: 'file', visible: true, required: true, validation: 'PDF/JPG/PNG only' }
+                                ]
+                            },
+                            { id: generateUniqueId('sec_nok'), title: 'Next of Kin 1', type: 'nok', fields: JSON.parse(JSON.stringify(nokFieldTemplates)).map(f => ({ ...f, uniqueId: generateUniqueId('fld') })) },
+                            { id: generateUniqueId('sec_nok'), title: 'Next of Kin 2', type: 'nok', fields: JSON.parse(JSON.stringify(nokFieldTemplates)).map(f => ({ ...f, uniqueId: generateUniqueId('fld') })) }
+                        ]
+                    };
                 }
             }
 
@@ -369,7 +372,6 @@
             $('#sectionTabContent').on('click', '.btn-add-field', function () {
                 $('#formField')[0].reset(); $('#fieldSectionId').val($(this).closest('.tab-pane').attr('id').substring(4)); $('#fieldUniqueId').val('');
                 $('#fieldModalTitle').text('Add Field'); $('#addFieldModal').modal('show');
-                á
             });
             $('#sectionTabContent').on('click', '.btn-edit-field', function () {
                 const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
@@ -427,7 +429,7 @@
             // --- INITIAL LOAD ---
             loadConfig();
             $('#generalInstructions').val(formConfig.instructions);
-            toggleViewMode(false);
+            toggleViewMode(false); // Start in preview mode
         });
     </script>
 </body>

@@ -1,3 +1,6 @@
+.body {
+  padding-bottom: 80px;
+}
 /* ===============================
    Original Registration Styles
    =============================== */
@@ -68,18 +71,6 @@
    =============================== */
 .dashboard-layout {
   min-height: 100vh;
-}
-.page-header {
-  margin-top: 20px;
-  margin-bottom: 30px;
-}
-.page-header h2 {
-  font-weight: 600;
-  color: var(--r-dark);
-}
-.page-header p {
-  color: var(--r-gray);
-  margin-top: 5px;
 }
 
 /* Sidebar */
@@ -473,7 +464,7 @@ body {
       bottom: 0;
       left: 0;
       width: 100%;
-      background-color: #f5f5f5;
+      background-color: var(--r-dark);
       border-top: 1px solid #ddd;
       padding: 10px 0;
       z-index: 1000;

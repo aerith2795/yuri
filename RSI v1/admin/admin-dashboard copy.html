@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Admin • Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple core + Admin page CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+</head>
+<style>
+  /* --- Button & KPI fixes --- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    line-height: 1.4;
+  }
+
+  .btn i {
+    margin-right: 6px;
+    line-height: 1;
+  }
+
+  .kpi-row .panel {
+    min-height: 220px;
+  }
+
+  .progress {
+    margin-bottom: 22px;
+  }
+</style>
+
+<body>
+  <button type="button" id="sidebar-toggle" class="mobile-toggle">
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Admin Dashboard</h2>
+          <p>Quick overview of vessels, customer admins, and certificate usage.</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="row kpi-row">
+          <div class="col-sm-4">
+            <div class="panel kpi">
+              <div class="panel-heading"><i class="fa fa-ship"></i> Active Vessels</div>
+              <div class="panel-body">
+                <h3>5 <small>licensed</small></h3>
+                <span class="label label-blue">3 configured</span>
+                <span class="label label-orange">2 pending</span>
+                <hr>
+                <a href="admin-vessel-setup.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i> Update</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="panel kpi">
+              <div class="panel-heading"><i class="fa fa-user-secret"></i> Customer Admins</div>
+              <div class="panel-body">
+                <h3>5 <small>active</small></h3>
+                <span class="label label-blue">1 pending invite</span>
+                <hr>
+                <a href="admin-customer-admins.html" class="btn btn-primary btn-sm"><i class="fa fa-cog"></i> Manage</a>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="panel kpi">
+              <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates</div>
+              <div class="panel-body">
+                <h3>82% <small>storage used</small></h3>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-info" style="width:82%"></div>
+                </div>
+                <hr>
+                <a href="admin-certificates.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i>
+                  Configure</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alerts & Recent Activity -->
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="panel">
+              <div class="panel-heading"><i class="fa fa-bell"></i> Alerts</div>
+              <div class="panel-body">
+                <div class="alert alert-warning"><i class="fa fa-clock-o"></i> License for <strong>MV Ocean
+                    Star</strong> expires in 10 days.</div>
+                <div class="alert alert-danger"><i class="fa fa-database"></i> Certificate storage is above 80%
+                  capacity.</div>
+                <div class="alert alert-info"><i class="fa fa-envelope"></i> 1 pending customer admin invitation.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div class="panel">
+              <div class="panel-heading"><i class="fa fa-history"></i> Recent Activity</div>
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>User</th>
+                        <th>Vessel</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>2025-09-09</td>
+                        <td>Invited customer admin</td>
+                        <td>Admin</td>
+                        <td>MV Horizon</td>
+                      </tr>
+                      <tr>
+                        <td>2025-09-08</td>
+                        <td>Updated welcome message</td>
+                        <td>Admin</td>
+                        <td>MV Explorer</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /main-content -->
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+  <script>
+    $(function () {
+       $('#sidebar-toggle').on('click', function () {
+        $('.sidebar').toggleClass('active');
+      });
+
+      fetch('admin-sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+          sidebarPlaceholder.innerHTML = data;
+
+          // Script to set the active state after the sidebar is loaded
+          const currentPage = 'admin-dashboard';
+          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+          }
+        })
+        .catch(error => console.error('Error fetching sidebar:', error));
+
+    });
+  </script>
+</body>
+
+</html>

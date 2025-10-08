@@ -37,7 +37,7 @@
 
 /* Main content */
 .main-content {
-  padding: 30px;
+  padding: 20px;
   background: var(--r-light);
   min-height: 100vh;
 }
@@ -188,3 +188,4 @@
   color: var(--r-orange);
   border: 1px solid var(--r-orange);
 }
+

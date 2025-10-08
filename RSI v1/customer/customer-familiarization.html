@@ -10,10 +10,6 @@
     <link href="../assets/ripple.css" rel="stylesheet" />
     <link href="page.css" rel="stylesheet" />
     <style>
-        body {
-            padding-bottom: 80px;
-        }
-
         .preview-container {
             background-color: #f9f9f9;
             border: 1px solid #ddd;
@@ -33,13 +29,11 @@
     <div class="container-fluid dashboard-layout">
         <div class="row">
             <div id="sidebar-placeholder"></div>
-
             <div class="col-sm-9 col-md-10 main-content">
                 <div class="page-header">
                     <h2>Familiarization Video Configuration</h2>
                     <p>Set the video and instructions for the crew's familiarization onboarding step.</p>
                 </div>
-
                 <div class="panel">
                     <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
                     <div class="panel-body">
@@ -49,7 +43,7 @@
                                     <div class="form-group">
                                         <label>Upload/Replace Video</label>
                                         <input id="videoFile" type="file" class="form-control"
-                                            accept="video/mp4,video/webm">
+                                            accept="video/mp4,video/webm,video/quicktime,.mov">
                                         <p class="help-block" id="currentFileName"></p>
                                     </div>
                                     <div class="form-group">
@@ -60,14 +54,11 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label>Settings</label>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" id="showVideo"> Show Familiarization Video page in
-                                            crew portal</label>
-                                    </div>
+                                    <div class="checkbox"><label><input type="checkbox" id="showVideo"> Show
+                                            Familiarization Video page in crew portal</label></div>
                                 </div>
                             </div>
                         </div>
-
                         <div id="preview-view" style="display:none;">
                             <h4>Preview</h4>
                             <div class="preview-container">
@@ -83,26 +74,23 @@
             </div>
         </div>
     </div>
-
     <div class="sticky-footer">
         <div class="footer-container" id="footer-btn-container"></div>
     </div>
-
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script>
         $(function () {
-            // Sidebar
             fetch('customer-sidebar.html')
                 .then(r => r.text())
-                .then(data => {
-                    $('#sidebar-placeholder').html(data);
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
                     const activeLink = document.querySelector('[data-page="customer-familiarization"]');
                     if (activeLink) activeLink.classList.add('active');
                 });
-
+                
             const configKey = "familiarizationConfig";
-            let tempVideoDataUrl = null; // Holds the new video data until save
+            let tempVideoUrl = null;
 
             function toggleViewMode(isEditing) {
                 if (isEditing) {
@@ -117,16 +105,16 @@
             }
 
             function saveConfig() {
+                const existingConfig = JSON.parse(localStorage.getItem(configKey)) || {};
                 const config = {
                     instructions: $("#videoInstructions").val(),
                     show: $("#showVideo").prop("checked"),
-                    videoUrl: tempVideoDataUrl || (JSON.parse(localStorage.getItem(configKey)) || {}).videoUrl,
-                    fileName: $("#videoFile")[0].files[0]?.name || (JSON.parse(localStorage.getItem(configKey)) || {}).fileName
+                    videoUrl: tempVideoUrl || existingConfig.videoUrl,
+                    fileName: $("#videoFile")[0].files[0]?.name || existingConfig.fileName
                 };
-
                 localStorage.setItem(configKey, JSON.stringify(config));
                 showAlert("Familiarization configuration saved.", "success");
-                loadConfig(); // Reload to update preview
+                loadConfig();
                 toggleViewMode(false);
             }
 
@@ -135,50 +123,38 @@
                 if (savedConfig) {
                     $("#videoInstructions").val(savedConfig.instructions);
                     $("#showVideo").prop("checked", savedConfig.show);
-
-                    // Update Previews
                     $('#instructionsPreview').html(savedConfig.instructions.replace(/\n/g, '<br>') || "<em>No instructions provided.</em>");
                     $('#videoPreview').attr('src', savedConfig.videoUrl || "");
-
                     if (savedConfig.fileName) {
                         $('#currentFileName').text(`Current file: ${savedConfig.fileName}`);
                     }
                     return true;
                 } else {
-                    // Default values
                     $("#showVideo").prop("checked", true);
                     $("#videoInstructions").val("Please watch the entire familiarization video below before proceeding.");
                     return false;
                 }
             }
 
-            // Handle new video file selection
             $("#videoFile").on("change", function () {
                 const file = this.files[0];
                 if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        tempVideoDataUrl = e.target.result; // Store base64 data URL
-                        $('#currentFileName').text(`New file selected: ${file.name}`);
-                        showAlert("Video file is ready to be saved.", "info");
-                    };
-                    reader.readAsDataURL(file);
+                    // Revoke old blob URL if it exists to prevent memory leaks
+                    if (tempVideoUrl) {
+                        URL.revokeObjectURL(tempVideoUrl);
+                    }
+                    // Create a new blob URL
+                    tempVideoUrl = URL.createObjectURL(file);
+                    $('#currentFileName').text(`New file selected: ${file.name}`);
+                    showAlert("Video file is ready to be saved.", "info");
                 }
             });
 
-            // Event Handlers
             $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
             $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
-
-            // Initial Load
             const hasData = loadConfig();
             toggleViewMode(!hasData);
-
-            function showAlert(msg, type = 'success') {
-                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
-                $('body').append(alert);
-                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
-            }
+            function showAlert(msg, type = 'success') { const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`); $('body').append(alert); setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000); }
         });
     </script>
 </body>

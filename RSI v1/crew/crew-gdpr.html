@@ -27,7 +27,7 @@
             <div class="col-sm-9 col-md-10 main-content">
                 <div class="page-header">
                     <h2>GDPR & Data Privacy</h2>
-                    <p id="gdprInstructionsText" class="lead" style="font-size: 16px;"></p>
+                    <p id="gdprInstructionsText"></p>
                 </div>
 
                 <div id="gdprPanel" style="display:none;">
@@ -66,7 +66,7 @@
 
             // 1. Check if the GDPR page should be shown at all
             if (!gdprConfig || !gdprConfig.showGdprPage) {
-                $('.page-header').html('<h2>GDPR & Data Privacy</h2><p class="lead">No GDPR acknowledgement is required at this time.</p>');
+                $('.page-header').html('<h2>GDPR & Data Privacy</h2><div class="alert alert-info">No GDPR acknowledgement is required at this time.</p>');
                 return; 
             }
             

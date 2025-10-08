@@ -72,6 +72,11 @@ body {
   background: var(--r-light);
   border-color: var(--r-blue);
 }
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--r-blue);
+  color: var(--r-blue);
+}
 /* ========================================
    Ripple Light Button Variants
    Inspired by btn-default
@@ -362,5 +367,17 @@ body.dark-mode .btn-primary {
 }
 
 /* ===============================
-     Instructional text
+     Welcome Banner
      =============================== */
+.welcome-banner {
+      background: linear-gradient(135deg, var(--r-blue) 0%, var(--r-dark) 100%);
+      color: var(--r-light);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .welcome-banner h2 {
+      margin-top: 0;
+      font-weight: 600;
+    }

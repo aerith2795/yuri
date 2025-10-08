@@ -1,363 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <title>RSI Client • Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <!-- Libs -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-  <!-- Ripple core + Page CSS -->
-  <link href="../assets/ripple.css" rel="stylesheet" />
-  <link href="page.css" rel="stylesheet" />
-
-  <style>
-    .panel-profile {
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      padding: 20px;
-      background: #fff;
-    }
-
-    .panel-profile .profile-photo {
-      width: 100px;
-      height: 100px;
-      object-fit: cover;
-      border: 3px solid #3F91FF;
-      margin-bottom: 10px;
-    }
-
-    .panel-profile .crew-name {
-      margin: 5px 0;
-      font-weight: 600;
-      font-size: 1.4em;
-    }
-
-    .panel-profile .crew-rank {
-      color: #5D7FAC;
-      margin-bottom: 5px;
-    }
-
-    .panel-profile .crew-company {
-      font-size: 0.9em;
-      color: #777;
-    }
-
-    /* Align edit button with tabs */
-    .tab-actions {
-      float: right;
-      margin-top: -35px;
-    }
-
-    .tab-actions .btn {
-      margin-left: 5px;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>RSI Crew • My Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+    <style>
+        .nav-tabs { border-bottom: 2px solid #ddd; }
+        .nav-tabs > li > a { border-radius: 4px 4px 0 0; padding: 12px 20px; font-size: 16px; color: var(--r-gray); border: 2px solid transparent; border-bottom: none; margin-right: 5px; }
+        .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus { color: var(--r-blue); background-color: #fff; border-color: #ddd; border-bottom-color: transparent; font-weight: 600; }
+        .nav-tabs > li > a:hover { background-color: #f9f9f9; border-color: #eee; border-bottom-color: transparent; }
+        .tab-content { background-color: #fff; padding: 25px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 12px 12px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+        label.required-field::after { content: " *"; color: var(--r-red); }
+    </style>
 </head>
-
 <body>
-   <button type="button" id="sidebar-toggle" class="mobile-toggle">
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="container-fluid dashboard-layout">
-    <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
-
-
-      <!-- Main -->
-      <div class="main-content col-sm-9 col-md-10">
-        <div class="page-header">
-          <h2>Profile</h2>
-          <p>View and maintain your registration details. Click <b>Edit</b> to update any section.</p>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>My Profile</h2>
+                    <p id="page-instructions">View and maintain your registration details.</p>
+                </div>
+                
+                <ul class="nav nav-tabs" id="profileTabs" role="tablist"></ul>
+                <div class="tab-content" id="profileTabContent"></div>
+            </div>
         </div>
-
-        <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
-          <li class="active"><a href="#personal" role="tab" data-toggle="tab"><i class="fa fa-user"></i> Personal</a></li>
-          <li><a href="#nok1" role="tab" data-toggle="tab"><i class="fa fa-users"></i> NOK 1</a></li>
-          <li><a href="#nok2" role="tab" data-toggle="tab"><i class="fa fa-users"></i> NOK 2</a></li>
-          <li><a href="#company" role="tab" data-toggle="tab"><i class="fa fa-building"></i> Company</a></li>
-        </ul>
-
-        <!-- Edit/Save/Cancel Controls -->
-        <div class="tab-actions">
-          <button id="cancelBtn" class="btn btn-default btn-sm" style="display:none;">
-            <i class="fa fa-times"></i> Cancel
-          </button>
-          <button id="editSaveBtn" class="btn btn-primary btn-sm">
-            <i class="fa fa-pencil"></i> Edit
-          </button>
-        </div>
-
-        <!-- Tab panes -->
-        <div class="tab-content">
-
-          <!-- Personal -->
-          <div class="tab-pane active" id="personal">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <i class="fa fa-user"></i> Personal Information
-              </div>
-              <div class="panel-body">
-                <form id="personalForm">
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>First Name</label>
-                      <input type="text" class="form-control" value="Cloud" readonly>
-                    </div>
-                    <div class="col-sm-6 form-group">
-                      <label>Surname</label>
-                      <input type="text" class="form-control" value="Strife" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-4 form-group">
-                      <label>Gender</label>
-                      <input type="text" class="form-control" value="Male" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Date of Birth</label>
-                      <input type="date" class="form-control" value="1986-08-11" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Place of Birth</label>
-                      <input type="text" class="form-control" value="Nibelheim" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Nationality</label>
-                      <input type="text" class="form-control" value="Filipino" readonly>
-                    </div>
-                    <div class="col-sm-6 form-group">
-                      <label>Residence Address</label>
-                      <input type="text" class="form-control" value="123 Port Street, Manila" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-4 form-group">
-                      <label>Phone</label>
-                      <input type="text" class="form-control" value="+63 2 123 4567" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Mobile</label>
-                      <input type="text" class="form-control" value="+63 917 123 4567" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Email (Username)</label>
-                      <input type="email" class="form-control" value="cloud.strife@email.com" readonly>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          <!-- NOK 1 -->
-          <div class="tab-pane" id="nok1">
-            <div class="panel panel-default">
-              <div class="panel-heading"><i class="fa fa-users"></i> Next of Kin 1</div>
-              <div class="panel-body">
-                <form id="nok1Form">
-                  <div class="row">
-                    <div class="col-sm-4 form-group">
-                      <label>Relationship</label>
-                      <input type="text" class="form-control" value="Mother" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>First Name</label>
-                      <input type="text" class="form-control" value="Claudia" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Surname</label>
-                      <input type="text" class="form-control" value="Strife" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Address</label>
-                      <input type="text" class="form-control" value="Nibelheim, Philippines" readonly>
-                    </div>
-                    <div class="col-sm-6 form-group">
-                      <label>Residence</label>
-                      <input type="text" class="form-control" value="Philippines" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-4 form-group">
-                      <label>Phone</label>
-                      <input type="text" class="form-control" value="+63 32 555 6789" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Mobile</label>
-                      <input type="text" class="form-control" value="+63 917 987 6543" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Email</label>
-                      <input type="email" class="form-control" value="claudia.strife@email.com" readonly>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          <!-- NOK 2 -->
-          <div class="tab-pane" id="nok2">
-            <div class="panel panel-default">
-              <div class="panel-heading"><i class="fa fa-users"></i> Next of Kin 2</div>
-              <div class="panel-body">
-                <form id="nok2Form">
-                  <div class="row">
-                    <div class="col-sm-4 form-group">
-                      <label>Relationship</label>
-                      <input type="text" class="form-control" value="Friend" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>First Name</label>
-                      <input type="text" class="form-control" value="Tifa" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Surname</label>
-                      <input type="text" class="form-control" value="Lockhart" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-6 form-group">
-                      <label>Address</label>
-                      <input type="text" class="form-control" value="Sector 7, Midgar" readonly>
-                    </div>
-                    <div class="col-sm-6 form-group">
-                      <label>Residence</label>
-                      <input type="text" class="form-control" value="Philippines" readonly>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col-sm-4 form-group">
-                      <label>Phone</label>
-                      <input type="text" class="form-control" value="+63 2 555 2222" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Mobile</label>
-                      <input type="text" class="form-control" value="+63 917 555 2222" readonly>
-                    </div>
-                    <div class="col-sm-4 form-group">
-                      <label>Email</label>
-                      <input type="email" class="form-control" value="tifa@email.com" readonly>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          <!-- Company -->
-          <div class="tab-pane" id="company">
-            <div class="panel panel-default">
-              <div class="panel-heading"><i class="fa fa-building"></i> Company & Emergency Contact</div>
-              <div class="panel-body">
-                <form id="companyForm">
-                  <div class="form-group">
-                    <label>Company</label>
-                    <input type="text" class="form-control" value="Ripple Shipping Inc." readonly>
-                  </div>
-                  <div class="form-group">
-                    <label>Position / Rank</label>
-                    <input type="text" class="form-control" value="Chief Engineer" readonly>
-                  </div>
-                  <div class="form-group">
-                    <label>Emergency Contact (Company)</label>
-                    <input type="text" class="form-control" value="+63 2 765 4321" readonly>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-        </div><!-- /tab-content -->
-      </div>
     </div>
-  </div>
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <div class="sticky-footer">
+        <div class="footer-container" id="footer-btn-container"></div>
+    </div>
 
-<script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
     $(function () {
-       $('#sidebar-toggle').on('click', function () {
-        $('.sidebar').toggleClass('active');
-      });
-        // Sidebar
-        fetch('crew-sidebar.html')
+        // --- INITIALIZATION & DATA ---
+         fetch('crew-sidebar.html')
             .then(res => res.text())
             .then(html => {
                 $('#sidebar-placeholder').html(html);
                 $('[data-page="crew-registration"]').addClass('active');
             });
+        const configKey = "registrationFormConfig_v4";
+        
+        // *** DATA FIX: Added complete data for nok1 and nok2 ***
+        const crewProfileData = {
+            firstName: "Cloud", lastName: "Strife", gender: "Male", dob: "1986-08-11",
+            pob: "Nibelheim", nationality: "Filipino", address: "123 Port Street, Manila", phone: "+63 2 123 4567", mobile: "+63 917 123 4567",
+            company: "Ripple Shipping Inc.", rank: "Chief Engineer", emergencyContact: "+63 2 765 4321", passport: "passport.pdf",
+            email: "cloud.strife@email.com",
+            // NOK 1 Data
+            nok1_rel: "Friend", nok1_fname: "Tifa", nok1_lname: "Lockhart", nok1_address: "Sector 7, Midgar", nok1_residence: "Philippines", nok1_phone: "+63 2 555 2222", nok1_mobile: "+63 917 555 2222", nok1_email: "tifa@email.com",
+            // NOK 2 Data
+            nok2_rel: "Friend", nok2_fname: "Barret", nok2_lname: "Wallace", nok2_address: "Sector 7, Midgar", nok2_residence: "Philippines", nok2_phone: "", nok2_mobile: "+63 918 555 3333", nok2_email: ""
+        };
 
-        let isEditing = false;
+        const lockedFields = { personal: [ { id: 'firstName', label: 'First Name', type: 'text', required: true }, { id: 'lastName', label: 'Surname', type: 'text', required: true }, { id: 'gender', label: 'Gender', type: 'select', required: true, options: 'Male,Female,Other' }, { id: 'dob', label: 'Date of Birth', type: 'date', required: true } ], company: [ { id: 'company', label: 'Company', type: 'text', required: true }, { id: 'rank', label: 'Position / Rank', type: 'select', required: true, options: 'Captain,Chief Engineer,Deck Officer,AB Seaman' } ], account: [ { id: 'email', label: 'Email (Username)', type: 'email', required: true }] };
         let originalValues = {};
 
-        // Toggle edit/save
-        $('#editSaveBtn').on('click', function () {
-            const inputs = $('.tab-content').find('input');
-
-            if (!isEditing) {
-                // Store all original values
+        // --- CORE FUNCTIONS ---
+        function toggleViewMode(isEditing) {
+            const footer = $('#footer-btn-container');
+            const inputs = $('.profile-input');
+            if (isEditing) {
                 originalValues = {};
-                inputs.each(function (i) {
-                    const key = $(this).attr('name') || `field-${i}`;
-                    originalValues[key] = $(this).val();
+                inputs.each(function () { originalValues[this.id] = $(this).val(); });
+                inputs.prop('readonly', false);
+                footer.html(`<div class="row"><div class="col-xs-6"><button id="cancelBtn" class="btn btn-danger btn-block btn-sm"><i class="fa fa-times"></i> Cancel</button></div><div class="col-xs-6"><button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save Changes</button></div></div>`);
+            } else {
+                inputs.prop('readonly', true);
+                footer.html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Profile</button>');
+            }
+        }
+
+        function loadAndRenderForm() {
+            const configData = JSON.parse(localStorage.getItem(configKey));
+            let sections = (configData && configData.sections) ? JSON.parse(JSON.stringify(configData.sections)) : [{ id: 'personal', title: 'Personal Information', fields: [] }];
+            if (configData && configData.instructions) { $('#page-instructions').text(configData.instructions); }
+            
+            const personalSection = sections.find(s => s.title.toLowerCase().includes('personal')) || sections[0];
+            personalSection.fields.unshift(...lockedFields.personal);
+            let companySection = sections.find(s => s.title.toLowerCase().includes('company'));
+            if (!companySection) { companySection = { id: generateUniqueId('sec'), title: 'Company Information', fields: [] }; sections.push(companySection); }
+            companySection.fields.unshift(...lockedFields.company);
+            personalSection.fields.push(...lockedFields.account);
+
+            const tabs = $('#profileTabs').empty();
+            const content = $('#profileTabContent').empty();
+            let nokCounter = 1;
+
+            sections.forEach((section, index) => {
+                const visibleFields = section.fields.filter(f => f.visible !== false);
+                if (visibleFields.length === 0) return;
+                
+                const sectionId = `section_${section.id}`;
+                tabs.append(`<li class="${index === 0 ? 'active' : ''}"><a href="#${sectionId}" role="tab" data-toggle="tab">${section.title}</a></li>`);
+                const tabPane = $(`<div class="tab-pane ${index === 0 ? 'active' : ''}" id="${sectionId}"><form class="row"></form></div>`).appendTo(content);
+                const form = tabPane.find('form');
+
+                visibleFields.forEach(field => {
+                    let dataLookupId = field.id;
+                    // *** LOGIC FIX: Create the correct ID for looking up NOK data ***
+                    if (section.type === 'nok') {
+                        dataLookupId = `nok${nokCounter}_${field.id.replace('nok_', '')}`;
+                    }
+                    const value = crewProfileData[dataLookupId] || '';
+                    const inputHtml = `<input type="${field.type}" class="form-control profile-input" id="${dataLookupId}" value="${value}" readonly>`;
+                    form.append(`<div class="col-sm-6 form-group"><label class="${field.required ? 'required-field' : ''}">${field.label}</label>${inputHtml}</div>`);
                 });
 
-                // Enable all fields
-                inputs.prop('readonly', false);
-                isEditing = true;
-                $('#cancelBtn').show();
-                $(this).html('<i class="fa fa-save"></i> Save')
-                    .removeClass('btn-primary')
-                    .addClass('btn-success');
-            } else {
-                // Save mode
-                inputs.prop('readonly', true);
-                isEditing = false;
-                $('#cancelBtn').hide();
-                $(this).html('<i class="fa fa-pencil"></i> Edit')
-                    .removeClass('btn-success')
-                    .addClass('btn-primary');
-                alert('All changes saved successfully');
-            }
-        });
-
-        // Cancel button
-        $('#cancelBtn').on('click', function () {
-            const inputs = $('.tab-content').find('input');
-
-            // Restore original values
-            inputs.each(function (i) {
-                const key = $(this).attr('name') || `field-${i}`;
-                if (originalValues[key] !== undefined) {
-                    $(this).val(originalValues[key]);
+                if (section.type === 'nok') {
+                    nokCounter++;
                 }
             });
-
-            inputs.prop('readonly', true);
-            isEditing = false;
-            $('#cancelBtn').hide();
-            $('#editSaveBtn').html('<i class="fa fa-pencil"></i> Edit')
-                .removeClass('btn-success')
-                .addClass('btn-primary');
+        }
+        
+        // --- EVENT HANDLERS ---
+        const footerContainer = $('#footer-btn-container');
+        footerContainer.on('click', '#editBtn', () => toggleViewMode(true));
+        footerContainer.on('click', '#saveBtn', function() {
+            alert('Profile updated successfully! (Simulation)');
+            toggleViewMode(false);
         });
+        footerContainer.on('click', '#cancelBtn', function() {
+            $('.profile-input').each(function () { $(this).val(originalValues[this.id]); });
+            toggleViewMode(false);
+        });
+
+        function generateUniqueId(prefix = 'id_') { return prefix + Date.now(); }
+
+        // --- INITIAL LOAD ---
+        loadAndRenderForm();
+        toggleViewMode(false);
     });
-</script>
-
-
+    </script>
 </body>
 </html>

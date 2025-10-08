@@ -1,182 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <title>RSI Admin • Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <title>RSI Admin • Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="admin-page.css" rel="stylesheet" />
+    <style>
+        .welcome-banner p { opacity: 0.9; margin-bottom: 0; color: #fff !important; }
+        .page-header .welcome-banner h2 {color: var(--r-light);
+        .page-header  {margin-top: 20px !important};
+    }
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card .stat-number { font-size: 2.5em; font-weight: 700; line-height: 1.1; margin-bottom: 5px; }
+        .stat-card .stat-label { font-size: 1em; color: var(--r-gray); font-weight: 500; }
+        .stat-card .stat-subtext { margin-top: 15px; }
+        .stat-card .stat-icon {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 4em;
+            opacity: 0.1;
+        }
+        .stat-card .btn { margin-top: 15px; }
 
-  <!-- Libs -->
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-
-  <!-- Ripple core + Admin page CSS -->
-  <link href="../assets/ripple.css" rel="stylesheet" />
-  <link href="admin-page.css" rel="stylesheet" />
+        .timeline { list-style: none; padding: 10px 0 10px; position: relative; }
+        .timeline:before { content: ''; position: absolute; top: 0; bottom: 0; left: 20px; width: 2px; background-color: #f0f0f0; }
+        .timeline-item { margin-bottom: 15px; position: relative; }
+        .timeline-icon { position: absolute; left: 13px; top: 5px; width: 16px; height: 16px; border-radius: 50%; background-color: var(--r-dark); color: white; text-align: center; line-height: 16px; font-size: 8px; }
+        .timeline-content { margin-left: 50px; }
+        .timeline-content .action { font-weight: 500; }
+        .timeline-content .time { color: #777; font-size: 12px; }
+    </style>
 </head>
-<style>
-  /* --- Button & KPI fixes --- */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 14px;
-    line-height: 1.4;
-  }
-
-  .btn i {
-    margin-right: 6px;
-    line-height: 1;
-  }
-
-  .kpi-row .panel {
-    min-height: 220px;
-  }
-
-  .progress {
-    margin-bottom: 22px;
-  }
-</style>
-
 <body>
-  <button type="button" id="sidebar-toggle" class="mobile-toggle">
-    <i class="fa fa-bars"></i>
-  </button>
-  <div class="container-fluid dashboard-layout">
-    <div class="row">
-      <!-- Sidebar -->
-      <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
-
-      <!-- Main -->
-      <div class="col-sm-9 col-md-10 main-content">
-        <div class="page-header">
-          <h2>Admin Dashboard</h2>
-          <p>Quick overview of vessels, customer admins, and certificate usage.</p>
-        </div>
-
-        <!-- KPI Cards -->
-        <div class="row kpi-row">
-          <div class="col-sm-4">
-            <div class="panel kpi">
-              <div class="panel-heading"><i class="fa fa-ship"></i> Active Vessels</div>
-              <div class="panel-body">
-                <h3>5 <small>licensed</small></h3>
-                <span class="label label-blue">3 configured</span>
-                <span class="label label-orange">2 pending</span>
-                <hr>
-                <a href="admin-vessel-setup.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i> Update</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="panel kpi">
-              <div class="panel-heading"><i class="fa fa-user-secret"></i> Customer Admins</div>
-              <div class="panel-body">
-                <h3>5 <small>active</small></h3>
-                <span class="label label-blue">1 pending invite</span>
-                <hr>
-                <a href="admin-customer-admins.html" class="btn btn-primary btn-sm"><i class="fa fa-cog"></i> Manage</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="panel kpi">
-              <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates</div>
-              <div class="panel-body">
-                <h3>82% <small>storage used</small></h3>
-                <div class="progress">
-                  <div class="progress-bar progress-bar-info" style="width:82%"></div>
-                </div>
-                <hr>
-                <a href="admin-certificates.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i>
-                  Configure</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Alerts & Recent Activity -->
+    <div class="container-fluid dashboard-layout">
         <div class="row">
-          <div class="col-sm-6">
-            <div class="panel">
-              <div class="panel-heading"><i class="fa fa-bell"></i> Alerts</div>
-              <div class="panel-body">
-                <div class="alert alert-warning"><i class="fa fa-clock-o"></i> License for <strong>MV Ocean
-                    Star</strong> expires in 10 days.</div>
-                <div class="alert alert-danger"><i class="fa fa-database"></i> Certificate storage is above 80%
-                  capacity.</div>
-                <div class="alert alert-info"><i class="fa fa-envelope"></i> 1 pending customer admin invitation.</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-sm-6">
-            <div class="panel">
-              <div class="panel-heading"><i class="fa fa-history"></i> Recent Activity</div>
-              <div class="panel-body">
-                <div class="table-responsive">
-                  <table class="table table-striped">
-                    <thead>
-                      <tr>
-                        <th>Date</th>
-                        <th>Action</th>
-                        <th>User</th>
-                        <th>Vessel</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>2025-09-09</td>
-                        <td>Invited customer admin</td>
-                        <td>Admin</td>
-                        <td>MV Horizon</td>
-                      </tr>
-                      <tr>
-                        <td>2025-09-08</td>
-                        <td>Updated welcome message</td>
-                        <td>Admin</td>
-                        <td>MV Explorer</td>
-                      </tr>
-                    </tbody>
-                  </table>
+            <div id="sidebar-placeholder"></div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <div class="welcome-banner">
+                        <h2>Hello, Ignis Scentia!</h2>
+                        <p>Welcome to Smart Induction! Here's your global overview of vessels, customers, and system status.</p>
+                    </div>
                 </div>
-              </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <i class="fa fa-ship stat-icon text-blue"></i>
+                            <div class="stat-number text-blue">5</div>
+                            <div class="stat-label">Active Vessels</div>
+                            <div class="stat-subtext">
+                                <span class="label label-green">3 Configured</span>
+                                <span class="label label-orange">2 Pending</span>
+                            </div>
+                            <hr>
+                            <a href="admin-vessel-setup.html" class="btn btn-primary btn-sm"><i class="fa fa-wrench"></i> Update Vessels</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <i class="fa fa-user-secret stat-icon text-orange"></i>
+                            <div class="stat-number text-orange">6</div>
+                            <div class="stat-label">Customer Admins</div>
+                            <div class="stat-subtext">
+                                <span class="label label-green">5 Active</span>
+                                <span class="label label-orange">1 Invite Pending</span>
+                            </div>
+                             <hr>
+                            <a href="admin-customer-admins.html" class="btn btn-primary btn-sm"><i class="fa fa-cog"></i> Manage Admins</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                         <div class="stat-card">
+                            <i class="fa fa-hdd-o stat-icon text-info"></i>
+                            <div class="stat-number text-info">82%</div>
+                            <div class="stat-label">Total Storage Used</div>
+                             <div class="progress" style="margin-top: 15px;">
+                                <div class="progress-bar progress-bar-info" style="width:82%"></div>
+                             </div>
+                             <hr>
+                             <a href="admin-certificates.html" class="btn btn-primary btn-sm"><i class="fa fa-cogs"></i> Configure Storage</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="panel">
+                            <div class="panel-heading"><i class="fa fa-history"></i> Recent Admin Activity</div>
+                            <div class="panel-body">
+                                <ul class="timeline" id="activity-log-list"></ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="panel">
+                            <div class="panel-heading"><i class="fa fa-bell"></i> System Alerts</div>
+                            <div class="panel-body" id="alerts-list"></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-          </div>
         </div>
-
-      </div><!-- /main-content -->
     </div>
-  </div>
 
-  <!-- JS -->
-  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
-  <script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
     $(function () {
-       $('#sidebar-toggle').on('click', function () {
-        $('.sidebar').toggleClass('active');
-      });
+        fetch('admin-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="admin-dashboard"]');
+          if (activeLink) activeLink.classList.add('active');
+        });
 
-      fetch('admin-sidebar.html')
-        .then(response => response.text())
-        .then(data => {
-          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
-          sidebarPlaceholder.innerHTML = data;
 
-          // Script to set the active state after the sidebar is loaded
-          const currentPage = 'admin-dashboard';
-          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-          if (activeLink) {
-            activeLink.classList.add('active');
-          }
-        })
-        .catch(error => console.error('Error fetching sidebar:', error));
+        const adminActivityLog = [
+            { icon: 'fa-user-plus', action: "Invited <strong>customer@example.com</strong> to <strong>MV Horizon</strong>.", timestamp: new Date(Date.now() - 36e5) },
+            { icon: 'fa-ship', action: "Renewed license for <strong>MV Ocean Star</strong>.", timestamp: new Date(Date.now() - 2 * 864e5) },
+            { icon: 'fa-cogs', action: "Updated global certificate templates.", timestamp: new Date(Date.now() - 3 * 864e5) }
+        ];
+        const systemAlerts = [
+            { type: 'warning', icon: 'fa-clock-o', text: 'License for <strong>MV Ocean Star</strong> expires in 10 days.' },
+            { type: 'danger', icon: 'fa-database', text: 'Total certificate storage is above 80% capacity.' },
+            { type: 'info', icon: 'fa-envelope', text: '1 pending customer admin invitation.' }
+        ];
 
+        function renderActivityLog() {
+            const logList = $('#activity-log-list').empty();
+            if (adminActivityLog.length > 0) {
+                adminActivityLog.forEach(log => {
+                    logList.append(`<li class="timeline-item"><div class="timeline-icon"><i class="fa ${log.icon}"></i></div><div class="timeline-content"><span class="action">${log.action}</span><span class="time pull-right">${timeAgo(log.timestamp)}</span></div></li>`);
+                });
+            } else {
+                logList.html('<li style="list-style:none;">No recent activity.</li>');
+            }
+        }
+        function renderAlerts() {
+            const alertsList = $('#alerts-list').empty();
+            if(systemAlerts.length > 0) {
+                systemAlerts.forEach(alert => {
+                    alertsList.append(`<div class="alert alert-${alert.type}"><i class="fa ${alert.icon}"></i> ${alert.text}</div>`);
+                });
+            } else {
+                 alertsList.html('<p class="text-muted">No system alerts.</p>');
+            }
+        }
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 86400; if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600; if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60; if (interval > 1) return Math.floor(interval) + " minutes ago";
+            return "Just now";
+        }
+        renderActivityLog();
+        renderAlerts();
     });
-  </script>
+    </script>
 </body>
-
 </html>
