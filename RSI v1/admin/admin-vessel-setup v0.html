@@ -145,8 +145,6 @@
       .then(data => {
         const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
         sidebarPlaceholder.innerHTML = data;
-
-        // Script to set the active state after the sidebar is loaded
         const currentPage = 'admin-vessel-setup';
         const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
         if (activeLink) {
