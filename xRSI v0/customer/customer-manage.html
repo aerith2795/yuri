@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RSI Customer • Manage Crew</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link href="../assets/ripple.css" rel="stylesheet">
+    <link href="page.css" rel="stylesheet">
+    <style>
+        .status-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .status-badge.green {
+            background-color: var(--r-green);
+        }
+
+        .status-badge.orange {
+            background-color: var(--r-orange);
+        }
+
+        .status-badge.red {
+            background-color: var(--r-red);
+        }
+
+        .status-badge.blue {
+            background-color: var(--r-blue);
+        }
+
+        .status-badge.gray {
+            background-color: var(--r-gray);
+        }
+
+        .status-legend {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .status-legend .item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+
+        .table th.checkbox-col,
+        .table td.checkbox-col {
+            text-align: center;
+            width: 40px;
+        }
+
+        .table .action-col {
+            width: 120px;
+            text-align: center;
+        }
+
+        /* Increased width for 3 buttons */
+
+        .panel-heading .btn {
+            margin-top: -5px;
+        }
+
+        .quick-actions-bar {
+            background-color: #f5f5f5;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .modal-body .nav-tabs {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Manage Crew & Invitations</h2>
+                    <p>Manage registered crew, process requests, and invite new members to the Smart Induction portal.
+                    </p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading"><i class="fa fa-users"></i> Crew Management</div>
+                    <div class="panel-body">
+                        <div class="quick-actions-bar">
+                            <strong style="margin-right: 15px;">With selected:</strong>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="accept" title="Accept"><i
+                                    class="fa fa-check text-success"></i> Accept</button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="reject" title="Reject"><i
+                                    class="fa fa-times text-danger"></i> Reject</button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="reset-password"
+                                title="Reset Password"><i class="fa fa-refresh text-blue"></i> Reset Password</button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="delete" title="Delete"><i
+                                    class="fa fa-trash text-danger"></i> Delete</button>
+                        </div>
+
+                        <div class="status-legend">
+                            <div class="item"><span class="status-badge blue"></span> New Applicant</div>
+                            <div class="item"><span class="status-badge green"></span> Onboarding Complete</div>
+                            <div class="item"><span class="status-badge orange"></span> Pending Onboarding</div>
+                            <div class="item"><span class="status-badge red"></span> Deletion Requested</div>
+                            <div class="item"><span class="status-badge gray"></span> Rejected</div>
+                        </div>
+                        <hr style="margin-top:10px;">
+
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-col"><input type="checkbox" id="selectAll"></th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Rank / Position</th>
+                                    <th class="action-col">Actions</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="crewTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <i class="fa fa-paper-plane"></i> Invitation Hub
+                        <button class="btn btn-primary btn-xs pull-right" data-toggle="modal"
+                            data-target="#inviteModal"><i class="fa fa-plus"></i> Invite Crew</button>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Date Invited</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invitationsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewEditModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">View / Edit Crew</h4>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tabProfile">Profile Summary</a></li>
+                        <li><a data-toggle="tab" href="#tabPersonal">Personal Details</a></li>
+                        <li><a data-toggle="tab" href="#tabNok">Next of Kin</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tabProfile" class="tab-pane fade in active">
+                            <div class="row" style="padding-top:20px;">
+                                <div class="form-group col-sm-6"><label>First Name</label><input type="text"
+                                        id="editFirstName" class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Surname</label><input type="text"
+                                        id="editLastName" class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Email</label><input type="email" id="editEmail"
+                                        class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Mobile</label><input type="tel" id="editMobile"
+                                        class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Company</label><input type="text"
+                                        id="editCompany" class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Position / Rank</label><input type="text"
+                                        id="editRank" class="form-control"></div>
+                                <div class="form-group col-sm-12"><label>Remarks</label><textarea id="editRemarks"
+                                        class="form-control" rows="2"></textarea></div>
+                            </div>
+                        </div>
+                        <div id="tabPersonal" class="tab-pane fade">
+                            <div class="row" style="padding-top:20px;">
+                                <div class="form-group col-sm-4"><label>Gender</label><input type="text" id="editGender"
+                                        class="form-control"></div>
+                                <div class="form-group col-sm-4"><label>Date of Birth</label><input type="date"
+                                        id="editDob" class="form-control"></div>
+                                <div class="form-group col-sm-4"><label>Place of Birth</label><input type="text"
+                                        id="editPob" class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Nationality</label><input type="text"
+                                        id="editNationality" class="form-control"></div>
+                                <div class="form-group col-sm-6"><label>Phone</label><input type="tel" id="editPhone"
+                                        class="form-control"></div>
+                                <div class="form-group col-sm-12"><label>Residence Address</label><input type="text"
+                                        id="editAddress" class="form-control"></div>
+                            </div>
+                        </div>
+                        <div id="tabNok" class="tab-pane fade">
+                            <div style="padding-top:20px;">
+                                <h4>Next of Kin 1</h4>
+                                <div class="row">
+                                    <div class="form-group col-sm-4"><label>Relationship</label><input type="text"
+                                            id="editNok1Rel" class="form-control"></div>
+                                    <div class="form-group col-sm-8"><label>Full Name</label><input type="text"
+                                            id="editNok1Name" class="form-control"></div>
+                                    <div class="form-group col-sm-6"><label>Mobile</label><input type="tel"
+                                            id="editNok1Mobile" class="form-control"></div>
+                                    <div class="form-group col-sm-6"><label>Email</label><input type="email"
+                                            id="editNok1Email" class="form-control"></div>
+                                </div>
+                                <hr>
+                                <h4>Next of Kin 2</h4>
+                                <div class="row">
+                                    <div class="form-group col-sm-4"><label>Relationship</label><input type="text"
+                                            id="editNok2Rel" class="form-control"></div>
+                                    <div class="form-group col-sm-8"><label>Full Name</label><input type="text"
+                                            id="editNok2Name" class="form-control"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" id="viewEditModalFooter"></div>
+            </div>
+        </div>
+    </div>
+    <div id="resetPasswordModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Reset Password</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="radio"><label><input type="radio" name="resetType" value="auto" checked> Auto-generate a
+                            new password</label></div>
+                    <div class="radio"><label><input type="radio" name="resetType" value="manual"> Let me create a
+                            password</label></div>
+                    <div class="form-group" id="manualPasswordGroup" style="display:none; margin-top:15px;"><label>New
+                            Password</label><input type="password" class="form-control"></div>
+                    <hr>
+                    <div class="checkbox"><label><input type="checkbox" id="forceChange" checked> Force password change
+                            on first sign-in</label></div>
+                </div>
+                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
+                        class="btn btn-primary">Reset Password</button></div>
+            </div>
+        </div>
+    </div>
+    <div id="inviteModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Invite Crew to Smart Induction</h4>
+                </div>
+                <div class="modal-body"><label>Select Joiners to Invite</label><select class="form-control"
+                        id="joinerList" multiple style="width:100%;"></select>
+                    <p class="help-block">The searchable list makes it easy to find a name even with hundreds of
+                        entries.</p>
+                </div>
+                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
+                        class="btn btn-primary" id="sendInvitesBtn">Send Invitation</button></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+            // --- INITIALIZATION & MOCK DATA ---
+            fetch('customer-sidebar.html')
+                .then(response => response.text())
+                .then(data => {
+                    const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                    sidebarPlaceholder.innerHTML = data;
+
+                    const currentPage = 'customer-manage';
+                    const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                    if (activeLink) {
+                        activeLink.classList.add('active');
+                    }
+                })
+                .catch(error => console.error('Error fetching sidebar:', error));
+
+
+            const joinerData = [{ id: 1, text: 'Adonis Reyes' }, { id: 2, text: 'Isabela Santos' }, { id: 3, text: 'Mateo de Leon' }, { id: 4, text: 'Sofia Mercado' }, { id: 5, text: 'Liam Anderson' }, { id: 6, text: 'Olivia Chen' }];
+            $('#joinerList').select2({ placeholder: "Search for a joiner...", data: joinerData, dropdownParent: $('#inviteModal') });
+            const crewData = [{ id: 1, firstName: 'Anya', lastName: 'Bautista', email: 'anya.b@example.com', rank: 'Deck Cadet', status: 'blue', remarks: 'New application received.', dob: '2001-05-10', phone: 'N/A', mobile: '+63-917-555-0101', nationality: 'Filipino', company: 'RSI', gender: 'Female', pob: 'Manila', address: '123 Rizal Ave, Manila', nok1: { rel: 'Mother', name: 'Maria Bautista', mobile: '+63-918-555-0102', email: 'maria.b@example.com' }, nok2: { rel: 'Father', name: 'Roberto Bautista' } }, { id: 2, firstName: 'Liam', lastName: 'Smith', email: 'liam.s@example.com', rank: 'Chief Officer', status: 'green', remarks: 'Onboarding completed on 2025-09-28.', dob: '1988-11-20', phone: '+1-202-555-0179', mobile: '+1-202-555-0180', nationality: 'American', company: 'RSI', gender: 'Male', pob: 'New York', address: '456 5th Ave, New York', nok1: { rel: 'Spouse', name: 'Emma Smith', mobile: '+1-202-555-0181', email: 'emma.s@example.com' }, nok2: {} }, { id: 3, firstName: 'Isabella', lastName: 'Garcia', email: 'isabella.g@example.com', rank: '2nd Engineer', status: 'orange', remarks: 'Needs to upload GDPR.', dob: '1992-02-15', phone: '+34-91-555-0142', mobile: '+34-60-555-0143', nationality: 'Spanish', company: 'RSI', gender: 'Female', pob: 'Madrid', address: '789 Gran Vía, Madrid', nok1: { rel: 'Brother', name: 'Mateo Garcia', mobile: '+34-60-555-0144', email: 'mateo.g@example.com' }, nok2: {} }, { id: 4, firstName: 'Kenji', lastName: 'Tanaka', email: 'kenji.t@example.com', rank: 'Oiler', status: 'orange', remarks: 'Accepted on 2025-09-30. Needs to complete onboarding.', dob: '1995-07-22', phone: '+81-3-5555-0181', mobile: '+81-90-5555-0182', nationality: 'Japanese', company: 'RSI', gender: 'Male', pob: 'Tokyo', address: '1-1 Chiyoda, Tokyo', nok1: { rel: 'Father', name: 'Haruto Tanaka', mobile: '+81-90-5555-0183', email: '' }, nok2: {} }, { id: 5, firstName: 'Carlos', lastName: 'Dela Cruz', email: 'carlos.d@example.com', rank: 'Able Seaman', status: 'red', remarks: 'Deletion requested on 2025-10-01.', dob: '1990-06-01', phone: '+63-917-555-0123', mobile: '+63-917-555-0124', nationality: 'Filipino', company: 'RSI', gender: 'Male', pob: 'Cebu', address: '101 Colon St, Cebu', nok1: { rel: 'Sister', name: 'Ana Dela Cruz', mobile: '+63-919-555-0125', email: 'ana.d@example.com' }, nok2: {} }, { id: 6, firstName: 'Fatima', lastName: 'Al-Jamil', email: 'fatima.a@example.com', rank: 'Cook', status: 'green', remarks: 'Onboarding completed on 2025-09-29.', dob: '1985-12-05', phone: '+971-4-555-0199', mobile: '+971-50-555-0199', nationality: 'Emirati', company: 'RSI', gender: 'Female', pob: 'Dubai', address: '22 Sheikh Zayed Rd, Dubai', nok1: { rel: 'Husband', name: 'Yusuf Al-Jamil', mobile: '+971-50-555-0200', email: '' }, nok2: {} }, { id: 7, firstName: 'Andres', lastName: 'Mercado', email: 'andres.m@example.com', rank: 'Captain', status: 'gray', remarks: 'Rejected on 2025-10-02.', dob: '1978-03-30', phone: '+63-928-555-0155', mobile: '+63-928-555-0156', nationality: 'Filipino', company: 'RSI', gender: 'Male', pob: 'Davao', address: '333 Bonifacio St, Davao', nok1: { rel: 'Spouse', name: 'Elena Mercado', mobile: '+63-928-555-0157', email: '' }, nok2: {} }, { id: 8, firstName: 'Chloe', lastName: 'Nguyen', email: 'chloe.n@example.com', rank: 'Stewardess', status: 'blue', remarks: 'New application received.', dob: '1999-08-12', phone: '+84-90-555-0168', mobile: '+84-90-555-0169', nationality: 'Vietnamese', company: 'RSI', gender: 'Female', pob: 'Hanoi', address: '44 Hang Gai, Hanoi', nok1: { rel: 'Brother', name: 'Bao Nguyen', mobile: '+84-90-555-0170', email: 'bao.n@example.com' }, nok2: {} }];
+            const invitations = [{ name: 'Miguel Castro', email: 'miguel.c@example.com', date: '2025-10-01' }];
+
+            // --- TABLE RENDERING ---
+            function renderCrewTable() {
+                const tableBody = $('#crewTableBody').empty();
+                const statusMap = { green: "Onboarding Complete", orange: "Pending Onboarding", red: "Deletion Requested", blue: "New Applicant", gray: "Rejected" };
+                crewData.forEach(crew => {
+                    let actionsHtml = '';
+                    if (crew.status === 'blue') {
+                        actionsHtml = `<button class="btn btn-xs btn-default action-btn" data-action="accept" title="Accept"><i class="fa fa-check text-success"></i></button> <button class="btn btn-xs btn-default action-btn" data-action="reject" title="Reject"><i class="fa fa-times text-danger"></i></button> <button class="btn btn-xs btn-default action-btn" data-action="view" title="View/Edit"><i class="fa fa-eye"></i></button>`;
+                    } else if (crew.status !== 'gray') {
+                        actionsHtml = `<button class="btn btn-xs btn-default action-btn" data-action="view" title="View/Edit"><i class="fa fa-eye"></i></button>`;
+                    }
+                    const row = $(`<tr data-id="${crew.id}"></tr>`).html(`
+                        <td class="checkbox-col"><input type="checkbox" class="row-select"></td>
+                        <td><span class="status-badge ${crew.status}" data-toggle="tooltip" title="${statusMap[crew.status]}"></span> ${crew.firstName} ${crew.lastName}</td>
+                        <td>${crew.email}</td><td>${crew.rank}</td>
+                        <td class="action-col">${actionsHtml}</td><td>${crew.remarks}</td>`);
+                    tableBody.append(row);
+                });
+                $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+                updateQuickActionsState();
+            }
+            function renderInvitationsTable() {
+                const tableBody = $('#invitationsTableBody').empty();
+                invitations.forEach(invite => { tableBody.append(`<tr><td>${invite.name}</td><td>${invite.email}</td><td>${invite.date}</td></tr>`); });
+            }
+
+            // --- CHECKBOX & QUICK ACTIONS LOGIC ---
+            function updateQuickActionsState() {
+                $('.row-select:checked').length > 0 ? $('.quick-actions-bar').fadeIn(200) : $('.quick-actions-bar').fadeOut(200);
+            }
+            $('#selectAll').on('change', function () { $('.row-select').prop('checked', this.checked); updateQuickActionsState(); });
+            $('#crewTableBody').on('change', '.row-select', updateQuickActionsState);
+
+            // --- ACTION HANDLING ---
+            function handleAction(action, ids) {
+                if (ids.length === 0) { alert('Please select at least one crew member.'); return; }
+                const today = new Date().toISOString().slice(0, 10);
+                ids.forEach(id => {
+                    const crewMember = crewData.find(c => c.id === parseInt(id));
+                    if (!crewMember) return;
+                    switch (action) {
+                        case 'accept':
+                            if (crewMember.status === 'blue') { crewMember.status = 'orange'; crewMember.remarks = `Accepted on ${today}. Awaiting onboarding.`; }
+                            break;
+                        case 'reject':
+                            if (crewMember.status === 'blue') { crewMember.status = 'gray'; crewMember.remarks = `Rejected on ${today}.`; }
+                            break;
+                        case 'view':
+                            $('#viewEditModal').data('crewId', crewMember.id);
+                            // Tab 1
+                            $('#editFirstName').val(crewMember.firstName); $('#editLastName').val(crewMember.lastName); $('#editEmail').val(crewMember.email); $('#editMobile').val(crewMember.mobile); $('#editCompany').val(crewMember.company); $('#editRank').val(crewMember.rank); $('#editRemarks').val(crewMember.remarks);
+                            // Tab 2
+                            $('#editGender').val(crewMember.gender); $('#editDob').val(crewMember.dob); $('#editPob').val(crewMember.pob); $('#editNationality').val(crewMember.nationality); $('#editPhone').val(crewMember.phone); $('#editAddress').val(crewMember.address);
+                            // Tab 3
+                            $('#editNok1Rel').val(crewMember.nok1.rel); $('#editNok1Name').val(crewMember.nok1.name); $('#editNok1Mobile').val(crewMember.nok1.mobile); $('#editNok1Email').val(crewMember.nok1.email);
+                            $('#editNok2Rel').val(crewMember.nok2.rel); $('#editNok2Name').val(crewMember.nok2.name);
+
+                            // Dynamic Footer
+                            const footer = $('#viewEditModalFooter').empty();
+                            if (crewMember.status === 'blue') {
+                                footer.html(`<button class="btn btn-danger" id="modalBtnReject">Reject</button>
+                                             <button class="btn btn-default" data-dismiss="modal">Close</button>
+                                             <button class="btn btn-success" id="modalBtnAccept">Accept</button>`);
+                            } else {
+                                footer.html(`<button class="btn btn-default" id="modalBtnReset">Reset Password</button>
+                                             <button class="btn btn-default" data-dismiss="modal">Close</button>
+                                             <button class="btn btn-primary" id="modalBtnSave">Save Changes</button>`);
+                            }
+                            $('#viewEditModal').modal('show');
+                            return;
+                        case 'reset-password': $('#resetPasswordModal').modal('show'); return;
+                    }
+                });
+                if (action === 'delete' && confirm(`Are you sure you want to delete ${ids.length} crew member(s)?`)) { alert(`Simulating deletion of crew IDs: ${ids.join(', ')}`); }
+                else if (action !== 'view' && action !== 'reset-password' && action !== 'delete') { renderCrewTable(); }
+            }
+            $('#crewTableBody').on('click', '.action-btn', function () { handleAction($(this).data('action'), [$(this).closest('tr').data('id')]); });
+            $('.bulk-action').on('click', function (e) {
+                e.preventDefault();
+                const selectedIds = $('.row-select:checked').map(function () { return $(this).closest('tr').data('id'); }).get();
+                handleAction($(this).data('action'), selectedIds);
+            });
+            $('#sendInvitesBtn').on('click', function () {
+                const selected = $('#joinerList').select2('data');
+                if (selected.length > 0) { alert(`Simulating sending invites to: ${selected.map(s => s.text).join(', ')}`); $('#inviteModal').modal('hide'); } else { alert('Please select at least one joiner to invite.'); }
+            });
+            $('input[name="resetType"]').on('change', function () { $('#manualPasswordGroup').toggle(this.value === 'manual'); });
+
+            // --- DYNAMIC MODAL FOOTER ACTIONS ---
+            $('#viewEditModal').on('click', '#modalBtnSave', function () { alert('Crew details saved (simulation).'); $('#viewEditModal').modal('hide'); });
+            $('#viewEditModal').on('click', '#modalBtnReset', function () { $('#resetPasswordModal').modal('show'); });
+            $('#viewEditModal').on('click', '#modalBtnAccept', function () {
+                const id = $('#viewEditModal').data('crewId');
+                handleAction('accept', [id]);
+                $('#viewEditModal').modal('hide');
+            });
+            $('#viewEditModal').on('click', '#modalBtnReject', function () {
+                const id = $('#viewEditModal').data('crewId');
+                handleAction('reject', [id]);
+                $('#viewEditModal').modal('hide');
+            });
+
+            renderCrewTable();
+            renderInvitationsTable();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,383 @@
+/* ===============================
+   Ripple Global Styles (ripple.css)
+   =============================== */
+
+/* Root colors & font */
+:root {
+  --r-dark: #0b0f24;
+  --r-gray: #5d7fac;
+  --r-blue: #3f91ff;
+  --r-red: #e32f31;
+  --r-orange: #ff783f;
+  --r-light: #eff4fa;
+  --r-green: #2d8548;
+  --r-font: "Overpass", sans-serif;
+}
+
+/* Base body styles */
+body {
+  font-family: var(--r-font);
+  background-color: var(--r-light);
+  color: var(--r-dark);
+  margin: 0;
+  padding: 0;
+}
+
+/* ===============================
+     Buttons (override Bootstrap 3)
+     =============================== */
+.btn-primary {
+  background-color: var(--r-blue);
+  border-color: var(--r-blue);
+  color: white;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #2a75d9;
+  border-color: #2a75d9;
+}
+.btn-danger {
+  background: var(--r-red);
+  border-color: var(--r-red);
+  color: #fff;
+}
+.btn-danger:hover {
+  background: #b82123;
+  border-color: #b82123;
+}
+.btn-success {
+  background: var(--r-green);
+  border-color: var(--r-green);
+  color: #fff;
+}
+.btn-success:hover {
+  background: #256d3b;
+  border-color: #256d3b;
+}
+.btn-warning {
+  background: var(--r-orange);
+  border-color: var(--r-orange);
+  color: #fff;
+}
+.btn-warning:hover {
+  background: #e66a2c;
+  border-color: #e66a2c;
+}
+.btn-default {
+  background: var(--r-light);
+  border-color: var(--r-blue);
+  color: var(--r-blue);
+}
+.btn-default:hover {
+  background: var(--r-light);
+  border-color: var(--r-blue);
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--r-blue);
+  color: var(--r-blue);
+}
+/* ========================================
+   Ripple Light Button Variants
+   Inspired by btn-default
+   ======================================== */
+
+/* Base light button */
+.btn-light {
+  background: var(--r-light);
+  border: 1px solid transparent;
+  color: var(--r-dark);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-light:hover,
+.btn-light:focus {
+  background: #fff;
+  border-color: var(--r-gray);
+  color: var(--r-dark);
+}
+
+/* Ripple Light Variants */
+.btn-light-blue {
+  background: var(--r-light);
+  border: 1px solid var(--r-blue);
+  color: var(--r-blue);
+}
+
+.btn-light-blue:hover,
+.btn-light-blue:focus {
+  background: #fff;
+  border-color: var(--r-blue);
+  color: var(--r-blue);
+}
+
+.btn-light-green {
+  background: var(--r-light);
+  border: 1px solid var(--r-green);
+  color: var(--r-green);
+}
+
+.btn-light-green:hover,
+.btn-light-green:focus {
+  background: #fff;
+  border-color: var(--r-green);
+  color: var(--r-green);
+}
+
+.btn-light-red {
+  background: var(--r-light);
+  border: 1px solid var(--r-red);
+  color: var(--r-red);
+}
+
+.btn-light-red:hover,
+.btn-light-red:focus {
+  background: #fff;
+  border-color: var(--r-red);
+  color: var(--r-red);
+}
+
+.btn-light-orange {
+  background: var(--r-light);
+  border: 1px solid var(--r-orange);
+  color: var(--r-orange);
+}
+
+.btn-light-orange:hover,
+.btn-light-orange:focus {
+  background: #fff;
+  border-color: var(--r-orange);
+  color: var(--r-orange);
+}
+
+.btn-light-gray {
+  background: var(--r-light);
+  border: 1px solid var(--r-gray);
+  color: var(--r-gray);
+}
+
+.btn-light-gray:hover,
+.btn-light-gray:focus {
+  background: #fff;
+  border-color: var(--r-gray);
+  color: var(--r-gray);
+}
+
+
+
+/* ===============================
+     Labels for required fields
+     =============================== */
+td.required-field {
+  background-color: #ffecec;
+  color: var(--r-red);
+  font-weight: 600;
+}
+label.required-field::after {
+  content: " *";
+  color: var(--r-red);
+  font-weight: 600;
+}
+
+/* ===============================
+     Form controls
+     =============================== */
+.checkbox-container label {
+  cursor: pointer;
+}
+.checkbox-container input[type="checkbox"] {
+  margin-right: 8px;
+}
+.form-control:focus {
+  border-color: var(--r-blue);
+  box-shadow: 0 0 5px var(--r-blue);
+}
+.has-error .form-control {
+  border-color: var(--r-red);
+  box-shadow: 0 0 5px var(--r-red);
+}
+.form-control[readonly] {
+  background: #f9f9f9;
+  color: #666;
+  cursor: not-allowed;
+}
+.form-group label {
+  font-weight: 500;
+  color: var(--r-dark);
+}
+
+/* ===============================
+     Select2
+     =============================== */
+.select2-container .select2-selection--single {
+  height: 34px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.select2-container--default
+  .select2-selection--single
+  .select2-selection__rendered {
+  line-height: 32px;
+}
+
+/* ===============================
+     Alerts
+     =============================== */
+.alert {
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+/* ===============================
+     Dark mode
+     =============================== */
+.theme-toggle {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 1000;
+}
+body.dark-mode {
+  background: var(--r-dark);
+  color: #f5f5f5;
+}
+body.dark-mode .panel,
+body.dark-mode .login-card,
+body.dark-mode .registration-card {
+  background: #1a1d2e;
+  color: #f5f5f5;
+}
+body.dark-mode .form-control {
+  background: #2a2e44;
+  color: #f5f5f5;
+  border: 1px solid #3f91ff33;
+}
+body.dark-mode .btn-primary {
+  background: var(--r-blue);
+  border-color: var(--r-blue);
+}
+
+/* ===============================
+     Custom Labels / Tags
+     =============================== */
+.label {
+  display: inline-block;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 2px 8px;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+.label-blue {
+  background-color: rgba(63, 145, 255, 0.1);
+  color: var(--r-blue);
+  border: 1px solid var(--r-blue);
+}
+.label-red {
+  background-color: rgba(227, 47, 49, 0.1);
+  color: var(--r-red);
+  border: 1px solid var(--r-red);
+}
+.label-green {
+  background-color: rgba(45, 133, 72, 0.1);
+  color: var(--r-green);
+  border: 1px solid var(--r-green);
+}
+.label-orange {
+  background-color: rgba(255, 120, 63, 0.1);
+  color: var(--r-orange);
+  border: 1px solid var(--r-orange);
+}
+.label-gray {
+  background-color: rgba(93, 127, 172, 0.1);
+  color: var(--r-gray);
+  border: 1px solid var(--r-gray);
+}
+.label-dark {
+  background-color: rgba(11, 15, 36, 0.1);
+  color: var(--r-dark);
+  border: 1px solid var(--r-dark);
+}
+.label-light {
+  background-color: var(--r-light);
+  color: var(--r-dark);
+  border: 1px solid var(--r-dark);
+}
+
+/* ===============================
+     Utility text colors
+     =============================== */
+.text-blue {
+  color: var(--r-blue) !important;
+}
+.text-red {
+  color: var(--r-red) !important;
+}
+.text-green {
+  color: var(--r-green) !important;
+}
+.text-orange {
+  color: var(--r-orange) !important;
+}
+.text-gray {
+  color: var(--r-gray) !important;
+}
+.text-dark {
+  color: var(--r-dark) !important;
+}
+.text-light {
+  color: var(--r-light) !important;
+}
+
+/* ===============================
+     Responsive grid layout
+     =============================== */
+.form-grid {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+.columns-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.columns-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.columns-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.columns-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  .columns-4,
+  .columns-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===============================
+     Welcome Banner
+     =============================== */
+.welcome-banner {
+      background: linear-gradient(135deg, var(--r-blue) 0%, var(--r-dark) 100%);
+      color: var(--r-light);
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+    }
+
+    .welcome-banner h2 {
+      margin-top: 0;
+      font-weight: 600;
+    }

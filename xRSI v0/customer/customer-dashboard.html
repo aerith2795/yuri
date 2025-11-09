@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Customer • Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/ripple.css">
+  <link rel="stylesheet" href="page.css">
+  <style>
+    .welcome-banner h2 {
+      color: var(--r-light);
+    }
+
+    .welcome-banner p {
+      opacity: 0.9;
+      margin-bottom: 0;
+      color: #fff !important;
+    }
+
+    /* Enhanced Panel Styles */
+    .panel {
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--r-border);
+      margin-bottom: 25px;
+      transition: transform 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+    }
+
+    .panel:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-5px);
+    }
+
+    .panel-heading {
+      background-color: white;
+      border-bottom: 1px solid var(--r-border);
+      padding: 18px 20px;
+      border-radius: 12px 12px 0 0;
+      font-weight: 600;
+      color: var(--r-dark);
+      font-size: 1.1rem;
+    }
+
+    .panel-heading i {
+      margin-right: 10px;
+      color: var(--r-blue);
+    }
+
+    .panel-body {
+      padding: 20px;
+    }
+
+    .panel-footer {
+      background-color: white;
+      border-top: 1px solid var(--r-border);
+      border-radius: 0 0 12px 12px;
+      padding: 15px 20px;
+    }
+
+    /* Enhanced Stat Cards */
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s, box-shadow 0.3s;
+      border-left: 4px solid var(--r-blue);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-shadow-hover);
+    }
+
+    .stat-card.warning {
+      border-left-color: var(--r-orange);
+    }
+
+    .stat-card.danger {
+      border-left-color: var(--r-red);
+    }
+
+    .stat-card .stat-number {
+      font-size: 2.5em;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 5px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 1em;
+      color: var(--r-gray);
+      font-weight: 500;
+    }
+
+    .stat-card .stat-icon {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 4em;
+      opacity: 0.1;
+    }
+
+    .stat-trend {
+      display: flex;
+      align-items: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    .trend-up {
+      color: var(--r-green);
+    }
+
+    .trend-down {
+      color: var(--r-red);
+    }
+
+
+    /* Enhanced List Items */
+    .list-group-item .badge {
+      background-color: var(--r-blue);
+      font-weight: 500;
+    }
+
+    .list-group-item-action {
+      transition: all 0.2s;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border: 1px solid var(--r-border);
+    }
+
+    .list-group-item-action:hover {
+      background-color: var(--r-blue-light);
+      transform: translateX(5px);
+    }
+
+    .config-status .label {
+      font-size: 12px;
+      padding: 6px 10px;
+      font-weight: 500;
+    }
+
+    .label-blue {
+      background-color: var(--r-blue);
+    }
+
+    .label-orange {
+      background-color: var(--r-orange);
+    }
+
+    .label-green {
+      background-color: var(--r-green);
+    }
+
+    /* Enhanced Timeline */
+    .timeline {
+      list-style: none;
+      padding: 10px 0 10px;
+      position: relative;
+    }
+
+    .timeline:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20px;
+      width: 2px;
+      background-color: #f0f0f0;
+    }
+
+    .timeline-item {
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .timeline-item:before,
+    .timeline-item:after {
+      content: " ";
+      display: table;
+    }
+
+    .timeline-item:after {
+      clear: both;
+    }
+
+    .timeline-icon {
+      position: absolute;
+      left: 13px;
+      top: 5px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: var(--r-blue);
+      color: white;
+      text-align: center;
+      line-height: 16px;
+      font-size: 8px;
+    }
+
+    .timeline-content {
+      margin-left: 50px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      padding: 10px 15px;
+    }
+
+    .timeline-content .action {
+      font-weight: 500;
+    }
+
+    .timeline-content .time {
+      color: #777;
+      font-size: 12px;
+      cursor: help;
+    }
+
+    /* Enhanced Progress Bar */
+    .progress {
+      height: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      background-color: var(--r-border);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--r-blue), #5a7aff);
+    }
+
+    /* Enhanced Embarkation Card */
+    .embarkation-card {
+      /* background: linear-gradient(135deg, var(--r-blue) 0%, var(--r-dark) 100%); */
+      background-color: var(--r-dark);
+      color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 25px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .embarkation-card h4 {
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    .embarkation-details p {
+      margin-bottom: 8px;
+      display: flex;
+    }
+
+    .embarkation-details strong {
+      min-width: 80px;
+      display: inline-block;
+    }
+
+    /* Enhanced Quota Display */
+    .quota-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .quota-info h5 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .quota-percentage {
+      color: var(--r-blue);
+      font-weight: 600;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 992px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .stat-card {
+        border-right: none;
+        border-bottom: 1px solid var(--r-border);
+      }
+
+      .stat-card:last-child {
+        border-bottom: none;
+      }
+
+      .panel-body {
+        padding: 15px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <div class="welcome-banner">
+            <div id="welcome-container">
+              <h2 style="color: var(--r-light);">Hi, Noctis Lucis Caelum!</h2>
+              <p>Welcome to M/V Yurisan Dozo Smart Induction. Here is a quick overview of your crew management and
+                portal configuration.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Stats Cards -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div id="stat-total-crew" class="stat-number text-blue">0</div>
+            <div class="stat-label">Total Crew</div>
+            <i class="fa fa-users stat-icon text-blue"></i>
+            <div class="stat-trend trend-up">
+              <i class="fa fa-arrow-up"></i>
+              <span>12% from last month</span>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div id="stat-new-applicants" class="stat-number text-orange">0</div>
+            <div class="stat-label">New Applicants</div>
+            <i class="fa fa-user-plus stat-icon text-orange"></i>
+            <div class="stat-trend trend-up">
+              <i class="fa fa-arrow-up"></i>
+              <span>3 new today</span>
+            </div>
+          </div>
+          <div class="stat-card danger">
+            <div id="stat-deletion-requests" class="stat-number text-red">0</div>
+            <div class="stat-label">Deletion Requests</div>
+            <i class="fa fa-trash stat-icon text-red"></i>
+            <div class="stat-trend trend-down">
+              <i class="fa fa-arrow-down"></i>
+              <span>2 resolved</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="left-column">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-users"></i> Crew Overview</div>
+              <div class="panel-body">
+                <h4><i class="fa fa-inbox"></i> Awaiting Action</h4>
+                <div class="list-group" id="crew-action-list"></div>
+              </div>
+              <div class="panel-footer text-right">
+                <a href="customer-manage.html" class="btn btn-primary btn-sm">Manage All Crew <i
+                    class="fa fa-arrow-right"></i></a>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-history"></i> Recent Activity</div>
+              <div class="panel-body">
+                <ul class="timeline" id="activity-log-list">
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="right-column">
+            <div class="embarkation-card">
+              <h4><i class="fa fa-anchor"></i> Next Embarkation</h4>
+              <div class="embarkation-details" id="embarkation-summary"></div>
+              <div class="text-right">
+                <hr />
+                <a href="customer-vessel-info.html" class="btn btn-primary btn-sm">Manage Vessel Info</a>
+              </div>
+            </div>
+
+
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-hdd-o"></i> Certificate Storage Quota</div>
+              <div class="panel-body">
+                <div class="quota-info">
+                  <h5>Storage Usage</h5>
+                  <span class="quota-percentage">82%</span>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-info" style="width:82%" title="410 MB Used"></div>
+                </div>
+                <small class="text-muted">410 MB of 500 MB used</small>
+              </div>
+            </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-cogs"></i> Portal Setup Status</div>
+              <ul class="list-group config-status" id="config-status-list"></ul>
+              <div class="panel-footer text-right">
+                <a href="customer-settings.html" class="btn btn-primary btn-sm">Configure Settings</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    $(function () {
+      // --- INITIALIZATION & MOCK DATA ---
+      fetch('customer-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="customer-dashboard"]');
+          if (activeLink) activeLink.classList.add('active');
+        });
+
+      const crewData = [
+        { id: 1, firstName: 'Anya', lastName: 'Bautista', status: 'blue', rank: 'Deck Cadet' },
+        { id: 2, firstName: 'Liam', lastName: 'Smith', status: 'green', rank: 'Chief Officer' },
+        { id: 3, firstName: 'Isabella', lastName: 'Garcia', status: 'orange', rank: '2nd Engineer' },
+        { id: 4, firstName: 'Carlos', lastName: 'Dela Cruz', status: 'red', rank: 'Able Seaman' },
+        { id: 8, firstName: 'Chloe', lastName: 'Nguyen', status: 'blue', rank: 'Stewardess' }
+      ];
+
+      const customerActivityLog = [
+        { icon: 'fa-user-plus', action: "Accepted applicant <strong>Anya Bautista</strong>.", timestamp: new Date(Date.now() - 3 * 60000) }, // 3 minutes ago
+        { icon: 'fa-shield', action: "Updated <strong>GDPR Policy</strong> content.", timestamp: new Date(Date.now() - 2 * 3600000) }, // 2 hours ago
+        { icon: 'fa-ship', action: "Added 2 new blocks to <strong>Visual Journey</strong>.", timestamp: new Date(Date.now() - 24 * 3600000) }, // 1 day ago
+        { icon: 'fa-paper-plane', action: "Invited 3 new crew members.", timestamp: new Date(Date.now() - 3 * 24 * 3600000) }, // 3 days ago
+      ];
+
+      // --- RENDER FUNCTIONS ---
+      function renderCrewSummary() {
+        $('#stat-total-crew').text(crewData.length);
+        const newApplicants = crewData.filter(c => c.status === 'blue');
+        $('#stat-new-applicants').text(newApplicants.length);
+        $('#stat-deletion-requests').text(crewData.filter(c => c.status === 'red').length);
+
+        const actionList = $('#crew-action-list').empty();
+        if (newApplicants.length > 0) {
+          newApplicants.slice(0, 3).forEach(crew => {
+            actionList.append(`
+              <a href="customer-manage.html" class="list-group-item list-group-item-action">
+                <strong>${crew.firstName} ${crew.lastName}</strong> 
+                <small class="text-muted">- ${crew.rank}</small>
+                <span class="label label-blue pull-right">New Applicant</span>
+              </a>
+            `);
+          });
+        } else {
+          actionList.html('<p class="text-muted text-center" style="padding: 15px;">No new applicants requiring action.</p>');
+        }
+      }
+
+      function renderEmbarkationSummary() {
+        const vesselData = JSON.parse(localStorage.getItem("vesselPageData"));
+        if (vesselData && vesselData.embarkation && vesselData.embarkation.date) {
+          $('#embarkation-summary').html(`
+            <p><strong>Date:</strong> ${vesselData.embarkation.date}</p>
+            <p><strong>Time:</strong> ${vesselData.embarkation.time}</p>
+            <p><strong>Location:</strong> ${vesselData.embarkation.location}</p>
+          `);
+        } else {
+          $('#embarkation-summary').html('<p>Next embarkation schedule is not set.</p>');
+        }
+      }
+
+      function renderActivityLog() {
+        const logList = $('#activity-log-list').empty();
+        if (customerActivityLog.length > 0) {
+          customerActivityLog.forEach(log => {
+            const absoluteTime = log.timestamp.toLocaleString();
+            const relativeTime = timeAgo(log.timestamp);
+            logList.append(`
+              <li class="timeline-item">
+                <div class="timeline-icon"><i class="fa ${log.icon}"></i></div>
+                <div class="timeline-content">
+                  <span class="action">${log.action}</span>
+                  <span class="time pull-right" data-toggle="tooltip" title="${absoluteTime}">${relativeTime}</span>
+                </div>
+              </li>
+            `);
+          });
+        } else {
+          logList.html('<li class="text-muted" style="padding:15px;">No recent activity.</li>');
+        }
+        $('[data-toggle="tooltip"]').tooltip(); // Re-initialize tooltips
+      }
+
+      function renderConfigStatus() {
+        const statusList = $('#config-status-list').empty();
+        const configs = {
+          'Visual Journey': {
+            key: 'vesselPageData',
+            check: d => d.journey && d.journey.length > 0,
+            link: 'customer-vessel-info.html',
+            value: d => `${d.journey.length} Blocks`
+          },
+          'Registration Form': {
+            key: 'registrationFormConfig_v4',
+            check: d => d.sections && d.sections.length > 0,
+            link: 'customer-registration.html',
+            value: () => 'Configured'
+          },
+          'GDPR Policy': {
+            key: 'gdprConfig',
+            check: d => d.policyContent,
+            link: 'customer-gdpr.html',
+            value: () => 'Configured'
+          },
+          'Certificates': {
+            key: 'certificatesConfig',
+            check: d => d.certificates && d.certificates.length > 0,
+            link: 'customer-certificates.html',
+            value: d => `${d.certificates.length} Defined`
+          },
+          'Familiarization Video': {
+            key: 'familiarizationConfig',
+            check: d => d.videoUrl,
+            link: 'customer-familiarization.html',
+            value: () => 'Video Uploaded'
+          }
+        };
+
+        for (const [name, config] of Object.entries(configs)) {
+          const data = JSON.parse(localStorage.getItem(config.key));
+          const isConfigured = data && config.check(data);
+          const statusLabel = isConfigured ?
+            `<span class="label label-green">OK</span>` :
+            `<span class="label label-orange">Not Set</span>`;
+          const valueText = isConfigured ?
+            `<span class="badge">${config.value(data)}</span>` : '';
+
+          statusList.append(`
+            <li class="list-group-item">
+              <a href="${config.link}" style="text-decoration:none; color:inherit;">
+                ${name} ${valueText} ${statusLabel}
+              </a>
+            </li>
+          `);
+        }
+      }
+
+      function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " years ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " months ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " days ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hours ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minutes ago";
+        return "Just now";
+      }
+
+      // --- INITIAL LOAD ---
+      renderCrewSummary();
+      renderEmbarkationSummary();
+      renderConfigStatus();
+      renderActivityLog();
+    });
+  </script>
+</body>
+
+</html>

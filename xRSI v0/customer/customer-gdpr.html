@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Customer • GDPR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+    <style>
+        body { padding-bottom: 80px; }
+        
+        /* Style for Summernote when disabled (Preview Mode) */
+        .note-editor.note-frame.panel-disabled {
+            background-color: #fff;
+            border-color: #ddd;
+        }
+        .note-editor.note-frame.panel-disabled .note-toolbar {
+            display: none;
+        }
+        .note-editor.note-frame.panel-disabled .note-editable {
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>GDPR Configuration</h2>
+                    <p>Create and configure the GDPR policy shown to crew during registration.</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading"><i class="fa fa-shield"></i> GDPR Policy Editor</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="gdprPolicyContent">Use the editor below to create the full GDPR policy. Use headings and lists for clear formatting.</label>
+                            <textarea id="gdprPolicyContent"></textarea>
+                        </div>
+                        <hr/>
+                        
+                        <h4>Crew Page Settings</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Upload GDPR Document (optional)</label>
+                                    <input type="file" id="gdprFile" class="form-control">
+                                    <p class="help-block" id="fileNameDisplay"></p>
+                                </div>
+                                <div class="form-group">
+                                    <label>Page Instructions (shown above the policy)</label>
+                                    <textarea id="gdprInstructions" class="form-control" rows="3"
+                                        placeholder="E.g., Please review the GDPR policy carefully..."></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Crew Options</label>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="showGdpr"> <b>Show GDPR page in Crew Portal</b></label>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="requireAgree"> Include checkbox: “I have read and agree…”</label>
+                                </div>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" id="allowDeletion"> Show 'Request Profile Deletion' button</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div></div>
+    </div>
+
+    <div class="sticky-footer">
+        <div class="footer-container" id="footer-btn-container"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
+    <script>
+        $(function () {
+            // Retained sidebar fetch logic
+            fetch('customer-sidebar.html')
+                .then(r => r.text())
+                .then(data => {
+                    const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                    sidebarPlaceholder.innerHTML = data;
+                    const activeLink = sidebarPlaceholder.querySelector('[data-page="customer-gdpr"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
+
+            $('#gdprPolicyContent').summernote({
+                height: 300,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link']],
+                    ['view', ['codeview', 'fullscreen']]
+                ]
+            });
+
+            const configKey = "gdprConfig";
+
+            function toggleViewMode(isEditing) {
+                $('#gdprPolicyContent').summernote(isEditing ? 'enable' : 'disable');
+                // Added #showGdpr to the list of elements to be toggled
+                $('#gdprFile, #gdprInstructions, #showGdpr, #requireAgree, #allowDeletion').prop('disabled', !isEditing);
+                if (isEditing) {
+                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
+                } else {
+                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
+                }
+            }
+
+            function saveGdprConfig() {
+                const fileInput = $("#gdprFile")[0];
+                let documentName = localStorage.getItem("gdprDocumentName") || "";
+                if (fileInput.files.length > 0) {
+                    documentName = fileInput.files[0].name;
+                    localStorage.setItem("gdprDocumentName", documentName);
+                }
+
+                const config = {
+                    policyContent: $('#gdprPolicyContent').summernote('code'),
+                    instructions: $("#gdprInstructions").val(),
+                    // Added logic to save the new checkbox state
+                    showGdprPage: $("#showGdpr").prop("checked"),
+                    requireAgree: $("#requireAgree").prop("checked"),
+                    allowDeletion: $("#allowDeletion").prop("checked"),
+                    documentName: documentName
+                };
+                localStorage.setItem(configKey, JSON.stringify(config));
+                showAlert("GDPR configuration saved!", "success");
+                toggleViewMode(false);
+            }
+
+            function loadGdprConfig() {
+                const savedConfig = JSON.parse(localStorage.getItem(configKey));
+                if (savedConfig) {
+                    $('#gdprPolicyContent').summernote('code', savedConfig.policyContent || '');
+                    $("#gdprInstructions").val(savedConfig.instructions || '');
+                    // Added logic to load the new checkbox state
+                    $("#showGdpr").prop("checked", savedConfig.showGdprPage);
+                    $("#requireAgree").prop("checked", savedConfig.requireAgree);
+                    $("#allowDeletion").prop("checked", savedConfig.allowDeletion);
+                    if(savedConfig.documentName) {
+                        $('#fileNameDisplay').text(`Current file: ${savedConfig.documentName}`);
+                    }
+                    return true;
+                } else {
+                    const defaultContent = '<h1>General Data Protection Regulation (GDPR) Policy</h1><p>We are committed to protecting your personal data. This policy outlines how we collect, use, and safeguard your information in compliance with GDPR.</p><h3>1. Data We Collect</h3><ul><li>Personal Identification Information (Name, email address, phone number, etc.)</li><li>Professional Qualifications (Certificates, licenses, etc.)</li><li>Employment History</li></ul><h3>2. How We Use Your Data</h3><p>Your data is used exclusively for crew management, payroll, and ensuring regulatory compliance.</p>';
+                    $('#gdprPolicyContent').summernote('code', defaultContent);
+                    $("#gdprInstructions").val("Please review the GDPR policy carefully before proceeding.");
+                    // Added default state for the new checkbox
+                    $("#showGdpr").prop("checked", true);
+                    $("#requireAgree").prop("checked", true);
+                    $("#allowDeletion").prop("checked", true);
+                    return false;
+                }
+            }
+            
+            $('#footer-btn-container').on('click', '#saveBtn', saveGdprConfig);
+            $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
+
+            const hasData = loadGdprConfig();
+            toggleViewMode(!hasData);
+
+            function showAlert(msg, type = 'success') {
+                const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+                $('body').append(alert);
+                setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
+            }
+        });
+    </script>
+</body>
+</html>

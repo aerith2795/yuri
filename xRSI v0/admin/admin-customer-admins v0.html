@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>RSI Admin • Manage Customer Admins</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Libs -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+
+    <!-- Ripple + page CSS -->
+    <link href="../assets/ripple.css" rel="stylesheet">
+    <link href="admin-page.css" rel="stylesheet">
+</head>
+
+<body>
+    <button type="button" id="sidebar-toggle" class="mobile-toggle">
+        <i class="fa fa-bars"></i>
+    </button>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
+
+            <!-- Main content -->
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Customer Administrators</h2>
+                    <p>Manage administrator accounts for each vessel’s customer portal.</p>
+                </div>
+
+                <!-- Table -->
+                <div class="panel">
+                    <div class="panel-heading">
+                        <i class="fa fa-user-plus"></i> Customer Admins
+                        <button type="button" class="btn btn-primary btn-xs pull-right" data-toggle="modal"
+                            data-target="#addAdminModal">
+                            <i class="fa fa-plus"></i> Add Customer Admin
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <table class="table table-bordered table-striped customer-admins-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>john@example.com</td>
+                                    <td>M/V Voyager</td>
+                                    <td><span class="label label-green">Active</span></td>
+                                    <td>
+                                        <button class="btn btn-xs btn-default view-edit-btn" data-toggle="modal"
+                                            data-target="#editAdminModal" data-name="John Doe"
+                                            data-email="john@example.com" data-role="M/V Voyager" data-status="Active">
+                                            <i class="fa fa-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-xs btn-light-orange"><i class="fa fa-refresh"></i> Reset
+                                            Password</button>
+                                        <button class="btn btn-xs btn-danger" data-toggle="modal"
+                                            data-target="#deleteCrewModal">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <!-- more rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!-- /main -->
+        </div>
+    </div>
+
+    <!-- ============= Modals ============= -->
+
+    <!-- Add Admin -->
+    <div id="addAdminModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Customer Admin</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-grid columns-2">
+                            <div class="form-group">
+                                <label>Full Name <span class="text-red">*</span></label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Email <span class="text-red">*</span></label>
+                                <input type="email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Assign Vessel</label>
+                                <select class="form-control select2" style="width: 100%;">
+                                    <option>M/V Voyager</option>
+                                    <option>M/V Explorer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="form-control">
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" class="form-control" placeholder="Leave blank to auto-generate">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm Password</label>
+                                <input type="password" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">Save</button>
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Admin -->
+    <div id="editAdminModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Edit Customer Admin</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-grid columns-2">
+                            <div class="form-group">
+                                <label>Full Name <span class="text-red">*</span></label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Email <span class="text-red">*</span></label>
+                                <input type="email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Assign Vessel</label>
+                                <select class="form-control select2" style="width: 100%;">
+                                    <option>M/V Voyager</option>
+                                    <option>M/V Explorer</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="form-control">
+                                    <option>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h5><input type="checkbox" id="togglePwd"> Change Password</h5>
+                        <div id="pwdSection" style="display:none;">
+                            <div class="form-grid columns-2">
+                                <div class="form-group">
+                                    <label>New Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Confirm Password</label>
+                                    <input type="password" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn btn-warning btn-sm"><i class="fa fa-refresh"></i> Send Reset
+                            Link</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary">Save Changes</button>
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+        fetch('admin-sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                sidebarPlaceholder.innerHTML = data;
+
+                // Script to set the active state after the sidebar is loaded
+                const currentPage = 'admin-customer-admins';
+                const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            })
+            .catch(error => console.error('Error fetching sidebar:', error));
+
+        $('.select2').select2();
+        $('#sidebar-toggle').on('click', function () {
+            $('.sidebar').toggleClass('active');
+        });
+        $('#togglePwd').on('change', function () {
+            $('#pwdSection').toggle(this.checked);
+        });
+    </script>
+</body>
+
+</html>

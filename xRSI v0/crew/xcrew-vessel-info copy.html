@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Client • Vessel Information</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple core + Page CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+
+  <style>
+    /* Scrollable About section */
+    .scrollable-container {
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    /* Carousel styling */
+    .vessel-carousel {
+      height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .vessel-carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    /* Alerts compact styling */
+    .alerts-panel .alert {
+      padding: 6px 12px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .alerts-panel .alert i {
+      margin-right: 8px;
+    }
+
+    .alerts-panel .alert button {
+      font-size: 11px;
+      padding: 2px 6px;
+    }
+
+    /* Progress bar */
+    .progress {
+      margin-bottom: 16px;
+    }
+
+    /* Success message */
+    #onboardingSuccess {
+      display: none;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div id="sidebar-placeholder"></div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+
+        <!-- Welcome + Alerts -->
+        <div class="tab-pane active" id="welcome">
+          <div class="page-header">
+            <h2>Visual Journey Aboard M/V Yurisan Dozo</h2>
+            <p>Here you will find all the information related to your journey aboard the vessel M/V Yurisan Dozo</p>
+          </div>
+
+          <!-- Vessel Info Display -->
+          <div class="panel">
+            <!-- <div class="panel-heading"><i class="fa fa-ship"></i> Visual Journey Aboard MV Yurisan Dozo</div> -->
+            <div class="panel-body">
+              <div class="row">
+                <!-- About -->
+                <div class="col-md-6">
+                  <!-- <h4><i class="fa fa-info-circle"></i> About the Vessel</h4> -->
+                  <div id="aboutPreview" class="well scrollable-container">
+                    <p class="text-muted">Loading vessel information...</p>
+                  </div>
+                </div>
+                <!-- Photos -->
+                <div class="col-md-6">
+                  <!-- <h4><i class="fa fa-picture-o"></i> Vessel Gallery</h4> -->
+                  <div id="vesselCarousel" class="carousel slide vessel-carousel" data-ride="carousel">
+                    <div class="carousel-inner" id="carouselItems">
+                      <div class="item active">
+                        <div class="well text-center text-muted">No photos uploaded</div>
+                      </div>
+                    </div>
+                    <ol class="carousel-indicators" id="carouselIndicators"></ol>
+                    <a class="left carousel-control" href="#vesselCarousel" data-slide="prev">
+                      <span class="glyphicon glyphicon-chevron-left"></span>
+                    </a>
+                    <a class="right carousel-control" href="#vesselCarousel" data-slide="next">
+                      <span class="glyphicon glyphicon-chevron-right"></span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /main -->
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <script>
+    $(function () {
+      // Load sidebar
+      fetch('crew-sidebar.html')
+        .then(r => r.text())
+        .then(data => {
+          $('#sidebar-placeholder').html(data);
+          $('[data-page="crew-vessel-info"]').addClass('active');
+        });
+
+      // Load vessel info from localStorage
+      const stored = localStorage.getItem("vesselConfig");
+      let config = stored ? JSON.parse(stored) : { aboutVessel: '', photos: [] };
+
+      $('#aboutPreview').html(config.aboutVessel || '<p class="text-muted">No information available.</p>');
+
+      // Render carousel + indicators
+      const carouselItems = $('#carouselItems').empty();
+      const indicators = $('#carouselIndicators').empty();
+      if (config.photos && config.photos.length) {
+        config.photos.forEach((p, i) => {
+          carouselItems.append(`<div class="item ${i === 0 ? 'active' : ''}"><img src="${p}" alt="Vessel Photo ${i + 1}"></div>`);
+          indicators.append(`<li data-target="#vesselCarousel" data-slide-to="${i}" class="${i === 0 ? 'active' : ''}"></li>`);
+        });
+        $('#vesselCarousel').carousel({ interval: 4000 });
+      } else {
+        carouselItems.append('<div class="item active"><div class="well text-center text-muted">No photos uploaded</div></div>');
+      }
+
+      // Onboarding progress logic (session-only)
+      const tasks = ['embark', 'cert', 'gdpr', 'video'];
+      let progress = {}; // reset on refresh
+
+      function updateProgress() {
+        const completed = tasks.filter(t => progress[t]).length;
+        $('#progressBar').css('width', (completed / tasks.length * 100) + '%');
+        $('#progressText').text(`${completed} of ${tasks.length} tasks completed`);
+
+        tasks.forEach(task => {
+          if (progress[task]) {
+            $(`#${task}Reminder`).hide();
+          } else {
+            $(`#${task}Reminder`).show();
+          }
+        });
+
+        if (completed === tasks.length) {
+          $('.progress-container').hide();
+          $('.alerts-panel').hide();
+          $('#onboardingSuccess').fadeIn();
+          setTimeout(() => $('#onboardingSuccess').fadeOut(), 5000);
+        } else {
+          $('.progress-container').show();
+          $('.alerts-panel').show();
+          $('#onboardingSuccess').hide();
+        }
+      }
+
+      updateProgress();
+
+      // CTA click handling
+      $('.complete-task').on('click', function () {
+        const task = $(this).data('task');
+        progress[task] = true;
+        updateProgress();
+
+        const urlMap = {
+          embark: 'crew-registration.html',
+          cert: 'crew-certificates.html',
+          gdpr: 'crew-gdpr.html',
+          video: 'crew-familiarization.html'
+        };
+        window.location.href = urlMap[task];
+      });
+    });
+  </script>
+</body>
+
+</html>

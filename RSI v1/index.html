@@ -2,694 +2,393 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RSI Unified Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --r-dark: #070a1a;
-            --r-gray: #5d7fac;
-            --r-blue: #3f91ff;
-            --r-red: #e32f31;
-            --r-orange: #ff783f;
-            --r-light: #eff4fa;
-            --r-green: #2d8548;
-            --r-font: "Overpass", sans-serif;
-            --r-ripple-blue: #0066cc;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSI Crew Login – M/V Sakurayuri Maru</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/ripple.css">
+  <style>
+    :root {
+      --r-dark: #070a1a;
+      --r-gray: #5d7fac;
+      --r-blue: #3f91ff;
+      --r-red: #e32f31;
+      --r-orange: #ff783f;
+      --r-light: #eff4fa;
+      --r-green: #2d8548;
+      --r-font: "Overpass", sans-serif;
+      --r-ripple-blue: #0066cc;
+      --bg-primary: linear-gradient(135deg, var(--r-dark), #101c56);
+      --bg-card: rgba(255, 255, 255, 0.1);
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.85);
+      --text-tertiary: rgba(255, 255, 255, 0.6);
+      --input-bg: rgba(255, 255, 255, 0.1);
+      --input-border: rgba(255, 255, 255, 0.3);
+      --tab-bg: rgba(255, 255, 255, 0.08);
+      --tab-active: rgba(255, 255, 255, 0.18);
+      --border-color: rgba(255, 255, 255, 0.2);
+    }
 
-            /* Light mode variables */
-            --bg-primary: linear-gradient(135deg, var(--r-dark), #101c56);
-            --bg-card: rgba(255, 255, 255, 0.1);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.8);
-            --text-tertiary: rgba(255, 255, 255, 0.6);
-            --input-bg: rgba(255, 255, 255, 0.1);
-            --input-border: rgba(255, 255, 255, 0.3);
-            --tab-bg: rgba(255, 255, 255, 0.1);
-            --tab-active: rgba(255, 255, 255, 0.2);
-            --border-color: rgba(255, 255, 255, 0.2);
-        }
+    [data-theme="light"] {
+      --bg-primary: linear-gradient(135deg, #3f91ff, #5d7fac);
+      --bg-card: rgba(255, 255, 255, 0.95);
+      --text-primary: #2d3748;
+      --text-secondary: #4a5568;
+      --text-tertiary: #718096;
+      --input-bg: rgba(255, 255, 255, 0.92);
+      --input-border: rgba(0, 0, 0, 0.12);
+      --tab-bg: rgba(0, 0, 0, 0.04);
+      --tab-active: rgba(255, 255, 255, 0.85);
+      --border-color: rgba(0, 0, 0, 0.12);
+    }
 
-        [data-theme="light"] {
-            --bg-primary: linear-gradient(135deg, #3f91ff, #5d7fac);
-            --bg-card: rgba(255, 255, 255, 0.95);
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
-            --text-tertiary: #718096;
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --input-border: rgba(0, 0, 0, 0.1);
-            --tab-bg: rgba(0, 0, 0, 0.05);
-            --tab-active: rgba(255, 255, 255, 0.8);
-            --border-color: rgba(0, 0, 0, 0.1);
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    body {
+      font-family: 'Overpass', sans-serif;
+      background: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      transition: background .5s ease;
+    }
 
-        body {
-            font-family: 'Overpass', sans-serif;
-            background: var(--bg-primary);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            transition: background 0.5s ease;
-        }
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 50px;
+      padding: 10px 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-primary);
+      transition: .3s;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, .12);
+    }
+    .theme-toggle:hover { transform: translateY(-2px) }
 
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            border-radius: 50px;
-            padding: 10px 15px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+    .login-container {
+      display: flex;
+      width: 100%;
+      max-width: 980px;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, .3);
+      overflow: hidden;
+      animation: fadeIn .7s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
 
-        .theme-toggle:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
+    /* LEFT: Company name + dynamic tagline, left-aligned; Powered by pinned to bottom-left */
+    .left-brand {
+      flex: 1;
+      min-height: 520px;
+      position: relative;
+      display: flex;
+      padding: 40px;
+      color: #fff;
+      background:
+        linear-gradient(rgba(0, 102, 204, .25), rgba(30, 42, 74, 0)),
+        url('https://shipadmin.com/sadesign/templates/New/assets/login-image.jpg') center/cover no-repeat;
+    }
+    .left-brand::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0, 102, 204, .7), rgba(30, 42, 74, .75));
+      z-index: 0;
+    }
+    .left-brand > * { position: relative; z-index: 1 }
 
-        .theme-toggle i {
-            font-size: 18px;
-        }
+    .brand-stack {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;      /* centers vertically as a group */
+      gap: 8px;
+      text-align: left;
+      align-items: flex-start;      /* left align items */
+      width: 100%;
+    }
 
-        .theme-text {
-            font-size: 14px;
-            font-weight: 600;
-        }
+    .company-name {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.267);
+      margin-bottom: 200px;
+    }
 
-        .login-container {
-            display: flex;
-            width: 100%;
-            max-width: 900px;
-            background: var(--bg-card);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: fadeIn 0.7s ease;
-            transition: all 0.5s ease;
-        }
+    .product-name {
+      font-size: 18px;
+      font-weight: 600;
+      opacity: .95;
+    }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+    .tagline {
+      font-size: 16px;
+      font-weight: 400;
+      color: #eaf2ff;
+      opacity: .95;
+    }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    .powered-left {
+      position: absolute;
+      left: 40px;
+      bottom: 24px;                 /* pinned at the bottom-left */
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #e8eef9;
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .22);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
+    .powered-left img { height: 12px; width: auto }
 
-        .image-section {
-            flex: 1;
-            background: linear-gradient(rgba(0, 102, 204, 0.2), rgba(30, 42, 74, 0)),
-                url('https://shipadmin.com/sadesign/templates/New/assets/login-image.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            color: white;
-            text-align: center;
-            position: relative;
-        }
+    /* RIGHT: Form + (smaller) company logo aligned with header text */
+    .right-form {
+      flex: 1;
+      padding: 36px 40px 44px 40px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-        .image-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.7), rgba(30, 42, 74, 0.7));
-            z-index: 1;
-        }
+    .header-top {
+      display: flex;
+      align-items: center;          /* vertical alignment between text and logo */
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
 
-        .image-section>* {
-            position: relative;
-            z-index: 2;
-        }
+    .header-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .login-header h1 { color: var(--text-primary); font-size: 26px; font-weight: 700; margin: 0; }
+    .login-header p { color: var(--text-secondary); font-size: 14px; margin: 0; }
 
-        .image-section h2 {
-            font-size: 28px;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
+    .brand-mini { display: flex; align-items: center; justify-content: flex-end; }
+    .brand-mini img { width: 95px; height: auto; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .15)); }
 
-        .image-section p {
-            font-size: 16px;
-            opacity: 0.9;
-            max-width: 300px;
-        }
+    .vessel-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--tab-active);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 6px 12px;
+      margin: 10px 0 16px;
+      width: max-content;
+    }
 
-        .logo {
-            margin-bottom: 200px;
-            max-width: 200px;
-        }
+    .form-group { margin-bottom: 18px; position: relative; }
+    .input-with-icon { position: relative; }
+    .input-with-icon i {
+      position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+      color: var(--text-tertiary);
+    }
+    .form-control {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      padding: 14px 15px 14px 45px;
+      width: 100%;
+      font-size: 15px;
+      transition: .25s;
+    }
+    .form-control:focus { outline: none; border-color: var(--r-blue); box-shadow: 0 0 0 2px rgba(63, 145, 255, .35); }
+    .form-control::placeholder { color: var(--text-tertiary); }
 
-        .logo img {
-            width: 100%;
-            height: auto;
-        }
+    .options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+    .remember-me { display: flex; align-items: center; }
+    .remember-me input { margin-right: 8px; accent-color: var(--r-blue); }
+    .remember-me label { color: var(--text-secondary); font-size: 14px; }
+    .forgot-password { color: var(--text-secondary); font-size: 14px; text-decoration: none; }
+    .forgot-password:hover { color: var(--text-primary); text-decoration: underline; }
 
-        .form-section {
-            flex: 1;
-            padding: 40px;
-        }
+    .btn {
+      border: none; border-radius: 10px; padding: 14px; width: 100%;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px; transition: .25s;
+    }
+    .btn-login { background: var(--r-green); color: #fff; margin-bottom: 18px; }
+    .btn-login:hover { background: #27ae60; transform: translateY(-2px); box-shadow: 0 8px 14px rgba(0, 0, 0, .22); }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    .register-section { text-align: center; padding-top: 18px; border-top: 1px solid var(--border-color); }
+    .register-text { color: var(--text-secondary); font-size: 14px; margin-bottom: 12px; }
+    .btn-register { background: transparent; color: var(--text-primary); border: 1px solid var(--input-border); }
+    .btn-register:hover { background: var(--input-bg); transform: translateY(-2px); }
 
-        .login-header h1 {
-            font-weight: 700;
-            color: var(--text-primary);
-            font-size: 28px;
-            margin-bottom: 8px;
-            transition: color 0.3s ease;
-        }
-
-        .login-header p {
-            color: var(--text-secondary);
-            font-size: 15px;
-            transition: color 0.3s ease;
-        }
-
-        /* Tabs */
-        .user-tabs {
-            display: flex;
-            border: none;
-            margin-bottom: 25px;
-            background: var(--tab-bg);
-            border-radius: 10px;
-            padding: 5px;
-            transition: all 0.3s ease;
-        }
-
-        .tab {
-            flex: 1;
-            background: transparent;
-            border: none;
-            padding: 12px 0;
-            text-align: center;
-            transition: all 0.3s;
-            font-weight: 600;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 14px;
-            position: relative;
-            border-radius: 8px;
-        }
-
-        .tab.active {
-            background: var(--tab-active);
-            color: var(--text-primary);
-        }
-
-        .tab:hover:not(.active) {
-            background: var(--tab-active);
-            color: var(--text-primary);
-        }
-
-        .tab-content {
-            animation: fadeSlide 0.5s;
-        }
-
-        @keyframes fadeSlide {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-with-icon i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-tertiary);
-            transition: color 0.3s ease;
-        }
-
-        .form-control {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 10px;
-            box-shadow: none;
-            color: var(--text-primary);
-            padding: 14px 15px 14px 45px;
-            width: 100%;
-            transition: all 0.3s;
-            font-size: 15px;
-        }
-
-        .form-control:focus {
-            background: var(--input-bg);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.5);
-            border-color: var(--r-blue);
-        }
-
-        .form-control::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-        }
-
-        .remember-me input {
-            margin-right: 8px;
-            accent-color: var(--r-blue);
-        }
-
-        .remember-me label {
-            color: var(--text-secondary);
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-password {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s;
-        }
-
-        .forgot-password:hover {
-            color: var(--text-primary);
-            text-decoration: underline;
-        }
-
-        /* Buttons */
-        .btn {
-            border-radius: 10px;
-            padding: 14px;
-            font-weight: 600;
-            width: 100%;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-login {
-            background: var(--r-ripple-blue);
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .btn-login:hover {
-            background: #0055aa;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-register {
-            background: transparent;
-            color: var(--text-primary);
-            border: 1px solid var(--input-border);
-            transition: all 0.3s ease;
-        }
-
-        .btn-register:hover {
-            background: var(--input-bg);
-            transform: translateY(-2px);
-        }
-
-        .register-section {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-            transition: border-color 0.3s ease;
-        }
-
-        .register-text {
-            color: var(--text-secondary);
-            margin-bottom: 15px;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Crew specific styling */
-        .crew-login .btn-login {
-            background: var(--r-green);
-        }
-
-        .crew-login .btn-login:hover {
-            background: #27ae60;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .login-container {
-                flex-direction: column;
-                max-width: 450px;
-            }
-
-            .image-section {
-                padding: 30px 20px;
-            }
-
-            .form-section {
-                padding: 30px 25px;
-            }
-
-            .theme-toggle {
-                top: 10px;
-                right: 10px;
-                padding: 8px 12px;
-            }
-
-            .theme-text {
-                display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .login-container {
-                max-width: 100%;
-            }
-
-            .form-section {
-                padding: 20px;
-            }
-
-            .user-tabs {
-                flex-direction: column;
-            }
-        }
-    </style>
+    @media (max-width: 900px) {
+      .login-container { max-width: 720px; }
+      .brand-mini img { width: 98px; }
+    }
+    @media (max-width: 768px) {
+      .login-container { flex-direction: column; max-width: 460px; }
+      .left-brand { min-height: 320px; padding: 28px 20px; }
+      .powered-left { left: 20px; bottom: 16px; }
+      .right-form { padding: 26px 22px 30px; }
+      .brand-mini img { width: 90px; }
+    }
+    @media (max-width: 420px) {
+      .company-name { font-size: 24px; }
+      .brand-mini img { width: 84px; }
+    }
+  </style>
 </head>
 
 <body>
-    <!-- Theme Toggle Button -->
-    <div class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon" id="themeIcon"></i>
-        <!-- <span class="theme-text" id="themeText">Dark Mode</span> -->
-    </div>
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
 
-    <div class="login-container">
-        <div class="image-section">
-            <div class="logo">
-                <img src="assets/Logo-White.png" alt="Ripple Operations Logo">
-            </div>
-            <h2>Ripple Smart Induction</h2>
-            <p id="sloganText">Onboard Smarter. Ready Faster.</p>
+  <div class="login-container">
+    <!-- LEFT: Company Name + Dynamic Tagline; Powered by pinned at bottom -->
+    <section class="left-brand" aria-label="Branding">
+      <div class="brand-stack">
+        <div class="company-name" id="companyName">M/V Sakurayuri Maru</div>
+        <div class="product-name">Ripple Smart Induction</div>
+        <div class="tagline" id="sloganText">Onboard Smarter. Ready Faster.</div>
+      </div>
+
+      <div class="powered-left" aria-label="Powered by">
+        <img src="assets/ripple-icon.png" alt="Ripple">
+        <span>Powered by Ripple Operations</span>
+      </div>
+    </section>
+
+    <!-- RIGHT: Form; logo aligned middle with header text -->
+    <section class="right-form" aria-label="Crew Login">
+      <div class="header-top">
+        <div class="header-text login-header">
+          <h1>Crew Login</h1>
+          <p>Sign in to access your account</p>
+          <!-- <div class="vessel-badge">
+            <i class="fa-solid fa-ship"></i>
+            <span>M/V Ocean Explorer</span>
+          </div> -->
         </div>
-
-        <div class="form-section">
-            <div class="login-header">
-                <h1>Welcome Back</h1>
-                <p>Sign in to access your account</p>
-            </div>
-
-            <div class="user-tabs">
-                <button class="tab active" data-tab="admin-customer">Admin / Customer</button>
-                <button class="tab" data-tab="crew">Crew</button>
-            </div>
-
-            <div class="tab-content active" id="admin-customer-form">
-                <form id="admin-customer-login-form">
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" class="form-control" placeholder="Email Address" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" class="form-control" placeholder="Password" required>
-                        </div>
-                    </div>
-
-                    <div class="options">
-                        <div class="remember-me">
-                            <input type="checkbox" id="remember-admin">
-                            <label for="remember-admin">Remember me</label>
-                        </div>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
-                    </div>
-
-                    <button type="submit" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-                </form>
-            </div>
-
-            <div class="tab-content crew-login" id="crew-form">
-                <form id="crew-login-form">
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" class="form-control" placeholder="Email Address" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="input-with-icon">
-                            <i class="fas fa-lock"></i>
-                            <input type="password" class="form-control" placeholder="Password" required>
-                        </div>
-                    </div>
-
-                    <div class="options">
-                        <div class="remember-me">
-                            <input type="checkbox" id="remember-crew">
-                            <label for="remember-crew">Remember me</label>
-                        </div>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
-                    </div>
-
-                    <button type="submit" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-                </form>
-
-                <div class="register-section">
-                    <p class="register-text">New crew member?</p>
-                    <button class="btn btn-register"><i class="fas fa-user-plus"></i> Register as Crew</button>
-                </div>
-            </div>
+        <div class="brand-mini">
+          <!-- Reduced-size company logo on the right -->
+          <img src="assets/company-logo.png" alt="Company Logo">
         </div>
-    </div>
+      </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Theme Toggle Functionality
-            const themeToggle = document.getElementById('themeToggle');
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-            const body = document.body;
+      <form id="crew-login-form" class="crew-login">
+        <div class="form-group">
+          <div class="input-with-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" class="form-control" placeholder="Email Address" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-with-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" class="form-control" placeholder="Password" required>
+          </div>
+        </div>
+        <div class="options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember-crew">Remember me
+          </label>
+          <a href="#" class="forgot-password" id="forgotPassword">Forgot Password?</a>
+        </div>
+        <button type="submit" class="btn btn-login">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </form>
 
-            // Check for saved theme or prefer-color-scheme
-            const savedTheme = localStorage.getItem('theme') ||
-                (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      <div class="register-section">
+        <p class="register-text">New crew member?</p>
+        <button class="btn btn-register" id="registerCrew"><i class="fas fa-user-plus"></i> Register as Crew</button>
+      </div>
+    </section>
+  </div>
 
-            // Apply the saved theme
-            body.setAttribute('data-theme', savedTheme);
-            updateThemeToggle(savedTheme);
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Theme setup
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const savedTheme = localStorage.getItem('theme') ||
+        (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.body.setAttribute('data-theme', savedTheme);
+      themeIcon.className = savedTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
 
-            // Toggle theme on button click
-            themeToggle.addEventListener('click', function () {
-                const currentTheme = body.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      themeToggle.addEventListener('click', () => {
+        const now = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', now);
+        localStorage.setItem('theme', now);
+        themeIcon.className = now === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+      });
 
-                body.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeToggle(newTheme);
-            });
+      // Dynamic tagline
+      const slogans = [
+        "Onboard Smarter. Ready Faster.",
+        "Your Journey Starts Here.",
+        "The Future of Maritime Induction.",
+        "Seamless Onboarding. Stronger Crew.",
+        "Safety First. Knowledge Always.",
+        "Connect. Learn. Sail."
+      ];
+      const sloganElement = document.getElementById('sloganText');
+      if (sloganElement) {
+        const randomIndex = Math.floor(Math.random() * slogans.length);
+        sloganElement.textContent = slogans[randomIndex];
+      }
 
-            function updateThemeToggle(theme) {
-                if (theme === 'light') {
-                    themeIcon.className = 'fas fa-sun';
-                    // themeText.textContent = 'Light Mode';
-                } else {
-                    themeIcon.className = 'fas fa-moon';
-                    // themeText.textContent = 'Dark Mode';
-                }
-            }
+      // Quick company name override via ?company=ACME
+      const params = new URLSearchParams(window.location.search);
+      const company = params.get('company');
+      if (company) document.getElementById('companyName').textContent = company;
 
-            // Slogan Rotation Logic
-            const slogans = [
-                "Onboard Smarter. Ready Faster.",
-                "Your Journey Starts Here.",
-                "The Future of Maritime Induction.",
-                "Seamless Onboarding. Stronger Crew.",
-                "Safety First. Knowledge Always.",
-                "Connect. Learn. Sail."
-            ];
+      // Crew form submit
+      const form = document.getElementById('crew-login-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = form.querySelector('input[type="email"]').value.trim();
+        if (!email) { alert('Please enter your email address'); return; }
+        localStorage.setItem('userType', 'crew');
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('vesselName', 'M/V Ocean Explorer');
+        const btn = form.querySelector('.btn-login');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+        btn.disabled = true;
+        setTimeout(() => { window.location.href = 'landing.html'; }, 1200);
+      });
 
-            const sloganElement = document.getElementById('sloganText');
-            if (sloganElement) {
-                const randomIndex = Math.floor(Math.random() * slogans.length);
-                sloganElement.textContent = slogans[randomIndex];
-            }
-
-            // Tab switching functionality
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-
-                    tab.classList.add('active');
-
-                    const tabId = tab.getAttribute('data-tab');
-                    document.getElementById(`${tabId}-form`).classList.add('active');
-                });
-            });
-
-            // Form submission with redirect to landing.html
-            const adminCustomerForm = document.getElementById('admin-customer-login-form');
-            const crewForm = document.getElementById('crew-login-form');
-
-            if (adminCustomerForm) {
-                adminCustomerForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const email = document.querySelector('#admin-customer-form input[type="email"]').value;
-
-                    if (email) {
-                        // Store user type in localStorage for use in landing.html
-                        localStorage.setItem('userType', 'admin-customer');
-                        localStorage.setItem('userEmail', email);
-
-                        // Show loading state
-                        const submitBtn = this.querySelector('.btn-login');
-                        const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-                        submitBtn.disabled = true;
-
-                        // Simulate API call delay, then redirect
-                        setTimeout(() => {
-                            window.location.href = 'landing.html';
-                        }, 1500);
-                    } else {
-                        alert('Please enter your email address');
-                    }
-                });
-            }
-
-            if (crewForm) {
-                crewForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const email = document.querySelector('#crew-form input[type="email"]').value;
-
-                    if (email) {
-                        // Store user type in localStorage for use in landing.html
-                        localStorage.setItem('userType', 'crew');
-                        localStorage.setItem('userEmail', email);
-
-                        // Show loading state
-                        const submitBtn = this.querySelector('.btn-login');
-                        const originalText = submitBtn.innerHTML;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
-                        submitBtn.disabled = true;
-
-                        // Simulate API call delay, then redirect
-                        setTimeout(() => {
-                            window.location.href = 'landing.html';
-                        }, 1500);
-                    } else {
-                        alert('Please enter your email address');
-                    }
-                });
-            }
-
-            // Register button functionality
-            const registerButtons = document.querySelectorAll('.btn-register');
-            registerButtons.forEach(button => {
-                button.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-                    if (activeTab === 'admin-customer') {
-                        alert('Redirecting to customer registration page');
-                    } else {
-                        // Redirect to crew registration page
-                        window.location.href = 'landing.html';
-                    }
-                });
-            });
-
-            // Forgot password functionality
-            const forgotPasswordLinks = document.querySelectorAll('.forgot-password');
-            forgotPasswordLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
-                    const emailField = document.querySelector(`#${activeTab}-form input[type="email"]`);
-
-                    if (emailField.value) {
-                        alert(`Password reset link will be sent to: ${emailField.value}`);
-                    } else {
-                        alert('Please enter your email address to reset your password');
-                    }
-                });
-            });
-        });
-    </script>
+      // Register and Forgot Password
+      document.getElementById('registerCrew').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'landing.html';
+      });
+      document.getElementById('forgotPassword').addEventListener('click', (e) => {
+        e.preventDefault();
+        const email = document.querySelector('input[type="email"]').value.trim();
+        if (email) alert(`Password reset link will be sent to: ${email}`);
+        else alert('Please enter your email address to reset your password');
+      });
+    });
+  </script>
 </body>
-
 </html>

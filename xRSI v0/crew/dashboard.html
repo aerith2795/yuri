@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RSI Crew Dashboard</title>
+
+  <!-- Bootstrap 3 CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- FontAwesome 4 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Select2 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple Global CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <!-- Dashboard Specific CSS -->
+  <link href="page.css" rel="stylesheet" />
+
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <div class="col-sm-3 col-md-2 sidebar">
+        <div class="text-center logo">
+          <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px; height:auto;" />
+        </div>
+        <ul class="nav nav-pills nav-stacked">
+          <li class="active"><a href="#welcome" data-toggle="tab"><i class="fa fa-home"></i> Welcome</a></li>
+          <li><a href="#profile" data-toggle="tab"><i class="fa fa-user"></i> Profile</a></li>
+          <li><a href="#company" data-toggle="tab"><i class="fa fa-building"></i> Company</a></li>
+          <li><a href="#certificates" data-toggle="tab"><i class="fa fa-file-text-o"></i> Certificates</a></li>
+          <li><a href="#gdpr" data-toggle="tab"><i class="fa fa-shield"></i> GDPR</a></li>
+          <li><a href="#video" data-toggle="tab"><i class="fa fa-video-camera"></i> Familiarization</a></li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="tab-content">
+          <!-- Onboarding Progress -->
+          <div id="progressContainer" class="progress-container">
+            <div class="clearfix">
+              <span class="pull-left"><strong>Onboarding Progress</strong></span>
+              <span class="pull-right" id="progressText">0 of 4 tasks completed</span>
+            </div>
+            <div class="progress progress-with-steps">
+              <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar"
+                style="width: 0%;"></div>
+
+              <!-- Step markers -->
+              <div class="progress-steps">
+                <span class="step" data-target="#welcome" style="left: 0%;">Embarkation</span>
+                <span class="step" data-target="#certificates" style="left: 33%;">Certificates</span>
+                <span class="step" data-target="#gdpr" style="left: 66%;">GDPR</span>
+                <span class="step" data-target="#video" style="left: 100%;">Video</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Welcome -->
+          <div class="tab-pane active" id="welcome">
+            <div class="page-header">
+              <h2>Hi, Cloud Strife!</h2>
+              <p>Welcome to the Ripple Smart Induction Crew Portal! <br> Your registration is complete. To continue,
+                please provide your embarkation details and complete your onboarding process.</p>
+            </div>
+            <!-- Reminder Banners -->
+            <div id="reminders">
+              <div class="alert alert-info" id="embarkReminder">
+                <i class="fa fa-info-circle"></i> Please fill out your embarkation details.
+                <button class="btn btn-xs btn-primary pull-right goto-embark">Go to Form</button>
+              </div>
+              <div class="alert alert-warning" id="certReminder">
+                <i class="fa fa-upload"></i> Please upload your certificates.
+                <button class="btn btn-xs btn-primary pull-right complete-task" data-target="#certReminder">Upload
+                  Now</button>
+              </div>
+              <div class="alert alert-info" id="gdprReminder">
+                <i class="fa fa-shield"></i> Review GDPR to continue.
+                <button class="btn btn-xs btn-primary pull-right complete-task"
+                  data-target="#gdprReminder">Review</button>
+              </div>
+              <div class="alert alert-success" id="videoReminder">
+                <i class="fa fa-video-camera"></i> Watch the familiarization video.
+                <button class="btn btn-xs btn-primary pull-right complete-task"
+                  data-target="#videoReminder">Watch</button>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-ship"></i> <label class="required-field">Vessel
+                  Information</label></div>
+              <div class="panel-body">
+                <form id="welcomeForm">
+                  <div class="form-group">
+                    <!-- <label for="vesselSelect" class="required-field">Vessel</label>
+                    <select class="form-control select2" id="vesselSelect" name="vesselSelect" required>
+                      <option></option>
+                      <option value="IMO1234567">MV Ocean Star (IMO: 1234567)</option>
+                      <option value="IMO7654321">MV Blue Horizon (IMO: 7654321)</option>
+                      <option value="IMO9876543">MV Golden Wave (IMO: 9876543)</option>
+                    </select> -->
+                    <p>
+                      <strong>Vessel:</strong>
+                      <span class="label label-blue">M/V Ripple Voyager</span>
+                    </p>
+                  </div>
+
+                  <div class="form-grid columns-3">
+                    <div class="form-group">
+                      <label for="embarkationDate" class="required-field">Embarkation Date</label>
+                      <input type="date" class="form-control" id="embarkationDate" name="embarkationDate" required />
+                    </div>
+                    <div class="form-group">
+                      <label for="embarkationTime" class="required-field">Embarkation Time</label>
+                      <input type="time" class="form-control" id="embarkationTime" name="embarkationTime" required />
+                    </div>
+
+                    <div class="form-group">
+                      <label for="embarkationPort">Embarkation Port</label>
+                      <input type="text" class="form-control" id="embarkationPort" name="embarkationPort"
+                        placeholder="Auto-filled if vessel API is connected" />
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Save Embarkation
+                    Details</button>
+                </form>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile -->
+          <div class="tab-pane" id="profile">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <i class="fa fa-user"></i> Personal Information
+                <button class="btn btn-xs btn-default pull-right toggle-edit"><i class="fa fa-pencil"></i> Edit</button>
+              </div>
+              <div class="panel-body">
+                <form id="profileForm">
+                  <div class="row">
+                    <div class="col-sm-6 form-group">
+                      <label>First Name</label>
+                      <input type="text" class="form-control" value="Juan" readonly>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <label>Surname</label>
+                      <input type="text" class="form-control" value="Dela Cruz" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4 form-group">
+                      <label>Gender</label>
+                      <input type="text" class="form-control" value="Male" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Date of Birth</label>
+                      <input type="date" class="form-control" value="1990-05-20" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Place of Birth</label>
+                      <input type="text" class="form-control" value="Manila" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6 form-group">
+                      <label>Nationality</label>
+                      <input type="text" class="form-control" value="Filipino" readonly>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <label>Residence Address</label>
+                      <input type="text" class="form-control" value="123 Port Street, Manila" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4 form-group">
+                      <label>Phone</label>
+                      <input type="text" class="form-control" value="+63 2 123 4567" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Mobile</label>
+                      <input type="text" class="form-control" value="+63 917 123 4567" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Email (Username)</label>
+                      <input type="email" class="form-control" value="juan.delacruz@email.com" readonly>
+                    </div>
+                  </div>
+                  <button class="btn r-btn-success hidden save-btn" type="submit"><i class="fa fa-save"></i>
+                    Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company -->
+          <div class="tab-pane" id="company">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <i class="fa fa-building"></i> Company & Emergency Contact
+                <button class="btn btn-xs btn-default pull-right toggle-edit"><i class="fa fa-pencil"></i> Edit</button>
+              </div>
+              <div class="panel-body">
+                <form id="companyForm">
+                  <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" class="form-control" value="Ripple Shipping Inc." readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Position / Rank</label>
+                    <input type="text" class="form-control" value="Chief Engineer" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Emergency Contact (Company)</label>
+                    <input type="text" class="form-control" value="+63 2 765 4321" readonly>
+                  </div>
+
+                  <hr>
+                  <h4>Next of Kin (NOK)</h4>
+
+                  <div class="nok-item">
+                    <div class="row">
+                      <div class="col-sm-4 form-group">
+                        <label>Relationship</label>
+                        <input type="text" class="form-control" value="Spouse" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control" value="Maria" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>Surname</label>
+                        <input type="text" class="form-control" value="Dela Cruz" readonly>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6 form-group">
+                        <label>Address</label>
+                        <input type="text" class="form-control" value="456 Harbor Road, Cebu" readonly>
+                      </div>
+                      <div class="col-sm-6 form-group">
+                        <label>Residence</label>
+                        <input type="text" class="form-control" value="Philippines" readonly>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-4 form-group">
+                        <label>Phone</label>
+                        <input type="text" class="form-control" value="+63 32 555 6789" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" value="+63 917 987 6543" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" value="maria@email.com" readonly>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-success hidden save-btn" type="submit"><i class="fa fa-save"></i> Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certificates -->
+          <div class="tab-pane" id="certificates">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates</div>
+              <div class="panel-body">
+                <p>Upload or manage your required certificates here. Bulk upload supported.</p>
+                <div class="alert alert-info">
+                  <i class="fa fa-info-circle"></i> Accepted formats: PDF, JPG, PNG. Max file size: 5MB.
+                </div>
+
+                <table class="table table-bordered certificate-table">
+                  <thead>
+                    <tr>
+                      <th>Certificate</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Seaman’s Book -->
+                    <tr data-cert="Seaman's Book">
+                      <td>
+                        <label class="required-field">Seaman’s Book</label>
+                        <i class="fa fa-info-circle text-muted text-xs" data-toggle="tooltip"
+                          title="Official record of sea service and seafarer identity."></i>
+                      </td>
+                      <td class="cert-status"><span class="label label-default">Pending</span></td>
+                      <td>
+                        <input type="file" class="cert-upload" data-cert="Seaman's Book" />
+                      </td>
+                    </tr>
+
+                    <!-- Passport -->
+                    <tr data-cert="Passport">
+                      <td>
+                        <label class="required-field">Passport</label>
+                        <i class="fa fa-info-circle text-muted" data-toggle="tooltip"
+                          title="Valid international travel document for crew identification."></i>
+                      </td>
+                      <td class="cert-status"><span class="label label-default">Pending</span></td>
+                      <td>
+                        <input type="file" class="cert-upload" data-cert="Passport" />
+                      </td>
+                    </tr>
+
+                    <!-- Yellow Fever Vaccination (Optional example) -->
+                    <tr data-cert="Yellow Fever Vaccination">
+                      <td>
+                        <label>Yellow Fever Vaccination</label>
+                        <i class="fa fa-info-circle text-muted" data-toggle="tooltip"
+                          title="Proof of yellow fever vaccination, required for some ports."></i>
+                      </td>
+                      <td class="cert-status"><span class="label label-default">Pending</span></td>
+                      <td>
+                        <input type="file" class="cert-upload" data-cert="Yellow Fever Vaccination" />
+                          <button class="btn btn-xs btn-link mark-missing text-orange" data-cert="Yellow Fever Vaccination">
+                            Mark Missing
+                          </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Upload preview -->
+                <!-- <h5>Selected files</h5>
+                <ul id="certList" class="list-group mb-15"></ul> -->
+
+                <button id="saveCertificates" class="btn btn-primary">
+                  <i class="fa fa-save"></i> Save Certificates
+                </button>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- GDPR -->
+          <div class="tab-pane" id="gdpr">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-shield"></i> GDPR & Data Privacy</div>
+              <div class="panel-body">
+                <h4>General Data Protection Regulation (GDPR)</h4>
+                <div
+                  style="max-height:240px; overflow-y:auto; border:1px solid #ddd; padding:10px; margin-bottom:10px;">
+                  <p><strong>Sample Privacy Policy (excerpt)</strong></p>
+                  <p>Ripple Smart Induction (RSI) collects and processes personal data including names, contact
+                    information, identification documents, certificated records and emergency contacts for the purpose
+                    of crew management, certification verification, and statutory compliance. Data may be shared with
+                    relevant authorities where legally required.</p>
+                  <p>Data retention rules: certain records are retained for audit and compliance as required by maritime
+                    regulations. You retain rights to access, correct, and request deletion of your personal data;
+                    however, some records may be retained to satisfy legal requirements.</p>
+                  <p>For more information, contact privacy@rsi.example or follow the data access procedure described in
+                    this portal.</p>
+                  <p>[...longer policy continues here ...]</p>
+                </div>
+
+                <div class="checkbox">
+                  <label><input type="checkbox" id="gdprAgree"> I have read and agree to the GDPR policy</label>
+                </div>
+
+                <button id="saveGdpr" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+                <hr>
+                <button class="btn btn-danger"><i class="fa fa-trash"></i> Request Profile Deletion</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video -->
+          <div class="tab-pane" id="video">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
+              <div class="panel-body">
+                <div class="text-center" style="margin:20px 0;">
+                  <div class="video-placeholder" style="display:inline-block;">
+                    <i class="fa fa-play-circle fa-5x"></i>
+                    <p>Video Placeholder - Watch required familiarization video.</p>
+                  </div>
+                </div>
+                <div class="checkbox text-center">
+                  <label><input type="checkbox" id="videoWatched"> I have watched the video</label>
+                </div>
+                <div class="text-center">
+                  <button class="btn btn-success btn-confirm-video">
+                    <i class="fa fa-check"></i> Confirm Watched
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.tab-content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JS libs -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+  <script>
+    $(function () {
+      $('.select2').select2({ placeholder: "Select an option" });
+
+      // Edit toggle (keeps original behavior)
+      $('.toggle-edit').on('click', function () {
+        const panel = $(this).closest('.panel');
+        panel.find('input').prop('readonly', function (_, val) { return !val; });
+        panel.find('.save-btn').toggleClass('hidden');
+        $(this).find('i').toggleClass('fa-pencil fa-times');
+        $(this).toggleClass('btn-default btn-warning');
+      });
+
+      // onboarding state
+      let totalTasks = 4;
+      let completedTasks = 0;
+
+      function updateProgress() {
+        let percent = (completedTasks / totalTasks) * 100;
+        $('#progressBar').css('width', percent + '%');
+        $('#progressText').text(completedTasks + " of " + totalTasks + " tasks completed");
+
+        // Embarkation Save
+        $("#welcomeForm").on("submit", function (e) {
+          e.preventDefault();
+          if (!$("#embarkReminder").hasClass("completed")) {
+            $("#embarkReminder").addClass("completed").fadeOut();
+            completedTasks++;
+            markStepComplete("#welcome"); // link it in progress steps if needed
+            updateProgress();
+          }
+          alert("Embarkation details saved successfully!");
+        });
+
+        // when all done: hide progress, reminders, and show success banner
+        if (completedTasks === totalTasks) {
+          $('#progressContainer').fadeOut();
+          $(".welcome-note").fadeOut();
+          $("#reminders").fadeOut();
+
+          if ($("#successBanner").length === 0) {
+            $(".main-content").prepend(`
+              <div id="successBanner" class="alert alert-success alert-dismissible fade in">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="fa fa-check-circle"></i> Onboarding complete! You can now fully use the dashboard.
+              </div>
+            `);
+          }
+        }
+      }
+
+      function markStepComplete(tabId) {
+        const step = $(".progress-steps .step[data-target='" + tabId + "']");
+        if (!step.hasClass("done")) {
+          step.addClass("done").append(" ✅");
+        }
+      }
+
+      // CTA buttons in banners should navigate to the tab (they do NOT mark complete)
+      $('.complete-task').on('click', function (e) {
+        e.preventDefault();
+        const bannerTarget = $(this).data('target'); // e.g. "#certReminder"
+        let tabToOpen = null;
+        if (bannerTarget === '#certReminder') tabToOpen = '#certificates';
+        if (bannerTarget === '#gdprReminder') tabToOpen = '#gdpr';
+        if (bannerTarget === '#videoReminder') tabToOpen = '#video';
+
+        if (tabToOpen) {
+          $('.nav-pills a[href="' + tabToOpen + '"]').tab('show');
+          $('html, body').animate({ scrollTop: $(".main-content").offset().top }, 400);
+        }
+
+      });
+
+      // Certificates: preview selected files into list
+      $('#certUpload').on('change', function () {
+        const list = $('#certList');
+        list.empty();
+        const files = this.files;
+        if (!files || files.length === 0) {
+          list.append('<li class="list-group-item">No files selected</li>');
+          return;
+        }
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
+          list.append(`<li class="list-group-item">${f.name} <span class="label label-default">Pending</span></li>`);
+        }
+      });
+
+      // per-row single file uploads update status in table (optional convenience)
+      $(document).on('change', '.cert-upload', function () {
+        const fileInput = $(this);
+        const row = fileInput.closest('tr');
+        const statusEl = row.find('.cert-status');
+        if (this.files && this.files.length > 0) {
+          statusEl.html('<span class="text-success">Selected</span>');
+        } else {
+          statusEl.html('<span class="text-muted">Pending</span>');
+        }
+      });
+
+      // Mark missing toggle for optional certs
+      $(document).on('click', '.mark-missing', function () {
+        $(this).toggleClass('active btn-link text-orange btn-link text-orange');
+        $(this).text($(this).hasClass('active') ? 'Unmark Missing' : 'Mark Missing');
+        const row = $(this).closest('tr');
+        if ($(this).hasClass('active')) {
+          row.find('.cert-status').html('<span class="label label-orange">Marked Missing</span>');
+        } else {
+          row.find('.cert-status').html('<span class="text-muted">Pending</span>');
+        }
+      });
+
+      // Embarkation CTA → jump to Welcome tab
+      $(document).on('click', '.goto-embark', function () {
+        $('.nav-pills a[href="#welcome"]').tab('show');
+        $('html, body').animate({ scrollTop: $("#welcomeForm").offset().top - 40 }, 400);
+      });
+
+      // Embarkation save
+      $("#welcomeForm").on("submit", function (e) {
+        e.preventDefault();
+        if (!$("#embarkReminder").hasClass("completed")) {
+          $("#embarkReminder").addClass("completed").fadeOut();
+          completedTasks++;
+          markStepComplete("#welcome");
+          updateProgress();
+        }
+        alert("Embarkation details saved successfully!");
+      });
+
+      // Save Certificates => set uploaded as completed, update banner & progress
+      $('#saveCertificates').on('click', function () {
+        // if user selected files, mark those uploaded in the preview list
+        $('#certList .list-group-item').each(function () {
+          $(this).find('.label').removeClass('label-default').addClass('label-success').text('Uploaded');
+        });
+
+        // also mark any rows with a selected file as completed
+        $('.certificate-table tbody tr').each(function () {
+          const row = $(this);
+          const fileInput = row.find('.cert-upload')[0];
+          const statusEl = row.find('.cert-status');
+          if ((fileInput && fileInput.files && fileInput.files.length > 0) || row.find('.mark-missing').hasClass('active')) {
+            statusEl.html('<span class="text-success">Completed</span>');
+          }
+        });
+
+        // Dismiss banner + increment progress if not already done
+        if (!$('#certReminder').hasClass('completed')) {
+          $('#certReminder').addClass('completed').fadeOut();
+          completedTasks++;
+          markStepComplete('#certificates');
+
+          updateProgress();
+        }
+      });
+
+      // Save GDPR => require checkbox then mark complete
+      $('#saveGdpr').on('click', function () {
+        if ($('#gdprAgree').is(':checked')) {
+          if (!$('#gdprReminder').hasClass('completed')) {
+            $('#gdprReminder').addClass('completed').fadeOut();
+            completedTasks++;
+            markStepComplete('#gdpr');
+            updateProgress();
+          }
+        } else {
+          alert('You must agree to the GDPR policy first.');
+        }
+      });
+
+      // Video confirm => require checkbox then mark complete
+      $('.btn-confirm-video').on('click', function () {
+        if ($('#videoWatched').is(':checked')) {
+          if (!$('#videoReminder').hasClass('completed')) {
+            $('#videoReminder').addClass('completed').fadeOut();
+            completedTasks++;
+            markStepComplete('#video');
+            updateProgress();
+          }
+        } else {
+          alert('Please check the box after watching the video.');
+        }
+      });
+
+      // Progress step click -> go to tab
+      $('.progress-steps .step').on('click', function () {
+        const targetTab = $(this).data('target');
+        if (targetTab) {
+          $('.nav-pills a[href="' + targetTab + '"]').tab('show');
+          $('html, body').animate({ scrollTop: $('#progressContainer').offset().top }, 400);
+        }
+      });
+
+      // init
+      updateProgress();
+    });
+  </script>
+</body>
+
+</html>

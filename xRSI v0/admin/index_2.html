@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSI Admin - Portal</title>
+  <!-- Bootstrap 3 CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .sidebar {
+      background: #002366;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      color: #ddd;
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      color: white;
+      background: rgba(255,255,255,0.1);
+    }
+    .sidebar a i {
+      margin-right: 10px;
+    }
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+    .card {
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .card-header {
+      background: #f5f5f5;
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+      font-weight: bold;
+    }
+    .card-body {
+      padding: 20px;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 20px;
+      color: white;
+      border-radius: 5px;
+    }
+    .stat-card.blue {
+      background: #3498db;
+    }
+    .stat-card.green {
+      background: #2ecc71;
+    }
+    .stat-card.orange {
+      background: #FF7900;
+    }
+    .badge-important {
+      background: #e74c3c;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar col-md-2">
+    <h4 class="text-center"><i class="fa fa-anchor"></i> RSXXX Admin</h4>
+    <hr>
+    <a href="#" class="active"><i class="fa fa-dashboard"></i> Dashboard</a>
+    <a href="#"><i class="fa fa-ship"></i> Vessel Management</a>
+    <a href="#"><i class="fa fa-key"></i> License Control</a>
+    <a href="#"><i class="fa fa-users"></i> User Accounts</a>
+    <a href="#"><i class="fa fa-file-text"></i> Reports</a>
+    <a href="#"><i class="fa fa-cog"></i> Settings</a>
+    <hr>
+    <a href="#"><i class="fa fa-sign-out"></i> Logout</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h2><i class="fa fa-dashboard"></i> Admin Dashboard</h2>
+    <hr>
+
+    <!-- Stats Cards -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="stat-card blue">
+          <h3>142</h3>
+          <p>Active Vessels</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card green">
+          <h3>1,248</h3>
+          <p>Crew Registrations</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card orange">
+          <h3>12</h3>
+          <p>Expiring Licenses</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vessel Management -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-ship"></i> Vessel Management
+        <button class="btn btn-xs btn-primary pull-right" data-toggle="modal" data-target="#addVesselModal">
+          <i class="fa fa-plus"></i> Add Vessel
+        </button>
+      </div>
+      <div class="card-body">
+        <table id="vesselsTable" class="table table-striped table-bordered">
+          <thead>
+            <tr>
+              <th>IMO</th>
+              <th>Vessel Name</th>
+              <th>Type</th>
+              <th>License Expiry</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1234567</td>
+              <td>MV Ocean Star</td>
+              <td>Offshore Supply</td>
+              <td>15/12/2023</td>
+              <td><span class="label label-success">Active</span></td>
+              <td>
+                <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td>7654321</td>
+              <td>MV Blue Horizon</td>
+              <td>Container Ship</td>
+              <td>05/01/2024</td>
+              <td><span class="label label-success">Active</span></td>
+              <td>
+                <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr>
+              <td>9876543</td>
+              <td>MV Golden Wave</td>
+              <td>Tanker</td>
+              <td>22/10/2023</td>
+              <td><span class="label label-danger">Expiring</span></td>
+              <td>
+                <button class="btn btn-xs btn-warning"><i class="fa fa-edit"></i></button>
+                <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- License Alerts -->
+    <div class="card">
+      <div class="card-header">
+        <i class="fa fa-exclamation-triangle"></i> Expiring Licenses (Next 30 Days)
+      </div>
+      <div class="card-body">
+        <div class="alert alert-warning">
+          <strong>MV Golden Wave</strong> - License expires on 22/10/2023 (12 days left)
+          <button class="btn btn-xs btn-primary pull-right">Renew Now</button>
+        </div>
+        <div class="alert alert-warning">
+          <strong>MV Northern Light</strong> - License expires on 05/11/2023 (26 days left)
+          <button class="btn btn-xs btn-primary pull-right">Renew Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Vessel Modal -->
+  <div class="modal fade" id="addVesselModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-plus"></i> Add New Vessel</h4>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label>IMO Number</label>
+              <input type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Vessel Name</label>
+              <input type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Vessel Type</label>
+              <select class="form-control select2">
+                <option>Offshore Supply</option>
+                <option>Container Ship</option>
+                <option>Tanker</option>
+                <option>Bulk Carrier</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>License Expiry Date</label>
+              <input type="date" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label>Customer Login (for vessel)</label>
+              <input type="text" class="form-control" placeholder="Username">
+              <input type="password" class="form-control" placeholder="Password" style="margin-top: 10px;">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Vessel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Bootstrap 3 JS -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Select2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize Select2
+      $('.select2').select2({
+        placeholder: "Select vessel type",
+        minimumResultsForSearch: Infinity
+      });
+
+      // Initialize DataTable
+      $('#vesselsTable').DataTable({
+        "pageLength": 10
+      });
+    });
+  </script>
+</body>
+</html>

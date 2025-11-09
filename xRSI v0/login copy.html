@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Unified Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Overpass:400,600" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Overpass', sans-serif;
+      background: linear-gradient(120deg, #3F91FF, #0B0F24);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      max-width: 380px;
+      width: 100%;
+      padding: 30px 25px;
+      text-align: center;
+      animation: fadeIn 0.7s ease;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(15px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    /* Toggle Switch */
+    .switch {
+      display: flex;
+      background: #f0f0f0;
+      border-radius: 30px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .switch button {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .switch button.active {
+      background: #3F91FF;
+      color: #fff;
+    }
+    /* Inputs */
+    .form-control {
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 15px;
+    }
+    .btn-modern {
+      border-radius: 30px;
+      padding: 12px;
+      font-weight: 600;
+      width: 100%;
+    }
+    .login-links {
+      margin-top: 12px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <!-- Toggle Switch -->
+    <div class="switch">
+      <button id="btnAdmin" class="active">Admin / Customer</button>
+      <button id="btnCrew">Crew</button>
+    </div>
+
+    <!-- Login Forms -->
+    <div id="adminForm">
+      <h3>Admin / Customer Login</h3>
+      <input type="email" class="form-control" placeholder="Email" />
+      <input type="password" class="form-control" placeholder="Password" />
+      <button class="btn btn-primary btn-modern">Login</button>
+      <div class="login-links"><a href="#">Forgot Password?</a></div>
+    </div>
+
+    <div id="crewForm" style="display:none;">
+      <h3>Crew Login</h3>
+      <input type="email" class="form-control" placeholder="Email" />
+      <input type="password" class="form-control" placeholder="Password" />
+      <button class="btn btn-success btn-modern">Login</button>
+      <div class="login-links">
+        <a href="#">Forgot Password?</a> • 
+        <a href="crew-register.html">Register</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('btnAdmin').addEventListener('click', function(){
+      this.classList.add('active');
+      document.getElementById('btnCrew').classList.remove('active');
+      document.getElementById('adminForm').style.display = 'block';
+      document.getElementById('crewForm').style.display = 'none';
+    });
+    document.getElementById('btnCrew').addEventListener('click', function(){
+      this.classList.add('active');
+      document.getElementById('btnAdmin').classList.remove('active');
+      document.getElementById('adminForm').style.display = 'none';
+      document.getElementById('crewForm').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

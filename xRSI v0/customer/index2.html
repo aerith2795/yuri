@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSXXX - Vessel Configuration Portal</title>
+  <!-- Bootstrap 3 CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/skins/square/blue.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<!-- In customer/index.html -->
+<script src="../shared.js"></script>
+<script>
+  // Initialize iCheck
+  $('.icheck').iCheck({
+    checkboxClass: 'icheckbox_square-blue',
+    radioClass: 'iradio_square-blue'
+  });
+
+  // Save configuration
+  $('.icheck').on('ifChanged', function() {
+    const db = RSXXXDB.get();
+    
+    db.config = {
+      requiredFields: [
+        ...document.querySelectorAll('.field-config input[type="checkbox"]:checked')
+              .map(el => el.id.replace('Toggle', ''))
+      ],
+      certificates: [] // Add certificate logic here
+    };
+
+    RSXXXDB.save(db);
+    updatePreview();
+  });
+
+  // Live preview
+  function updatePreview() {
+    const db = RSXXXDB.get();
+    document.getElementById('livePreview').innerHTML = `
+      <h4>Current Required Fields:</h4>
+      <ul>
+        ${db.config.requiredFields.map(field => `<li>${field}</li>`).join('')}
+      </ul>
+    `;
+  }
+
+  // Initialize
+  updatePreview();
+  window.addEventListener('rsxxxUpdate', updatePreview);
+</script>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="vessel-header">
+      <h4><i class="fa fa-ship"></i> MV Ocean Star</h4>
+      <p>IMO: 1234567</p>
+    </div>
+    <a href="#" class="active" data-section="welcome"><i class="fa fa-home"></i> Welcome Page</a>
+    <a href="#" data-section="personal"><i class="fa fa-user"></i> Personal Details</a>
+    <a href="#" data-section="certificates"><i class="fa fa-file-text"></i> Certificates</a>
+    <a href="#" data-section="gdpr"><i class="fa fa-shield"></i> GDPR Settings</a>
+    <a href="#" data-section="familiarization"><i class="fa fa-video-camera"></i> Familiarization</a>
+    <a href="#" data-section="verification"><i class="fa fa-check-circle"></i> Verification</a>
+    <a href="#" data-section="settings"><i class="fa fa-cog"></i> Settings</a>
+    <div style="position: absolute; bottom: 0; width: 100%; padding: 15px; background: rgba(0,0,0,0.2);">
+      <a href="#" style="display: block; text-align: center;">
+        <i class="fa fa-sign-out"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Welcome Page Section -->
+    <div class="content-section" id="welcome-section">
+      <h2><i class="fa fa-home"></i> Welcome Page Configuration</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>Welcome Content</span>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="form-group">
+              <label>Welcome Heading</label>
+              <input type="text" class="form-control" value="Welcome to NA Offshore">
+            </div>
+            <div class="form-group">
+              <label>Welcome Text</label>
+              <textarea class="form-control" rows="8">This page is made specially for sailors and engineers that are planning to visit or sail with our vessels. First time visitors: Before you visit or embark the vessel it is important that you complete this registration with accurate information.</textarea>
+            </div>
+            <div class="form-group">
+              <label>Company Logo</label>
+              <input type="file" class="form-control">
+              <p class="help-block">Recommended size: 300x100 pixels</p>
+              <img src="https://via.placeholder.com/300x100?text=NA+Offshore" style="max-width: 100%; margin-top: 10px;">
+            </div>
+            <button class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>Embarkation Fields</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck" checked> Show Embarkation Date field
+              </label>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck"> Make Embarkation Date required
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck" checked> Show Embarkation Port field
+              </label>
+            </div>
+          </div>
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Details Section -->
+    <div class="content-section" id="personal-section" style="display: none;">
+      <h2><i class="fa fa-user"></i> Personal Details Configuration</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>Field Configuration</span>
+          <button class="btn btn-sm btn-default"><i class="fa fa-eye"></i> Preview Form</button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i> Fields marked with <span class="required-badge">Required</span> are system-mandatory and cannot be disabled.
+          </div>
+          
+          <!-- Name Fields -->
+          <div class="field-config">
+            <h5><span class="required-badge">Required</span> First Name</h5>
+            <p class="text-muted">System-required field for crew identification</p>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" checked disabled>
+              <span class="toggle-label">Field enabled (required)</span>
+            </div>
+          </div>
+          
+          <div class="field-config">
+            <h5><span class="required-badge">Required</span> Last Name</h5>
+            <p class="text-muted">System-required field for crew identification</p>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" checked disabled>
+              <span class="toggle-label">Field enabled (required)</span>
+            </div>
+          </div>
+          
+          <!-- Contact Information -->
+          <div class="field-config">
+            <h5>Email Address</h5>
+            <p class="text-muted">Used as username for crew login</p>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" checked disabled>
+              <span class="toggle-label">Field enabled (required)</span>
+            </div>
+          </div>
+          
+          <div class="field-config">
+            <h5>Phone Number</h5>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" id="phoneToggle" checked>
+              <span class="toggle-label">Show this field</span>
+            </div>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" id="phoneRequired">
+              <span class="toggle-label">Make this field required</span>
+            </div>
+          </div>
+          
+          <!-- Professional Details -->
+          <div class="field-config">
+            <h5>Rank/Position</h5>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" checked disabled>
+              <span class="toggle-label">Field enabled (required)</span>
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+              <label>Available Ranks</label>
+              <select class="form-control select2" multiple style="width: 100%;">
+                <option selected>Captain</option>
+                <option selected>Chief Engineer</option>
+                <option selected>Deck Officer</option>
+                <option selected>Engineer</option>
+                <option selected>Electrician</option>
+                <option selected>AB Seaman</option>
+                <option>Cook</option>
+                <option>Medic</option>
+              </select>
+              <p class="help-block">Select which ranks will be available for selection</p>
+            </div>
+          </div>
+          
+          <!-- NOK Details -->
+          <div class="field-config">
+            <h5>Next of Kin (NOK) Information</h5>
+            <div class="toggle-container">
+              <input type="checkbox" class="icheck" id="nokToggle" checked>
+              <span class="toggle-label">Show NOK section</span>
+            </div>
+            <div style="margin-left: 20px; margin-top: 15px;">
+              <div class="toggle-container">
+                <input type="checkbox" class="icheck" id="nokName" checked>
+                <span class="toggle-label">NOK Name</span>
+              </div>
+              <div class="toggle-container">
+                <input type="checkbox" class="icheck" id="nokPhone">
+                <span class="toggle-label">NOK Phone</span>
+              </div>
+              <div class="toggle-container">
+                <input type="checkbox" class="icheck" id="nokRelationship" checked>
+                <span class="toggle-label">Relationship</span>
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save Configuration</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificates Section -->
+    <div class="content-section" id="certificates-section" style="display: none;">
+      <h2><i class="fa fa-file-text"></i> Certificate Requirements</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>Certificate Configuration</span>
+          <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addCertificateModal">
+            <i class="fa fa-plus"></i> Add Custom Certificate
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-warning">
+            <i class="fa fa-exclamation-triangle"></i> Changes to certificate requirements may affect crew registration completion rates.
+          </div>
+          
+          <!-- Passport -->
+          <div class="certificate-item">
+            <h4><i class="fa fa-passport"></i> Passport</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="toggle-container">
+                  <input type="checkbox" class="icheck" id="passportRequired" checked>
+                  <span class="toggle-label">Require this certificate</span>
+                </div>
+                <div class="toggle-container">
+                  <input type="checkbox" class="icheck" id="passportScan">
+                  <span class="toggle-label">Require scan upload</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Expiry Validation</label>
+                  <select class="form-control">
+                    <option>No expiry check</option>
+                    <option selected>Must be valid during stay</option>
+                    <option>Must have 6+ months validity</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Seaman's Book -->
+          <div class="certificate-item">
+            <h4><i class="fa fa-book"></i> Seaman's Book</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="toggle-container">
+                  <input type="checkbox" class="icheck" id="seamanRequired" checked>
+                  <span class="toggle-label">Require this certificate</span>
+                </div>
+                <div class="toggle-container">
+                  <input type="checkbox" class="icheck" id="seamanScan" checked>
+                  <span class="toggle-label">Require scan upload</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Expiry Validation</label>
+                  <select class="form-control">
+                    <option>No expiry check</option>
+                    <option selected>Must be valid during stay</option>
+                    <option>Must have 6+ months validity</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- STCW Certificates -->
+          <div class="certificate-item">
+            <h4><i class="fa fa-certificate"></i> STCW Certificates</h4>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="toggle-container">
+                  <input type="checkbox" class="icheck" id="stcwRequired" checked>
+                  <span class="toggle-label">Require at least one STCW cert</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Required for Roles</label>
+                  <select class="form-control select2" multiple style="width: 100%;">
+                    <option selected>All crew</option>
+                    <option selected>Deck officers</option>
+                    <option selected>Engineering staff</option>
+                    <option>Other roles</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 15px; background: #f9f9f9; border-radius: 4px;">
+              <h5>STCW Certificate Types</h5>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck" checked> Basic Safety Training
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck" checked> Advanced Firefighting
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck"> Medical Care
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck" checked> Survival Craft
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck"> Ship Security Officer
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save Certificate Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GDPR Settings Section -->
+    <div class="content-section" id="gdpr-section" style="display: none;">
+      <h2><i class="fa fa-shield"></i> GDPR & Privacy Settings</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>GDPR Compliance</span>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <i class="fa fa-info-circle"></i> Configure how personal data is handled according to GDPR requirements.
+          </div>
+          
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck" checked> Enable GDPR compliance page
+              </label>
+            </div>
+            <p class="help-block">Shows a dedicated page during crew registration</p>
+          </div>
+          
+          <div class="form-group">
+            <label>GDPR Page Title</label>
+            <input type="text" class="form-control" value="Data Privacy Information">
+          </div>
+          
+          <div class="form-group">
+            <label>GDPR Consent Text</label>
+            <textarea class="form-control" rows="6">By completing this registration, you agree that NA Offshore may process your personal data for the purpose of vessel operations, safety, and compliance with maritime regulations. Your data will be stored securely and only shared with authorized personnel and regulatory bodies as required by law.</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>Data Retention Period</label>
+            <select class="form-control">
+              <option>1 year after last activity</option>
+              <option selected>2 years after last activity</option>
+              <option>3 years after last activity</option>
+              <option>Until manually deleted</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Attach Documents</label>
+            <div class="document-upload" id="gdprUpload">
+              <i class="fa fa-cloud-upload fa-2x"></i>
+              <p>Drag & drop GDPR documents or click to browse</p>
+              <input type="file" id="gdprFile" style="display: none;" multiple>
+            </div>
+            <div class="upload-preview" id="gdprPreview">
+              <div class="alert alert-info" style="margin-top: 15px;">
+                <i class="fa fa-file-pdf-o"></i> NA_Offshore_Privacy_Policy.pdf
+                <button class="btn btn-xs btn-danger pull-right"><i class="fa fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save GDPR Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Familiarization Section -->
+    <div class="content-section" id="familiarization-section" style="display: none;">
+      <h2><i class="fa fa-video-camera"></i> Vessel Familiarization</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>Familiarization Materials</span>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck" id="enableFamiliarization">
+                <span class="toggle-label">Enable familiarization section</span>
+              </label>
+            </div>
+          </div>
+          
+          <div id="familiarizationContent">
+            <div class="form-group">
+              <label>Section Title</label>
+              <input type="text" class="form-control" value="Vessel Familiarization">
+            </div>
+            
+            <div class="form-group">
+              <label>Introduction Text</label>
+              <textarea class="form-control" rows="4">Before embarking, please review these materials to familiarize yourself with our vessel's specific safety procedures and layout.</textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Training Video</label>
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="YouTube/Vimeo URL" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button">Test</button>
+                </span>
+              </div>
+              <p class="help-block">Supports YouTube, Vimeo, or direct MP4 links</p>
+            </div>
+            
+            <div class="form-group">
+              <label>Additional Documents</label>
+              <div class="document-upload" id="trainingUpload">
+                <i class="fa fa-cloud-upload fa-2x"></i>
+                <p>Drag & drop training documents or click to browse</p>
+                <input type="file" id="trainingFile" style="display: none;" multiple>
+              </div>
+              <div class="upload-preview" id="trainingPreview">
+                <div class="alert alert-info" style="margin-top: 15px;">
+                  <i class="fa fa-file-pdf-o"></i> MV_Ocean_Star_Safety_Manual.pdf
+                  <button class="btn btn-xs btn-danger pull-right"><i class="fa fa-trash"></i></button>
+                </div>
+                <div class="alert alert-info" style="margin-top: 10px;">
+                  <i class="fa fa-file-word-o"></i> Emergency_Procedures.docx
+                  <button class="btn btn-xs btn-danger pull-right"><i class="fa fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" class="icheck" checked> Require crew to view all materials
+                </label>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" class="icheck"> Add confirmation checkbox
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Section -->
+    <div class="content-section" id="verification-section" style="display: none;">
+      <h2><i class="fa fa-check-circle"></i> Verification Page</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <span>Final Verification Step</span>
+        </div>
+        <div class="card-body">
+          <div class="verification-step">
+            <h4><i class="fa fa-info-circle"></i> Summary Information</h4>
+            <div class="form-group">
+              <label>Verification Page Title</label>
+              <input type="text" class="form-control" value="Review Your Information">
+            </div>
+            <div class="form-group">
+              <label>Introduction Text</label>
+              <textarea class="form-control" rows="3">Please review all information below before submitting your registration. Ensure all details are accurate as they will be used for official records.</textarea>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck" checked> Show summary of entered information
+              </label>
+            </div>
+          </div>
+          
+          <div class="verification-step">
+            <h4><i class="fa fa-check-square"></i> Final Confirmation</h4>
+            <div class="form-group">
+              <label>Confirmation Text</label>
+              <textarea class="form-control" rows="3">By clicking "Complete Registration", you confirm that all information provided is accurate and complete to the best of your knowledge.</textarea>
+            </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" class="icheck" checked> Require explicit confirmation
+              </label>
+            </div>
+          </div>
+          
+          <div class="verification-step">
+            <h4><i class="fa fa-envelope"></i> Post-Submission</h4>
+            <div class="form-group">
+              <label>Success Message</label>
+              <textarea class="form-control" rows="3">Thank you for completing your registration! Your information has been submitted to the vessel's crew management system. You will receive a confirmation email shortly.</textarea>
+            </div>
+            <div class="form-group">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" class="icheck" checked> Send confirmation email
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary"><i class="fa fa-save"></i> Save Verification Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="content-section" id="settings-section" style="display: none;">
+      <h2><i class="fa fa-cog"></i> Vessel Settings</h2>
+      <hr>
+      
+      <div class="card">
+        <div class="card-header">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#general-settings" data-toggle="tab">General</a></li>
+            <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
+            <li><a href="#access" data-toggle="tab">Access</a></li>
+          </ul>
+        </div>
+        <div class="card-body">
+          <div class="tab-content">
+            <div class="tab-pane active" id="general-settings">
+              <div class="settings-group">
+                <h4>Vessel Information</h4>
+                <div class="form-group">
+                  <label>Vessel Name</label>
+                  <input type="text" class="form-control" value="MV Ocean Star" disabled>
+                </div>
+                <div class="form-group">
+                  <label>IMO Number</label>
+                  <input type="text" class="form-control" value="1234567" disabled>
+                </div>
+                <div class="form-group">
+                  <label>Vessel Type</label>
+                  <input type="text" class="form-control" value="Offshore Supply" disabled>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h4>Localization</h4>
+                <div class="form-group">
+                  <label>Default Language</label>
+                  <select class="form-control">
+                    <option selected>English</option>
+                    <option>Spanish</option>
+                    <option>French</option>
+                    <option>Filipino</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Date Format</label>
+                  <select class="form-control">
+                    <option>DD/MM/YYYY (European)</option>
+                    <option selected>MM/DD/YYYY (US)</option>
+                    <option>YYYY-MM-DD (ISO)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Time Zone</label>
+                  <select class="form-control">
+                    <option>(UTC-12:00) International Date Line West</option>
+                    <option>(UTC-05:00) Eastern Time (US & Canada)</option>
+                    <option>(UTC+00:00) London</option>
+                    <option selected>(UTC+01:00) Paris</option>
+                    <option>(UTC+08:00) Singapore</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="tab-pane" id="notifications">
+              <div class="settings-group">
+                <h4>Email Notifications</h4>
+                <div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck" checked> Receive notifications for new registrations
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Notification Email</label>
+                  <input type="email" class="form-control" value="captain@oceanstar.com">
+                </div>
+                <div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck"> Receive daily summary
+                    </label>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h4>Alert Thresholds</h4>
+                <div class="form-group">
+                  <label>Certificate Expiry Warning</label>
+                  <select class="form-control">
+                    <option>30 days before expiry</option>
+                    <option selected>60 days before expiry</option>
+                    <option>90 days before expiry</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="tab-pane" id="access">
+              <div class="settings-group">
+                <h4>Login Credentials</h4>
+                <div class="form-group">
+                  <label>Username</label>
+                  <input type="text" class="form-control" value="captain_oceanstar" disabled>
+                </div>
+                <div class="form-group">
+                  <label>Change Password</label>
+                  <input type="password" class="form-control" placeholder="New password">
+                  <input type="password" class="form-control" placeholder="Confirm password" style="margin-top: 10px;">
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h4>Two-Factor Authentication</h4>
+                <div class="form-group">
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" class="icheck"> Enable 2FA via SMS
+                    </label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Mobile Number</label>
+                  <input type="tel" class="form-control" placeholder="+1 (___) ___-____">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-right" style="margin-top: 20px;">
+            <button class="btn btn-primary"><i class="fa fa-save"></i> Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Certificate Modal -->
+  <div class="modal fade" id="addCertificateModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><i class="fa fa-plus-circle"></i> Add Custom Certificate</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Certificate Name</label>
+              <div class="col-sm-9">
+                <input type="text" class="form-control" placeholder="e.g., BOSIET, ENG1">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Certificate Type</label>
+              <div class="col-sm-9">
+                <select class="form-control">
+                  <option>Medical</option>
+                  <option>Safety</option>
+                  <option>Technical</option>
+                  <option>Company Specific</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Require Scan</label>
+              <div class="col-sm-9">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" class="icheck"> Crew must upload scan
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Expiry Check</label>
+              <div class="col-sm-9">
+                <select class="form-control">
+                  <option selected>No expiry date</option>
+                  <option>Must be valid during stay</option>
+                  <option>Must have 6+ months validity</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Required For</label>
+              <div class="col-sm-9">
+                <select class="form-control select2" multiple>
+                  <option selected>All crew</option>
+                  <option>Deck officers</option>
+                  <option>Engineering staff</option>
+                  <option>Other roles</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary">Add Certificate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <!-- Bootstrap 3 JS -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <!-- Select2 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+  <!-- iCheck -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/iCheck/1.0.2/icheck.min.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize Select2
+      $('.select2').select2({
+        placeholder: "Select options",
+        allowClear: true
+      });
+
+      // Initialize iCheck
+      $('.icheck').iCheck({
+        checkboxClass: 'icheckbox_square-blue',
+        radioClass: 'iradio_square-blue'
+      });
+
+      // Menu Navigation
+      $('.sidebar a[data-section]').click(function(e) {
+        e.preventDefault();
+        var section = $(this).data('section');
+        
+        // Update active menu item
+        $('.sidebar a').removeClass('active');
+        $(this).addClass('active');
+        
+        // Show corresponding section
+        $('.content-section').hide();
+        $('#' + section + '-section').show();
+      });
+
+      // Toggle familiarization content
+      $('#enableFamiliarization').on('ifChanged', function() {
+        if (this.checked) {
+          $('#familiarizationContent').show();
+        } else {
+          $('#familiarizationContent').hide();
+        }
+      }).trigger('ifChanged');
+
+      // File upload handling
+      function handleFileUpload(uploadId, previewId) {
+        $(uploadId).click(function() {
+          $(uploadId + ' input[type="file"]').click();
+        });
+
+        $(uploadId + ' input[type="file"]').change(function() {
+          if (this.files.length > 0) {
+            $(previewId).show();
+          }
+        });
+      }
+
+      handleFileUpload('#gdprUpload', '#gdprPreview');
+      handleFileUpload('#trainingUpload', '#trainingPreview');
+    });
+  </script>
+</body>
+</html>

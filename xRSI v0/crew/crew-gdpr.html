@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Crew • GDPR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+    <style>
+        /* Styles to ensure content from Summernote looks good */
+        #gdprPolicyContainer {
+            border: 1px solid #eee;
+            border-radius: 4px;
+            padding: 20px;
+            background-color: #fff;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>GDPR & Data Privacy</h2>
+                    <p id="gdprInstructionsText"></p>
+                </div>
+
+                <div id="gdprPanel" style="display:none;">
+                    <div id="gdprPolicyContainer"></div>
+
+                    <div id="gdprAgreementContainer"></div>
+
+                    <div class="well well-sm clearfix">
+                        <button id="requestDeleteBtn" class="btn btn-danger pull-left" style="display:none;">
+                            <i class="fa fa-user-times"></i> Request Profile Deletion
+                        </button>
+                        <button id="saveGdprCrew" class="btn btn-primary pull-right" disabled>
+                            <i class="fa fa-check-circle"></i> Acknowledge & Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            // --- SIDEBAR ---
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-gdpr"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
+
+            // --- PAGE LOGIC ---
+            const gdprConfig = JSON.parse(localStorage.getItem("gdprConfig"));
+
+            // 1. Check if the GDPR page should be shown at all
+            if (!gdprConfig || !gdprConfig.showGdprPage) {
+                $('.page-header').html('<h2>GDPR & Data Privacy</h2><div class="alert alert-info">No GDPR acknowledgement is required at this time.</p>');
+                return; 
+            }
+            
+            $("#gdprPanel").show();
+
+            // 2. Display Page Instructions
+            $("#gdprInstructionsText").text(gdprConfig.instructions || "Please review the policy below.");
+
+            // 3. Display the GDPR Policy Content from the Summernote editor
+            if (gdprConfig.policyContent) {
+                $("#gdprPolicyContainer").html(gdprConfig.policyContent);
+            } else {
+                $("#gdprPolicyContainer").html("<p>The GDPR Policy has not been configured.</p>");
+            }
+
+            // 4. Display link to uploaded document, if it exists
+            if (gdprConfig.documentName) {
+                $("#gdprPolicyContainer").append(`<hr><p><strong>Supporting Document:</strong> <a href="#" onclick="alert('File download simulation.')" title="${gdprConfig.documentName}"><i class="fa fa-file-pdf-o"></i> ${gdprConfig.documentName}</a></p>`);
+            }
+
+            // 5. Display and handle the "Agree" checkbox
+            if (gdprConfig.requireAgree) {
+                // CHECKBOX FIX: Removed inline styles for consistency
+                const checkboxHtml = `
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="gdprAgree"> I have read and agree to the GDPR policy.
+                        </label>
+                    </div>`;
+                $("#gdprAgreementContainer").html(checkboxHtml);
+
+                $("#gdprAgree").on("change", function () {
+                    $("#saveGdprCrew").prop("disabled", !this.checked);
+                });
+            } else {
+                $("#saveGdprCrew").prop("disabled", false);
+            }
+
+            // 6. Display the "Request Profile Deletion" button
+            if (gdprConfig.allowDeletion) {
+                $("#requestDeleteBtn").show();
+            }
+
+            // 7. Handle Acknowledgement & Onboarding Progress
+            $("#saveGdprCrew").on("click", function () {
+                let progress = JSON.parse(localStorage.getItem("progress")) || {};
+                progress['gdpr'] = true;
+                localStorage.setItem("progress", JSON.stringify(progress));
+                
+                $(this).prop('disabled', true).html('<i class="fa fa-check"></i> Acknowledged');
+                $('#gdprAgree').prop('disabled', true);
+                $('#requestDeleteBtn').hide(); // Hide deletion button after acknowledging
+                
+                alert("Thank you. Your acknowledgement has been saved.");
+            });
+
+            // 8. Handle Deletion Request State
+            if (localStorage.getItem("crewDeletionRequested") === "true") {
+                $("#requestDeleteBtn").text("Deletion Requested").removeClass("btn-danger").addClass("btn-default").prop("disabled", true);
+            }
+
+            $("#requestDeleteBtn").on("click", function () {
+                if(confirm("Are you sure you want to request the deletion of your profile and all associated data? This action cannot be undone.")) {
+                    localStorage.setItem("crewDeletionRequested", "true");
+                    $(this).text("Deletion Requested").removeClass("btn-danger").addClass("btn-default").prop("disabled", true);
+                    alert("Your profile deletion request has been submitted.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

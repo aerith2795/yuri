@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Admin • GDPR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Ripple + Admin CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-sm-3 col-md-2 sidebar">
+        <div class="text-center logo">
+          <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px; height:auto;" />
+        </div>
+<ul class="nav nav-pills nav-stacked">
+          <li><a href="admin-dashboard.html"><i class="fa fa-tachometer"></i> Dashboard</a></li>
+          <li><a href="admin-vessel-setup.html"><i class="fa fa-ship"></i> Vessel</a></li>
+          <li><a href="admin-certificates.html"><i class="fa fa-file-text-o"></i> Certificates</a></li>
+          <li class="active"><a href="admin-gdpr.html"><i class="fa fa-shield"></i> GDPR</a></li>
+          <li><a href="admin-familiarization.html"><i class="fa fa-video-camera"></i> Familiarization</a></li>
+          <li><a href="admin-customer-admins.html"><i class="fa fa-user-secret"></i> Customer Admins</a></li>
+          <li><a href="admin-settings.html"><i class="fa fa-cog"></i> Welcome Text</a></li>
+        </ul>
+      </div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>GDPR Configuration</h2>
+          <p>
+            Manage GDPR texts and downloadable documents visible in the Crew
+            portal.
+          </p>
+        </div>
+
+        <!-- Visibility toggle -->
+        <div class="panel">
+          <div class="panel-heading">
+            <i class="fa fa-eye"></i> Visibility
+          </div>
+          <div class="panel-body">
+            <div class="checkbox">
+              <label><input type="checkbox" id="showGdpr" checked /> Show GDPR
+                page in Crew portal</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Texts -->
+        <div class="panel">
+          <div class="panel-heading">
+            <i class="fa fa-shield"></i> GDPR Texts
+            <button class="btn btn-primary btn-xs pull-right" id="btnAddText">
+              <i class="fa fa-plus"></i> Add Text
+            </button>
+          </div>
+          <div class="panel-body">
+            <table class="table table-bordered" id="gdprTable">
+              <thead>
+                <tr>
+                  <th style="width: 28%">Title</th>
+                  <th>Body (excerpt)</th>
+                  <th style="width: 16%">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>General Data Protection Policy</td>
+                  <td>
+                    RSI collects and processes personal data including names,
+                    contact information...
+                  </td>
+                  <td>
+                    <button class="btn btn-xs btn-default edit-text">
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-xs btn-danger delete-text">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="form-group">
+              <label>Page Instructions (shown on Crew GDPR tab)</label>
+              <textarea id="gdprInstructions" class="form-control" rows="3"
+                placeholder="Provide a quick summary on why GDPR matters and what crew should do."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Docs -->
+        <div class="panel">
+          <div class="panel-heading">
+            <i class="fa fa-paperclip"></i> GDPR Documents
+          </div>
+          <div class="panel-body">
+            <div class="dropzone" id="docDrop">
+              <p>
+                <i class="fa fa-upload"></i> Drop files here or click to
+                upload
+              </p>
+              <input id="docInput" type="file" multiple style="display: none" />
+            </div>
+            <hr />
+            <ul class="list-group" id="docList">
+              <!-- appended links -->
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- /main -->
+    </div>
+  </div>
+
+  <!-- Modal: Add/Edit GDPR Text -->
+  <div class="modal fade" id="modalText">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formText">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">
+              <i class="fa fa-file-text"></i> GDPR Text
+            </h4>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="textIndex" />
+            <div class="form-group">
+              <label>Title</label>
+              <input id="textTitle" type="text" class="form-control" required />
+            </div>
+            <div class="form-group">
+              <label>Body</label>
+              <textarea id="textBody" class="form-control" rows="8" required></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">
+              Cancel
+            </button>
+            <button class="btn btn-primary" type="submit">
+              <i class="fa fa-save"></i> Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    $(function () {
+      // Visibility
+      $("#showGdpr").on("change", function () {
+        alert(
+          "GDPR page " +
+          (this.checked ? "visible" : "hidden") +
+          " for Crew (demo)."
+        );
+      });
+
+      // Add text
+      let editRow = null;
+      $("#btnAddText").on("click", function () {
+        $("#textIndex").val("");
+        $("#textTitle").val("");
+        $("#textBody").val("");
+        $("#modalText").modal("show");
+      });
+
+      $(document).on("click", ".edit-text", function () {
+        editRow = $(this).closest("tr");
+        const i = editRow.index();
+        $("#textIndex").val(i);
+        $("#textTitle").val(editRow.children().eq(0).text().trim());
+        $("#textBody").val(editRow.children().eq(1).text().trim());
+        $("#modalText").modal("show");
+      });
+
+      $(document).on("click", ".delete-text", function () {
+        if (confirm("Delete this GDPR text?")) $(this).closest("tr").remove();
+      });
+
+      $("#formText").on("submit", function (e) {
+        e.preventDefault();
+        const idx = $("#textIndex").val();
+        const t = $("#textTitle").val(),
+          b = $("#textBody").val();
+        const excerpt = b.length > 120 ? b.substr(0, 117) + "..." : b;
+        const row = `<tr>
+          <td>${t}</td><td>${excerpt}</td>
+          <td>
+            <button class="btn btn-xs btn-default edit-text"><i class="fa fa-pencil"></i></button>
+            <button class="btn btn-xs btn-danger delete-text"><i class="fa fa-trash"></i></button>
+          </td>
+        </tr>`;
+        if (idx === "") $("#gdprTable tbody").append(row);
+        else $("#gdprTable tbody tr").eq(parseInt(idx, 10)).replaceWith(row);
+
+        $("#modalText").modal("hide");
+      });
+
+      // Docs upload (demo)
+      $("#docDrop").on("click", function () {
+        $("#docInput").click();
+      });
+      $("#docInput").on("change", function () {
+        const list = $("#docList");
+        Array.from(this.files).forEach((f) => {
+          list.append(`<li class="list-group-item">
+            <i class="fa fa-file-o"></i> ${f.name}
+            <span class="pull-right"><span class="label label-blue">link</span></span>
+          </li>`);
+        });
+        this.value = "";
+      });
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSI Unified Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --r-dark: #070a1a;
+            --r-gray: #5d7fac;
+            --r-blue: #3f91ff;
+            --r-red: #e32f31;
+            --r-orange: #ff783f;
+            --r-light: #eff4fa;
+            --r-green: #2d8548;
+            --r-font: "Overpass", sans-serif;
+            --r-ripple-blue: #0066cc;
+
+            /* Light mode variables */
+            --bg-primary: linear-gradient(135deg, var(--r-dark), #101c56);
+            --bg-card: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-tertiary: rgba(255, 255, 255, 0.6);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --input-border: rgba(255, 255, 255, 0.3);
+            --tab-bg: rgba(255, 255, 255, 0.1);
+            --tab-active: rgba(255, 255, 255, 0.2);
+            --border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: linear-gradient(135deg, #3f91ff, #5d7fac);
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-tertiary: #718096;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-border: rgba(0, 0, 0, 0.1);
+            --tab-bg: rgba(0, 0, 0, 0.05);
+            --tab-active: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overpass', sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: background 0.5s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle i {
+            font-size: 18px;
+        }
+
+        .theme-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.7s ease;
+            transition: all 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-section {
+            flex: 1;
+            background: linear-gradient(rgba(0, 102, 204, 0.2), rgba(30, 42, 74, 0)),
+                url('https://shipadmin.com/sadesign/templates/New/assets/login-image.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+
+        .image-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.7), rgba(30, 42, 74, 0.7));
+            z-index: 1;
+        }
+
+        .image-section>* {
+            position: relative;
+            z-index: 2;
+        }
+
+        .image-section h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .image-section p {
+            font-size: 16px;
+            opacity: 0.9;
+            max-width: 300px;
+        }
+
+        .logo {
+            margin-bottom: 200px;
+            max-width: 200px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 28px;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            transition: color 0.3s ease;
+        }
+
+        /* Tabs */
+        .user-tabs {
+            display: flex;
+            border: none;
+            margin-bottom: 25px;
+            background: var(--tab-bg);
+            border-radius: 10px;
+            padding: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .tab.active {
+            background: var(--tab-active);
+            color: var(--text-primary);
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--tab-active);
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            animation: fadeSlide 0.5s;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+            transition: color 0.3s ease;
+        }
+
+        .form-control {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            box-shadow: none;
+            color: var(--text-primary);
+            padding: 14px 15px 14px 45px;
+            width: 100%;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .form-control:focus {
+            background: var(--input-bg);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.5);
+            border-color: var(--r-blue);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            accent-color: var(--r-blue);
+        }
+
+        .remember-me label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: var(--text-primary);
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            background: var(--r-ripple-blue);
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .btn-login:hover {
+            background: #0055aa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-register {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            transition: all 0.3s ease;
+        }
+
+        .btn-register:hover {
+            background: var(--input-bg);
+            transform: translateY(-2px);
+        }
+
+        .register-section {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .register-text {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Crew specific styling */
+        .crew-login .btn-login {
+            background: var(--r-green);
+        }
+
+        .crew-login .btn-login:hover {
+            background: #27ae60;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 450px;
+            }
+
+            .image-section {
+                padding: 30px 20px;
+            }
+
+            .form-section {
+                padding: 30px 25px;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+            }
+
+            .theme-text {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .user-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+        <!-- <span class="theme-text" id="themeText">Dark Mode</span> -->
+    </div>
+
+    <div class="login-container">
+        <div class="image-section">
+            <div class="logo">
+                <img src="assets/Logo-White.png" alt="Ripple Operations Logo">
+            </div>
+            <h2>Ripple Smart Induction</h2>
+            <p id="sloganText">Onboard Smarter. Ready Faster.</p>
+        </div>
+
+        <div class="form-section">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to access your account</p>
+            </div>
+
+            <div class="user-tabs">
+                <button class="tab active" data-tab="admin-customer">Admin / Customer</button>
+                <button class="tab" data-tab="crew">Crew</button>
+            </div>
+
+            <div class="tab-content active" id="admin-customer-form">
+                <form id="admin-customer-login-form">
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="form-control" placeholder="Email Address" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-control" placeholder="Password" required>
+                        </div>
+                    </div>
+
+                    <div class="options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember-admin">
+                            <label for="remember-admin">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                </form>
+            </div>
+
+            <div class="tab-content crew-login" id="crew-form">
+                <form id="crew-login-form">
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="form-control" placeholder="Email Address" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-control" placeholder="Password" required>
+                        </div>
+                    </div>
+
+                    <div class="options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember-crew">
+                            <label for="remember-crew">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                </form>
+
+                <div class="register-section">
+                    <p class="register-text">New crew member?</p>
+                    <button class="btn btn-register"><i class="fas fa-user-plus"></i> Register as Crew</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Theme Toggle 
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            const body = document.body;
+
+            // Check for saved theme or prefer-color-scheme
+            const savedTheme = localStorage.getItem('theme') ||
+                (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+
+            // Apply the saved theme
+            body.setAttribute('data-theme', savedTheme);
+            updateThemeToggle(savedTheme);
+
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', function () {
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeToggle(newTheme);
+            });
+
+            function updateThemeToggle(theme) {
+                if (theme === 'light') {
+                    themeIcon.className = 'fas fa-sun';
+                    // themeText.textContent = 'Light Mode';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    // themeText.textContent = 'Dark Mode';
+                }
+            }
+
+            // Slogan Rotation Logic
+            const slogans = [
+                "Onboard Smarter. Ready Faster.",
+                "Your Journey Starts Here.",
+                "The Future of Maritime Induction.",
+                "Seamless Onboarding. Stronger Crew.",
+                "Safety First. Knowledge Always.",
+                "Connect. Learn. Sail."
+            ];
+
+            const sloganElement = document.getElementById('sloganText');
+            if (sloganElement) {
+                const randomIndex = Math.floor(Math.random() * slogans.length);
+                sloganElement.textContent = slogans[randomIndex];
+            }
+
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-form`).classList.add('active');
+                });
+            });
+
+            // Form submission with redirect to landing.html
+            const adminCustomerForm = document.getElementById('admin-customer-login-form');
+            const crewForm = document.getElementById('crew-login-form');
+
+            if (adminCustomerForm) {
+                adminCustomerForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const email = document.querySelector('#admin-customer-form input[type="email"]').value;
+
+                    if (email) {
+                        // Store user type in localStorage for use in landing.html
+                        localStorage.setItem('userType', 'admin-customer');
+                        localStorage.setItem('userEmail', email);
+
+                        // Show loading state
+                        const submitBtn = this.querySelector('.btn-login');
+                        const originalText = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                        submitBtn.disabled = true;
+
+                        // Simulate API call delay, then redirect
+                        setTimeout(() => {
+                            window.location.href = 'landing.html';
+                        }, 1500);
+                    } else {
+                        alert('Please enter your email address');
+                    }
+                });
+            }
+
+            if (crewForm) {
+                crewForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const email = document.querySelector('#crew-form input[type="email"]').value;
+
+                    if (email) {
+                        // Store user type in localStorage for use in landing.html
+                        localStorage.setItem('userType', 'crew');
+                        localStorage.setItem('userEmail', email);
+
+                        // Show loading state
+                        const submitBtn = this.querySelector('.btn-login');
+                        const originalText = submitBtn.innerHTML;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                        submitBtn.disabled = true;
+
+                        // Simulate API call delay, then redirect
+                        setTimeout(() => {
+                            window.location.href = 'landing.html';
+                        }, 1500);
+                    } else {
+                        alert('Please enter your email address');
+                    }
+                });
+            }
+
+            // Register button functionality
+            const registerButtons = document.querySelectorAll('.btn-register');
+            registerButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                    if (activeTab === 'admin-customer') {
+                        alert('Redirecting to customer registration page');
+                    } else {
+                        // Redirect to crew registration page
+                        window.location.href = 'landing.html';
+                    }
+                });
+            });
+
+            // Forgot password functionality
+            const forgotPasswordLinks = document.querySelectorAll('.forgot-password');
+            forgotPasswordLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                    const emailField = document.querySelector(`#${activeTab}-form input[type="email"]`);
+
+                    if (emailField.value) {
+                        alert(`Password reset link will be sent to: ${emailField.value}`);
+                    } else {
+                        alert('Please enter your email address to reset your password');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

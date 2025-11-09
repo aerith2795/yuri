@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Crew • Certificates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+  <style>
+
+    .required-field-label {
+      font-weight: bold;
+    }
+
+    .required-field-label::after {
+      content: " *";
+      color: var(--r-red);
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: #777;
+    }
+
+    .cert-upload {
+      max-width: 250px;
+      display: inline-block;
+    }
+
+    .mark-missing {
+      padding: 2px 0;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Certificates</h2>
+          <p id="pageInstructions">Please upload clear, readable copies of your required documents.</p>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <table class="table table-bordered certificate-table">
+              <thead>
+                <tr>
+                  <th>Certificate</th>
+                  <th style="width:160px">Status</th>
+                  <th style="width:320px">Action</th>
+                </tr>
+              </thead>
+              <tbody id="crewCertTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-footer">
+    <div class="footer-container">
+      <button id="saveCertificates" class="btn btn-primary btn-sm btn-block"><i class="fa fa-save"></i> Save All
+        Changes</button>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    $(function () {
+      // --- INITIALIZATION & DATA ---
+      // sidebar
+      fetch('crew-sidebar.html').then(r => r.text()).then(html => {
+        $('#sidebar-placeholder').html(html);
+        $('#sidebar-placeholder').find('[data-page="crew-certificates"]').addClass('active');
+      });
+
+      let config = JSON.parse(localStorage.getItem('certificatesConfig'));
+      if (!config || !config.certificates || config.certificates.length === 0) {
+        config = {
+          instructions: "Please upload clear, readable copies of all required certificates for this vessel.",
+          certificates: [
+            { name: "Passport", desc: "Valid passport for international travel.", isRequired: true, requireUpload: true, instructions: "Must be valid for 6 months." },
+            { name: "Seaman’s Book", desc: "Official seafarer identification booklet.", isRequired: true, requireUpload: true },
+            { name: "Medical Certificate", desc: "Issued by an approved maritime medical examiner.", isRequired: true, requireUpload: true, instructions: "Must be valid for 1 year." },
+            { name: "Yellow Fever Vaccination", desc: "International vaccination certificate.", isRequired: false, requireUpload: false, instructions: "Only required for specific voyages." } // Changed requireUpload to false for demo
+          ]
+        };
+      }
+
+      const crewUploads = JSON.parse(localStorage.getItem('crewCertUploads') || '{}');
+
+      // --- RENDER FUNCTION ---
+      function renderCrewCertificates() {
+        const tbody = $('#crewCertTable').empty();
+        if (config.instructions) { $('#pageInstructions').text(config.instructions); }
+
+        config.certificates.forEach(cert => {
+          const isMandatory = cert.isRequired || cert.requireUpload;
+
+          // *** LOGIC FIX: Always show the upload input field ***
+          const uploadHtml = `<input type="file" class="form-control input-sm cert-upload" data-name="${cert.name}" />`;
+
+          const instructionIcon = cert.instructions ? ` <i class="fa fa-info-circle text-muted" data-toggle="tooltip" title="${escapeHtml(cert.instructions)}"></i>` : '';
+          const markMissingBtn = !isMandatory ? `<button class="btn btn-link btn-xs mark-missing" data-name="${cert.name}">Mark as Not Applicable</button>` : '';
+
+          let statusHtml = `<span class="label label-default">Pending</span>`;
+          if (crewUploads[cert.name]) {
+            if (crewUploads[cert.name].status === 'missing') {
+              statusHtml = `<span class="label label-warning">Not Applicable</span>`;
+            } else {
+              statusHtml = `<span class="label label-success">Uploaded</span><div class="small-note">${escapeHtml(crewUploads[cert.name].filename)}</div>`;
+            }
+          }
+
+          tbody.append(`
+                    <tr data-name="${cert.name}">
+                        <td>
+                            <label class="${isMandatory ? 'required-field-label' : ''}">${escapeHtml(cert.name)}</label>${instructionIcon}
+                            ${cert.desc ? `<div class="small-note">${escapeHtml(cert.desc)}</div>` : ''}
+                        </td>
+                        <td class="cert-status">${statusHtml}</td>
+                        <td>${uploadHtml} ${markMissingBtn}</td>
+                    </tr>
+                `);
+        });
+        $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
+      }
+
+      // --- EVENT HANDLERS ---
+      $('#crewCertTable').on('change', '.cert-upload', function (e) {
+        const certName = $(this).data('name');
+        const file = this.files[0];
+        if (!file) return;
+
+        crewUploads[certName] = { filename: file.name, timestamp: Date.now() };
+        localStorage.setItem('crewCertUploads', JSON.stringify(crewUploads));
+
+        const statusCell = $(this).closest('tr').find('.cert-status');
+        statusCell.html(`<span class="label label-success">Uploaded</span><div class="small-note">${escapeHtml(file.name)}</div>`);
+
+        let progress = JSON.parse(localStorage.getItem("progress")) || {};
+        progress['cert'] = true;
+        localStorage.setItem("progress", JSON.stringify(progress));
+
+        showToast(`'${certName}' was uploaded successfully.`);
+      });
+
+      $('#crewCertTable').on('click', '.mark-missing', function () {
+        const certName = $(this).data('name');
+        crewUploads[certName] = { status: 'missing', timestamp: Date.now() };
+        localStorage.setItem('crewCertUploads', JSON.stringify(crewUploads));
+        $(this).closest('tr').find('.cert-status').html(`<span class="label label-warning">Not Applicable</span>`);
+        $(this).hide();
+      });
+
+      $('#saveCertificates').on('click', function () {
+        showToast('All changes have been saved.');
+      });
+
+      // --- HELPERS ---
+      function escapeHtml(s) { if (!s) return ''; return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+      function showToast(msg) {
+        $('.toast-custom').remove();
+        const toast = $(`<div class="alert alert-success toast-custom" style="position:fixed;bottom:20px;right:20px;z-index:1050;">${escapeHtml(msg)}</div>`);
+        $('body').append(toast);
+        setTimeout(() => toast.fadeOut(500, () => toast.remove()), 3000);
+      }
+
+      // --- INITIAL LOAD ---
+      renderCrewCertificates();
+    });
+  </script>
+</body>
+
+</html>

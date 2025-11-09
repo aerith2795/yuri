@@ -1,0 +1,191 @@
+/* ===============================
+   RSI Admin Dashboard Styles
+   Scoped for admin-dashboard.html
+   =============================== */
+
+/* Layout */
+.dashboard-layout {
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--r-dark);
+  min-height: 100vh;
+  padding: 20px;
+  color: #fff;
+}
+.sidebar .logo {
+  color: var(--r-light);
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.sidebar .nav > li > a {
+  color: var(--r-light);
+  border-radius: 4px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sidebar .nav > li.active > a,
+.sidebar .nav > li > a:hover {
+  background: var(--r-blue);
+  color: #fff;
+  border-left: 3px solid #FF7900;
+}
+
+/* Main content */
+.main-content {
+  padding: 20px;
+  background: var(--r-light);
+  min-height: 100vh;
+}
+
+/* Page header */
+.page-header h2 {
+  font-weight: 600;
+  color: var(--r-dark);
+}
+.page-header p {
+  color: var(--r-gray);
+}
+
+/* ============================================
+   Panels (global)
+   ============================================ */
+.panel {
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+  margin-bottom: 25px;
+}
+.panel-heading {
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 1px solid #eee;
+  border-radius: 12px 12px 0 0;
+  color: var(--r-dark);
+  background: #fff;
+  padding: 12px 15px;
+}
+.panel-body {
+  background: #fff;
+  border-radius: 0 0 12px 12px;
+  padding: 20px;
+}
+.panel .panel-heading i {
+  margin-right: 6px;
+  /* color: var(--r-blue); */
+}
+
+/* KPI cards */
+.kpi-row .panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.kpi-row h3 {
+  margin-top: 0;
+  font-weight: 600;
+}
+.kpi-row .label {
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+/* Alerts & Activity */
+.alert {
+  margin-bottom: 12px;
+}
+.table > thead > tr > th {
+  font-weight: 600;
+}
+
+/* ============================================
+   RSI Admin • Customer Admins
+   Scoped for admin-customer-admins.html
+   ============================================ */
+
+/* Table */
+.customer-admins-table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+.customer-admins-table th {
+  background: var(--r-light);
+  color: var(--r-dark);
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+}
+.customer-admins-table td {
+  vertical-align: middle;
+}
+
+/* Buttons in table rows */
+.customer-admins-table .btn {
+  margin-right: 4px;
+}
+
+/* Panel heading with button */
+.panel-heading.clearfix {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.panel-heading .btn {
+  padding: 4px 10px;
+  font-size: 13px;
+}
+
+/* Form grid inside modals */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+.form-grid.columns-2 .form-group {
+  margin-bottom: 15px;
+}
+
+/* Modal header/footer */
+.modal-header {
+  background: var(--r-blue);
+  color: #fff;
+  border-radius: 6px 6px 0 0;
+}
+.modal-header h4 {
+  margin: 0;
+  font-weight: 600;
+}
+.modal-footer {
+  background: #f8f9fc;
+}
+
+/* Change-password section in edit modal */
+#pwdSection {
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+/* Reset-link button */
+.btn-warning.btn-sm i {
+  margin-right: 4px;
+}
+
+/* Label overrides */
+.label-green {
+  background: #eaf7ee;
+  color: var(--r-green);
+  border: 1px solid var(--r-green);
+}
+.label-blue {
+  background: #ebf4ff;
+  color: var(--r-blue);
+  border: 1px solid var(--r-blue);
+}
+.label-orange {
+  background: #fff3e6;
+  color: var(--r-orange);
+  border: 1px solid var(--r-orange);
+}
+

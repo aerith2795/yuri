@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSI Unified Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --r-dark: #0b0f24;
+            --r-gray: #5d7fac;
+            --r-blue: #3f91ff;
+            --r-red: #e32f31;
+            --r-orange: #ff783f;
+            --r-light: #eff4fa;
+            --r-green: #2d8548;
+            --r-font: "Overpass", sans-serif;
+            --r-ripple-blue: #0066cc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overpass', sans-serif;
+            /* ANIMATED BACKGROUND START */
+            background: linear-gradient(-45deg, var(--r-dark), #101c56, var(--r-blue), #5d7fac);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            /* ANIMATED BACKGROUND END */
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Keyframes for animated background */
+        @keyframes gradient-animation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.7s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-section {
+            flex: 1;
+            /* Opacity adjustment: Changed 0.8 to 0.6 for the darker color to make the ship clearer */
+            background: linear-gradient(rgba(0, 102, 204, 0.7), rgba(30, 42, 74, 0.6)),
+                url('https://shipadmin.com/sadesign/templates/New/assets/login-image.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+
+        .image-section h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .image-section p {
+            font-size: 16px;
+            opacity: 0.9;
+            max-width: 300px;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+            max-width: 200px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: auto;
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            font-weight: 700;
+            color: #fff;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+        }
+
+        /* Tabs */
+        .user-tabs {
+            display: flex;
+            border: none;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 0;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 14px;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .tab-content {
+            animation: fadeSlide 0.5s;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 10px;
+            box-shadow: none;
+            color: #fff;
+            padding: 14px 15px 14px 45px;
+            width: 100%;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.5);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            accent-color: var(--r-blue);
+        }
+
+        .remember-me label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .forgot-password {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-login {
+            background: var(--r-ripple-blue);
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .btn-login:hover {
+            background: #0055aa;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-register {
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-register:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .register-section {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .register-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Crew specific styling */
+        .crew-login .btn-login {
+            background: var(--r-green);
+        }
+
+        .crew-login .btn-login:hover {
+            background: #27ae60;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 450px;
+            }
+
+            .image-section {
+                padding: 30px 20px;
+            }
+
+            .form-section {
+                padding: 30px 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .user-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="image-section">
+            <div class="logo">
+                <img src="assets/Logo-White.png" alt="Ripple Operations Logo">
+            </div>
+            <h2>Ripple Smart Induction</h2>
+            <p id="sloganText">Onboard Smarter. Ready Faster.</p>
+        </div>
+
+        <div class="form-section">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to access your account</p>
+            </div>
+
+            <div class="user-tabs">
+                <button class="tab active" data-tab="admin-customer">Admin / Customer</button>
+                <button class="tab" data-tab="crew">Crew</button>
+            </div>
+
+            <div class="tab-content active" id="admin-customer-form">
+                <form>
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="form-control" placeholder="Email Address" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-control" placeholder="Password" required>
+                        </div>
+                    </div>
+
+                    <div class="options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember-admin">
+                            <label for="remember-admin">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                </form>
+
+                <div class="register-section">
+                    <p class="register-text">New customer?</p>
+                    <button class="btn btn-register"><i class="fas fa-user-plus"></i> Create Account</button>
+                </div>
+            </div>
+
+            <div class="tab-content crew-login" id="crew-form">
+                <form>
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" class="form-control" placeholder="Email Address" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" class="form-control" placeholder="Password" required>
+                        </div>
+                    </div>
+
+                    <div class="options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember-crew">
+                            <label for="remember-crew">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+
+                    <button class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                </form>
+
+                <div class="register-section">
+                    <p class="register-text">New crew member?</p>
+                    <button class="btn btn-register"><i class="fas fa-user-plus"></i> Register as Crew</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Slogan Rotation Logic
+            const slogans = [
+                "Onboard Smarter. Ready Faster.",
+                "Your Journey Starts Here.",
+                "The Future of Maritime Induction.",
+                "Seamless Onboarding. Stronger Crew.",
+                "Safety First. Knowledge Always.",
+                "Connect. Learn. Sail."
+            ];
+
+            const sloganElement = document.getElementById('sloganText');
+            if (sloganElement) {
+                const randomIndex = Math.floor(Math.random() * slogans.length);
+                sloganElement.textContent = slogans[randomIndex];
+            }
+
+
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    tab.classList.add('active');
+
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-form`).classList.add('active');
+                });
+            });
+
+            // Form submission (simulated)
+            const loginButtons = document.querySelectorAll('.btn-login');
+            loginButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                    const email = document.querySelector(`#${activeTab}-form input[type="email"]`).value;
+
+                    if (email) {
+                        alert(`Login attempt for ${activeTab === 'admin-customer' ? 'Admin/Customer' : 'Crew'} user: ${email}`);
+                    } else {
+                        alert(`Please enter your email to login as ${activeTab === 'admin-customer' ? 'Admin/Customer' : 'Crew'}`);
+                    }
+                });
+            });
+
+            // Register button functionality
+            const registerButtons = document.querySelectorAll('.btn-register');
+            registerButtons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                    if (activeTab === 'admin-customer') {
+                        alert('Redirecting to customer registration page');
+                    } else {
+                        alert('Redirecting to crew registration page');
+                    }
+                });
+            });
+
+            // Forgot password functionality
+            const forgotPasswordLinks = document.querySelectorAll('.forgot-password');
+            forgotPasswordLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                    const emailField = document.querySelector(`#${activeTab}-form input[type="email"]`);
+
+                    if (emailField.value) {
+                        alert(`Password reset link will be sent to: ${emailField.value}`);
+                    } else {
+                        alert('Please enter your email address to reset your password');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

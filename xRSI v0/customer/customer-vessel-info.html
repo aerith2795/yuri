@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Customer • Vessel Info</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.css" rel="stylesheet" />
+  <!-- Ripple + Customer CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+
+  <style>
+    body {
+      padding-bottom: 80px;
+      /* Add padding for the sticky footer */
+    }
+
+
+
+    /* Panel and Block Styling */
+    .panel-body.scrollable-panel {
+      padding: 0;
+      /* Remove padding from body as container will have it */
+    }
+
+    #journeyBlocksContainer {
+      max-height: 65vh;
+      /* Sets a maximum height relative to the screen */
+      overflow-y: auto;
+      /* Adds a scrollbar when content exceeds the height */
+      padding: 15px;
+    }
+
+    .journey-block {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background-color: #fafafa;
+      position: relative;
+    }
+
+    .journey-block .remove-block-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      z-index: 10;
+    }
+
+    /* Fixed Heights for Editor and Image Area */
+    .note-editor .note-editable {
+      height: 220px !important;
+      /* Fixed height */
+      overflow-y: auto !important;
+      /* Ensures editor is scrollable */
+    }
+
+    .image-upload-area {
+      height: 220px;
+      /* Match the Summernote height */
+      border: 2px dashed #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      position: relative;
+      margin-bottom: 0;
+    }
+
+    .image-upload-area:hover {
+      border-color: #337ab7;
+      background-color: #f9f9ff;
+    }
+
+    .image-preview-container .img-thumbnail-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .image-preview-container img {
+      max-width: 100%;
+      max-height: 180px;
+      /* Adjust for padding */
+      object-fit: contain;
+    }
+
+    .remove-img-btn {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #d9534f;
+      color: white;
+      border: 1px solid white;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      line-height: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    /* Preview State Styling */
+    .preview-content {
+      border: 1px solid #e3e3e3;
+      background-color: #fff;
+      padding: 6px 12px;
+      min-height: 150px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+
+    .preview-images img {
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    /* Client Preview Modal Styling */
+    #clientPreviewModal .modal-body {
+      min-height: 400px;
+    }
+
+    #preview-image-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 350px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+
+    #preview-image-col img {
+      max-width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+    }
+
+    #preview-content-col {
+      min-height: 350px;
+      overflow-y: auto;
+      max-height: 350px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2 id="vesselTitle">Vessel Configuration</h2>
+          <p>Maintain vessel details to ensure accurate information is displayed in the crew portal.</p>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i class="fa fa-ship"></i> Visual Journey Aboard
+            <button id="addBlockBtn" class="btn btn-primary btn-xs pull-right">
+              <i class="fa fa-plus"></i> Add Block
+            </button>
+          </div>
+          <div class="panel-body scrollable-panel">
+            <div id="journeyBlocksContainer">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading"><i class="fa fa-anchor"></i> Next Embarkation Schedule</div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-4 form-group">
+                <label>Embarkation Date</label>
+                <input type="date" id="embarkDate" class="form-control">
+              </div>
+              <div class="col-sm-4 form-group">
+                <label>Embarkation Time</label>
+                <input type="time" id="embarkTime" class="form-control">
+              </div>
+              <div class="col-sm-4 form-group">
+                <label>Embarkation Location</label>
+                <input type="text" id="embarkLocation" class="form-control" placeholder="e.g. Manila Port">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="sticky-footer">
+    <div class="footer-container">
+      <div class="row">
+        <div class="col-xs-6">
+          <button id="previewBtn" class="btn btn-info btn-block btn-sm"><i class="fa fa-eye"></i> Client
+            Preview</button>
+        </div>
+        <div class="col-xs-6" id="main-action-btn-wrapper"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="clientPreviewModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Client Portal Preview</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-sm-6" id="preview-content-col"></div>
+            <div class="col-sm-6" id="preview-image-col"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="pull-left">
+            <button type="button" class="btn btn-default" id="preview-prev-btn"><i class="fa fa-chevron-left"></i>
+              Previous</button>
+          </div>
+          <div class="pull-right">
+            <span id="preview-page-indicator" style="margin: 0 10px; vertical-align: middle;"></span>
+            <button type="button" class="btn btn-default" id="preview-next-btn">Next <i
+                class="fa fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
+
+  <script>
+    $(function () {
+      // --- GLOBALS & DEFAULT DATA ---
+      fetch('customer-sidebar.html')
+        .then(res => res.text())
+        .then(data => {
+          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+          sidebarPlaceholder.innerHTML = data;
+          const activeLink = sidebarPlaceholder.querySelector('[data-page="customer-vessel-info"]');
+          if (activeLink) activeLink.classList.add('active');
+        });
+
+      let blockCounter = 0;
+      let isEditMode = true;
+      let previewBlocksData = [];
+      let currentPreviewIndex = 0;
+
+      const defaultPageData = {
+        embarkation: {
+          date: "2025-11-15",
+          time: "09:00",
+          location: "Cebu Port"
+        },
+        journey: [
+          {
+            content: '<h1>Vessel Overview: M/V Yurisan Dozo</h1><p>The <b>M/V Yurisan Dozo</b> is a modern general cargo vessel designed for maximum efficiency and compliance with the latest international maritime standards. It is equipped to handle a wide variety of cargo types, including bulk, containers, and project cargo.</p><ul><li><b>Vessel Type:</b> General Cargo</li><li><b>IMO Number:</b> 9876543</li><li><b>Gross Tonnage:</b> 12,500 GT</li><li><b>Length Overall (LOA):</b> 150.25 m</li><li><b>Beam:</b> 25.5 m</li><li><b>Year Built:</b> 2021</li></ul>',
+            image: '../assets/rsi1.png'
+          },
+          {
+            content: '<h2>Crew Accommodations & Amenities</h2><p>Life on board the M/V Yurisan Dozo is designed for comfort and well-being. All crew members are housed in single-berth cabins with private washroom facilities.</p><p>Onboard amenities include:</p><ul><li>A modern gymnasium and fitness area.</li><li>Recreation room with satellite TV and entertainment systems.</li><li>High-speed satellite internet access for crew communication.</li><li>A fully-equipped mess hall serving nutritious meals.</li></ul>',
+            image: '../assets/rsi3.1.png'
+          },
+          {
+            content: '<h2>Bridge & Contact Information</h2><p>The vessel is commanded from a state-of-the-art navigation bridge featuring fully integrated systems for enhanced safety and operational efficiency.</p><p><b>Key Equipment:</b> Dual RADAR (X & S-Band), ECDIS, GMDSS, VDR, and Autopilot systems.</p><hr><p><b><u>Important Contacts:</u></b></p><ul><li><b>Bridge Satellite Phone:</b> +88 167 772 1234</li><li><b>Vessel Email:</b> captain.yurisandozo@shiplink.com</li></ul>',
+            image: '../assets/rsi2.2.png'
+          }
+        ]
+      };
+
+      // --- MAIN FUNCTIONS ---
+      function addBlock(data = {}) {
+        const id = blockCounter++;
+        const blockId = `journey-block-${id}`;
+        const inputId = `image-input-${id}`;
+        const content = data.content || '';
+        const image = data.image || null;
+
+        const blockHTML = `
+          <div class="journey-block" id="${blockId}" data-block-id="${id}">
+            <button class="btn btn-danger btn-xs remove-block-btn"><i class="fa fa-trash"></i></button>
+            <div class="edit-view">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>Content</label>
+                  <textarea class="rich-text-editor"></textarea>
+                </div>
+                <div class="col-md-6">
+                  <label>Image</label>
+                  <label for="${inputId}" class="image-upload-area">
+                    <input type="file" id="${inputId}" class="image-input" accept="image/*" style="display: none;" />
+                    <div class="image-preview-container"></div>
+                    <div class="upload-text">
+                      <i class="fa fa-cloud-upload fa-2x"></i>
+                      <p>Click to upload a single image</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="preview-view" style="display: none;">
+              <div class="row">
+                <div class="col-md-6"><div class="preview-content"></div></div>
+                <div class="col-md-6"><div class="preview-images"></div></div>
+              </div>
+            </div>
+          </div>
+        `;
+        $('#journeyBlocksContainer').append(blockHTML);
+        const $currentBlock = $(`#${blockId}`);
+
+        $currentBlock.find('.rich-text-editor').summernote({
+          height: 220, // Match CSS fixed height
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link']],
+            ['view', ['codeview']]
+          ]
+        }).summernote('code', content);
+
+        if (image) {
+          updateImageThumbnail(image, $currentBlock.find('.image-preview-container'));
+        }
+        toggleRemoveButtons();
+      }
+
+      function toggleViewMode(editMode) {
+        isEditMode = editMode;
+        $('#embarkDate, #embarkTime, #embarkLocation').prop('disabled', !editMode);
+
+        if (editMode) {
+          $('#addBlockBtn').prop('disabled', false);
+          $('.edit-view').show();
+          $('.preview-view').hide();
+          $('.remove-block-btn').show();
+          toggleRemoveButtons();
+          $('#main-action-btn-wrapper').html('<button id="saveAllBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
+        } else {
+          $('#addBlockBtn').prop('disabled', true);
+          updateAllPreviews();
+          $('.edit-view').hide();
+          $('.preview-view').show();
+          $('.remove-block-btn').hide();
+          $('#main-action-btn-wrapper').html('<button id="editAllBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Page</button>');
+        }
+      }
+
+      function saveAllData() {
+        const journeyData = [];
+        $('.journey-block').each(function () {
+          const content = $(this).find('.rich-text-editor').summernote('code');
+          const image = $(this).find('.image-preview-container img').attr('src') || null;
+          journeyData.push({ content, image });
+        });
+
+        const embarkationData = {
+          date: $('#embarkDate').val(),
+          time: $('#embarkTime').val(),
+          location: $('#embarkLocation').val()
+        };
+
+        const allPageData = { journey: journeyData, embarkation: embarkationData };
+        localStorage.setItem('vesselPageData', JSON.stringify(allPageData));
+
+        showAlert('All changes have been saved!', 'success');
+        toggleViewMode(false);
+      }
+
+      function updateAllPreviews() {
+        $('.journey-block').each(function () {
+          const $block = $(this);
+          const content = $block.find('.rich-text-editor').summernote('code');
+          const image = $block.find('.image-preview-container img').attr('src');
+
+          $block.find('.preview-content').html(content.trim() === "" ? '<p class="text-muted">No content.</p>' : content);
+
+          const $previewImages = $block.find('.preview-images').empty();
+          if (image) {
+            $previewImages.append(`<img src="${image}" class="img-responsive thumbnail">`);
+          } else {
+            $previewImages.html('<p class="text-muted">No image.</p>');
+          }
+        });
+      }
+
+      function updateImageThumbnail(src, $container) {
+        $container.empty().append(`
+            <div class="img-thumbnail-wrapper">
+              <img src="${src}" />
+              <button class="remove-img-btn">&times;</button>
+            </div>`);
+        $container.siblings('.upload-text').hide();
+      }
+
+      function toggleRemoveButtons() {
+        $('.remove-block-btn').toggle($('.journey-block').length > 1);
+      }
+
+      function showAlert(msg, type = 'success') {
+        const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
+        $('body').append(alert);
+        setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
+      }
+
+      // --- CLIENT PREVIEW MODAL LOGIC ---
+      function launchPreviewModal() {
+        previewBlocksData = [];
+        $('.journey-block').each(function () {
+          const content = $(this).find('.rich-text-editor').summernote('code');
+          const image = $(this).find('.image-preview-container img').attr('src') || null;
+          previewBlocksData.push({ content, image });
+        });
+
+        if (previewBlocksData.length === 0) {
+          showAlert('Add at least one block to preview.', 'warning'); return;
+        }
+        currentPreviewIndex = 0;
+        renderPreviewSlide(currentPreviewIndex);
+        $('#clientPreviewModal').modal('show');
+      }
+
+      function renderPreviewSlide(index) {
+        const slideData = previewBlocksData[index];
+        $('#preview-content-col').html(slideData.content);
+        if (slideData.image) {
+          $('#preview-image-col').html(`<img src="${slideData.image}" alt="Vessel Journey Image">`);
+        } else {
+          $('#preview-image-col').html('<p class="text-muted">No Image Provided</p>');
+        }
+        $('#preview-page-indicator').text(`Page ${index + 1} of ${previewBlocksData.length}`);
+        $('#preview-prev-btn').prop('disabled', index === 0);
+        $('#preview-next-btn').prop('disabled', index === previewBlocksData.length - 1);
+      }
+
+      // --- EVENT HANDLERS ---
+      $('#addBlockBtn').on('click', () => addBlock());
+      $('#main-action-btn-wrapper').on('click', '#saveAllBtn', saveAllData);
+      $('#main-action-btn-wrapper').on('click', '#editAllBtn', () => toggleViewMode(true));
+      $('#previewBtn').on('click', launchPreviewModal);
+
+      $('#journeyBlocksContainer').on('click', '.remove-block-btn', function () {
+        $(this).closest('.journey-block').remove();
+        toggleRemoveButtons();
+      });
+
+      $('#journeyBlocksContainer').on('change', '.image-input', function (e) {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          const $previewContainer = $(this).siblings('.image-preview-container');
+          const reader = new FileReader();
+          reader.onload = (event) => { updateImageThumbnail(event.target.result, $previewContainer); };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      $('#journeyBlocksContainer').on('click', '.remove-img-btn', function (e) {
+        e.preventDefault();
+        const $uploadArea = $(this).closest('.image-upload-area');
+        $uploadArea.find('.image-preview-container').empty();
+        $uploadArea.find('.upload-text').show();
+        $uploadArea.find('.image-input').val('');
+      });
+
+      $('#preview-next-btn').on('click', function () {
+        if (currentPreviewIndex < previewBlocksData.length - 1) { renderPreviewSlide(++currentPreviewIndex); }
+      });
+      $('#preview-prev-btn').on('click', function () {
+        if (currentPreviewIndex > 0) { renderPreviewSlide(--currentPreviewIndex); }
+      });
+
+      // --- ON PAGE LOAD ---
+      let savedPageData = JSON.parse(localStorage.getItem('vesselPageData'));
+      const startInEditMode = !savedPageData; // Start in edit if no saved data exists
+
+      if (!savedPageData) {
+        savedPageData = defaultPageData; // Load sample data if local storage is empty
+      }
+
+      if (savedPageData.embarkation) {
+        $('#embarkDate').val(savedPageData.embarkation.date || "");
+        $('#embarkTime').val(savedPageData.embarkation.time || "");
+        $('#embarkLocation').val(savedPageData.embarkation.location || "");
+      }
+      if (savedPageData.journey && savedPageData.journey.length > 0) {
+        savedPageData.journey.forEach(blockData => addBlock(blockData));
+      } else {
+        addBlock();
+      }
+      toggleViewMode(startInEditMode);
+    });
+  </script>
+
+</body>
+
+</html>

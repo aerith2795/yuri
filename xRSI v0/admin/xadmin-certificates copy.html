@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Admin • Certificates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Libs -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple + Admin CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+  <style>
+    .checkbox label {
+      font-weight: normal;
+      margin-right: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-sm-3 col-md-2 sidebar">
+        <div class="text-center logo">
+          <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width: 160px; height: auto" />
+        </div>
+       <ul class="nav nav-pills nav-stacked">
+          <li><a href="admin-dashboard.html"><i class="fa fa-tachometer"></i> Dashboard</a></li>
+          <li><a href="admin-vessel-setup.html"><i class="fa fa-ship"></i> Vessel</a></li>
+          <li class="active"><a href="admin-certificates.html"><i class="fa fa-file-text-o"></i> Certificates</a></li>
+          <!-- <li><a href="admin-gdpr.html"><i class="fa fa-shield"></i> GDPR</a></li> -->
+          <!-- <li><a href="admin-familiarization.html"><i class="fa fa-video-camera"></i> Familiarization</a></li> -->
+          <li><a href="admin-customer-admins.html"><i class="fa fa-user-secret"></i> Customer Admins</a></li>
+          <li><a href="admin-settings.html"><i class="fa fa-cog"></i> Settings</a></li>
+        </ul>
+      </div>
+
+      <!-- Main -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Certificate Templates</h2>
+          <p>Manage certificate requirements shown in the Crew dashboard.</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <i class="fa fa-list"></i> Certificates
+            <button class="btn btn-primary btn-xs pull-right" data-toggle="modal" data-target="#modalCert">
+              <i class="fa fa-plus"></i> Add Certificate
+            </button>
+          </div>
+          <div class="panel-body">
+            <div class="form-group">
+              <label>General Instructions (displayed above the table)</label>
+              <textarea id="certInstructions" class="form-control" rows="3"
+                placeholder="e.g., Please upload clear, readable copies."></textarea>
+            </div>
+
+            <table class="table table-bordered" id="certTable">
+              <thead>
+                <tr>
+                  <th style="width: 20%">Name (crew sees)</th>
+                  <th style="width: 12%">Type</th>
+                  <th style="width: 12%">Code</th>
+                  <th style="width: 14%">Category</th>
+                  <th>Description</th>
+                  <th style="width: 9%">Required</th>
+                  <th style="width: 9%">Upload</th>
+                  <th style="width: 12%">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Seaman's Book</td>
+                  <td><span class="label label-gray">Document</span></td>
+                  <td>SBK-01</td>
+                  <td><span class="label label-light">Identity</span></td>
+                  <td>Official seafarer identification booklet.</td>
+                  <td><span class="label label-red">Yes</span></td>
+                  <td><span class="label label-blue">Yes</span></td>
+                  <td>
+                    <button class="btn btn-xs btn-default edit-cert">
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-xs btn-danger delete-cert">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Medical Certificate</td>
+                  <td><span class="label label-gray">Medical</span></td>
+                  <td>MED-11</td>
+                  <td><span class="label label-light">Health</span></td>
+                  <td>Medical fitness for duty.</td>
+                  <td><span class="label label-red">Yes</span></td>
+                  <td><span class="label label-gray">No</span></td>
+                  <td>
+                    <button class="btn btn-xs btn-default edit-cert">
+                      <i class="fa fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-xs btn-danger delete-cert">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- File size/type rule -->
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Accepted File Types</label>
+                <select id="acceptTypes" class="form-control select2" multiple style="width: 100%">
+                  <option value="pdf" selected>PDF</option>
+                  <option value="jpg" selected>JPG</option>
+                  <option value="png" selected>PNG</option>
+                </select>
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>Max Size (MB)</label>
+                <input id="maxSize" type="number" class="form-control" min="1" max="50" value="5" />
+              </div>
+              <div class="col-sm-3 form-group">
+                <label>&nbsp;</label>
+                <button id="saveRules" class="btn btn-default btn-block">
+                  <i class="fa fa-save"></i> Save Upload Rules
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /main -->
+    </div>
+  </div>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal fade" id="modalCert">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formCert">
+          <div class="modal-header">
+            <button class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">
+              <i class="fa fa-file-text-o"></i> Certificate
+            </h4>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="certRowIndex" />
+
+            <div class="form-group">
+              <label>Name (visible to crew)</label>
+              <input type="text" class="form-control" id="certName" required />
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Type</label>
+                <input type="text" class="form-control" id="certType" placeholder="e.g., Document, Medical..." />
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Code</label>
+                <input type="text" class="form-control" id="certCode" placeholder="e.g., MED-11" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-6 form-group">
+                <label>Category</label>
+                <input type="text" class="form-control" id="certCategory" placeholder="e.g., Health, Identity" />
+              </div>
+              <div class="col-sm-6 form-group">
+                <label>Options</label>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" id="certIsRequired" /> Required
+                    field
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" id="certRequireUpload" /> Require
+                    upload
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="certDesc" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Instructions (shown to crew)</label>
+              <textarea id="certNote" class="form-control" rows="2"
+                placeholder="Optional note for this certificate"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-default" data-dismiss="modal">
+              Cancel
+            </button>
+            <button class="btn btn-primary" type="submit">
+              <i class="fa fa-save"></i> Save Certificate
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+  <script>
+    $(function () {
+      $(".select2").select2({ width: "100%" });
+
+      function rowToObj($tr) {
+        return {
+          name: $tr.children().eq(0).text().trim(),
+          type: $tr.find("td:eq(1) .label").text().trim(),
+          code: $tr.children().eq(2).text().trim(),
+          category: $tr.find("td:eq(3) .label").text().trim(),
+          desc: $tr.children().eq(4).text().trim(),
+          isRequired: $tr.find("td:eq(5) .label").text().trim() === "Yes",
+          requireUpload: $tr.find("td:eq(6) .label").text().trim() === "Yes",
+        };
+      }
+
+      function objToRow(o) {
+        return `
+          <tr>
+            <td>${o.name}</td>
+            <td><span class="label label-gray">${o.type || "-"}</span></td>
+            <td>${o.code || "-"}</td>
+            <td><span class="label label-light">${o.category || "-"}</span></td>
+            <td>${o.desc || "-"}</td>
+            <td><span class="label ${o.isRequired ? "label-red" : "label-gray"
+          }">${o.isRequired ? "Yes" : "No"}</span></td>
+            <td><span class="label ${o.requireUpload ? "label-blue" : "label-gray"
+          }">${o.requireUpload ? "Yes" : "No"}</span></td>
+            <td>
+              <button class="btn btn-xs btn-default edit-cert"><i class="fa fa-pencil"></i></button>
+              <button class="btn btn-xs btn-danger delete-cert"><i class="fa fa-trash"></i></button>
+            </td>
+          </tr>`;
+      }
+
+      // Submit
+      $("#formCert").on("submit", function (e) {
+        e.preventDefault();
+        const idx = $("#certRowIndex").val();
+        const o = {
+          name: $("#certName").val(),
+          type: $("#certType").val(),
+          code: $("#certCode").val(),
+          category: $("#certCategory").val(),
+          desc: $("#certDesc").val(),
+          isRequired: $("#certIsRequired").prop("checked"),
+          requireUpload: $("#certRequireUpload").prop("checked"),
+        };
+        if (idx === "") {
+          $("#certTable tbody").append(objToRow(o));
+        } else {
+          const $tr = $("#certTable tbody tr").eq(parseInt(idx, 10));
+          $tr.replaceWith(objToRow(o));
+        }
+        $("#modalCert").modal("hide");
+        this.reset();
+        $("#certRowIndex").val("");
+      });
+
+      // Edit
+      $(document).on("click", ".edit-cert", function () {
+        const $tr = $(this).closest("tr");
+        const i = $tr.index();
+        const o = rowToObj($tr);
+        $("#certRowIndex").val(i);
+        $("#certName").val(o.name);
+        $("#certType").val(o.type);
+        $("#certCode").val(o.code);
+        $("#certCategory").val(o.category);
+        $("#certDesc").val(o.desc);
+        $("#certIsRequired").prop("checked", o.isRequired);
+        $("#certRequireUpload").prop("checked", o.requireUpload);
+        $("#modalCert").modal("show");
+      });
+
+      // Delete
+      $(document).on("click", ".delete-cert", function () {
+        if (confirm("Delete this certificate template?"))
+          $(this).closest("tr").remove();
+      });
+
+      // Save upload rules (demo)
+      $("#saveRules").on("click", function () {
+        alert("File type & size rules saved.");
+      });
+    });
+  </script>
+</body>
+
+</html>

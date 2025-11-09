@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Crew • Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+    <style>
+        .stat-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .stat-card .icon {
+            font-size: 24px;
+            color: var(--r-blue);
+            margin-bottom: 10px;
+        }
+
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: var(--r-gray);
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--r-dark);
+        }
+
+        .onboarding-panel .panel-body {
+            display: flex;
+            align-items: center;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        #onboardingChart {
+            max-width: 100%;
+        }
+
+        .chart-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--r-dark);
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #ddd;
+        }
+
+        .nav-tabs>li>a {
+            border-radius: 4px 4px 0 0 !important;
+        }
+
+        #reminders .alert {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <div class="welcome-banner">
+                        <div id="welcome-container">
+                            <h2 style="color: var(--r-light);">Hi, Cloud Strife!</h2>
+                            <p>Welcome to M/V Yurisan Dozo Smart Induction. This is your central hub for vessel information and onboarding tasks.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="icon"><i class="fa fa-calendar"></i></div>
+                            <div class="stat-label">Embarkation Date</div>
+                            <div id="embarkDateDisplay" class="stat-value">—</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="icon"><i class="fa fa-clock-o"></i></div>
+                            <div class="stat-label">Embarkation Time</div>
+                            <div id="embarkTimeDisplay" class="stat-value">—</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <div class="icon"><i class="fa fa-map-marker"></i></div>
+                            <div class="stat-label">Location</div>
+                            <div id="embarkLocationDisplay" class="stat-value">—</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default onboarding-panel">
+                    <div class="panel-heading"><i class="fa fa-tasks"></i> Onboarding Progress</div>
+                    <div class="panel-body">
+                        <div class="col-md-4 text-center">
+                            <div class="chart-container"><canvas id="onboardingChart"></canvas>
+                                <div id="chartPercentage" class="chart-percentage">0%</div>
+                            </div>
+                            <p style="margin-top:10px;"><strong><span id="progressText">0 of 3</span></strong> tasks
+                                completed</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div id="reminders">
+                                <div class="alert alert-info"><span><i class="fa fa-info-circle"></i> <b>FYI:</b> New
+                                        safety protocols will be discussed on Monday.</span></div>
+                                <div class="alert alert-warning" id="certReminder"><span><i class="fa fa-upload"></i>
+                                        Upload your certificates.</span><a href="crew-certificates.html"
+                                        class="btn btn-xs btn-primary">Upload</a></div>
+                                <div class="alert alert-warning" id="gdprReminder"><span><i class="fa fa-shield"></i>
+                                        Review GDPR agreement.</span><a href="crew-gdpr.html"
+                                        class="btn btn-xs btn-primary">Review</a></div>
+                                <div class="alert alert-warning" id="videoReminder"><span><i
+                                            class="fa fa-video-camera"></i> Watch familiarization video.</span><a
+                                        href="crew-familiarization.html" class="btn btn-xs btn-primary">Watch</a></div>
+                                <div class="alert alert-success" id="onboardingSuccess" style="display: none;"><i
+                                        class="fa fa-check-circle"></i> <b>Onboarding Complete!</b> All tasks are done.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <ul class="nav nav-tabs" id="logTabs">
+                        <li class="active"><a data-toggle="tab" href="#activity"><i class="fa fa-history"></i> Activity
+                                Logs</a></li>
+                        <li id="historyTab"><a data-toggle="tab" href="#history"><i class="fa fa-ship"></i> Vessel
+                                History</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="activity" class="tab-pane fade in active">
+                            <div class="panel-body">
+                                <table class="table table-striped" id="crewLogsTable">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="history" class="tab-pane fade">
+                            <div class="panel-body">
+                                <table class="table table-striped" id="vesselHistoryTable">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(function () {
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-dashboard"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
+
+            const vesselData = JSON.parse(localStorage.getItem("vesselPageData")) || {};
+            const settingsData = JSON.parse(localStorage.getItem("customerSettings")) || {};
+            let onboardingChart;
+            const tasks = ['cert', 'gdpr', 'video'];
+            let progress = JSON.parse(localStorage.getItem("progress")) || {};
+
+            // Activity logging function
+            function logActivity(activity, remarks = '') {
+                const activities = JSON.parse(localStorage.getItem("activityLogs")) || [];
+                const timestamp = new Date().toLocaleString();
+
+                activities.unshift({
+                    Date: timestamp,
+                    Activity: activity,
+                    Remarks: remarks
+                });
+
+                // Keep only last 50 activities
+                if (activities.length > 50) {
+                    activities.pop();
+                }
+
+                localStorage.setItem("activityLogs", JSON.stringify(activities));
+                return activities;
+            }
+
+            function updateProgress() {
+                progress = JSON.parse(localStorage.getItem("progress")) || {};
+                const completed = tasks.filter(t => progress[t]).length;
+                const progressPercent = (completed / tasks.length) * 100;
+                $('#progressText').text(`${completed} of ${tasks.length}`);
+                $('#chartPercentage').text(Math.round(progressPercent) + '%');
+                if (onboardingChart) {
+                    onboardingChart.data.datasets[0].data = [completed, tasks.length - completed];
+                    onboardingChart.update();
+                }
+                tasks.forEach(task => { $(`#${task}Reminder`).toggle(!progress[task]); });
+                if (completed === tasks.length) {
+                    $('#onboardingSuccess').show();
+                    logActivity('Onboarding Completed', 'All onboarding tasks finished');
+                }
+            }
+
+            function initializePage() {
+                // Log page view
+                logActivity('Dashboard Viewed', 'User accessed the dashboard');
+
+                if (settingsData.welcomeText) {
+                    let welcomeMsg = settingsData.welcomeText.replace(/{User}/g, 'Cloud Strife').replace(/{Vessel}/g, 'M/V Yurisan Dozo');
+                    $('#welcome-container').html(welcomeMsg);
+                }
+                if (vesselData.embarkation) {
+                    $('#embarkDateDisplay').text(vesselData.embarkation.date || '—');
+                    $('#embarkTimeDisplay').text(vesselData.embarkation.time || '—');
+                    $('#embarkLocationDisplay').text(vesselData.embarkation.location || '—');
+                }
+                const ctx = document.getElementById('onboardingChart').getContext('2d');
+                onboardingChart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [0, tasks.length], backgroundColor: ['#2d8548', '#f0f0f0'], borderWidth: 0 }] }, options: { cutout: '70%', responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+                updateProgress();
+
+                // FIXED: Activity logs rendering
+                if (settingsData.showActivityLogs !== false) {
+                    const activities = JSON.parse(localStorage.getItem("activityLogs")) || [];
+                    const activityConfig = {
+                        columns: ['Date', 'Activity', 'Remarks'],
+                        entries: activities,
+                        count: settingsData.activityLogCount || 10
+                    };
+                    renderTable('crewLogsTable', activityConfig, ['Date', 'Activity', 'Remarks'], 'No activity logs found. Activities will appear here as you use the system.');
+                } else {
+                    $('#activity').html('<p class="text-muted" style="padding:20px;">Activity log display is disabled by the administrator.</p>');
+                }
+
+                if (settingsData.showVesselHistory !== false) {
+                    $('#historyTab').show();
+                    const historyConfig = {
+                        columns: ['Vessel', 'Embark Date', 'Disembark Date'],
+                        entries: [
+                            { 'Vessel': 'M/V Ocean Dream', 'Embark Date': '2024-01-15', 'Disembark Date': '2024-07-20' },
+                            { 'Vessel': 'M/V Sea Spirit', 'Embark Date': '2023-05-10', 'Disembark Date': '2023-11-25' }
+                        ],
+                        count: settingsData.vesselHistoryCount || 5
+                    };
+                    renderTable('vesselHistoryTable', historyConfig, ['Vessel', 'Embark Date', 'Disembark Date'], 'No vessel history found.');
+                } else {
+                    $('#historyTab').hide();
+                }
+
+                // Add click handlers for demo activities
+                $('a.btn').on('click', function (e) {
+                    const activity = $(this).text().trim();
+                    const page = $(this).attr('href');
+                    logActivity(`Clicked: ${activity}`, `Navigating to ${page}`);
+                });
+            }
+
+            function renderTable(tableId, config, defaultCols, noDataMsg) {
+                const table = $(`#${tableId}`);
+                const thead = table.find('thead tr').empty();
+                const tbody = table.find('tbody').empty();
+                const columns = (config && config.columns && config.columns.length > 0) ? config.columns : defaultCols;
+                const entries = (config && config.entries) || [];
+                const count = (config && config.count) || 5;
+
+                columns.forEach(col => thead.append(`<th>${col}</th>`));
+                if (entries.length > 0) {
+                    entries.slice(0, count).forEach(entry => {
+                        let rowHtml = '<tr>';
+                        columns.forEach(col => {
+                            rowHtml += `<td>${entry[col] || '—'}</td>`;
+                        });
+                        tbody.append(rowHtml + '</tr>');
+                    });
+                } else {
+                    tbody.html(`<tr><td colspan="${columns.length}" class="text-center text-muted" style="padding:20px;">${noDataMsg}</td></tr>`);
+                }
+            }
+
+            initializePage();
+        });
+    </script>
+</body>
+
+</html>

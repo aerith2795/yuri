@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Admin • Vessel Configuration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="admin-page.css" rel="stylesheet" />
+  <style>
+    .actions-col {
+      width: 100px;
+      text-align: center;
+    }
+
+    #addVesselForm {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Vessel Configuration</h2>
+          <p>Register new vessels and manage existing ones in the system.</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-heading">
+            <i class="fa fa-list"></i> All Vessels
+            <button class="btn btn-primary btn-xs pull-right" data-toggle="collapse" data-target="#addVesselForm">
+              <i class="fa fa-plus"></i> Add Vessel
+            </button>
+          </div>
+          <div class="panel-body">
+            <div class="form-inline" style="margin-bottom: 20px;">
+              <label for="companyFilter">Filter by Company:</label>
+              <select id="companyFilter" class="form-control select2" style="min-width:240px;"></select>
+            </div>
+
+            <table class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <th>IMO</th>
+                  <th>Vessel Name</th>
+                  <th>Type</th>
+                  <th>Company</th>
+                  <th>License Expiry</th>
+                  <th class="actions-col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="vesselList"></tbody>
+            </table>
+
+            <div id="addVesselForm" class="collapse">
+              <h4 id="formTitle">Register New Vessel</h4>
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#manual">Manual Input</a></li>
+                <li><a data-toggle="tab" href="#api">Fetch via API</a></li>
+              </ul>
+              <div class="tab-content" style="padding-top: 20px;">
+                <div id="manual" class="tab-pane fade in active">
+                  <form id="vesselForm">
+                    <input type="hidden" id="editImo" />
+                    <div class="row">
+                      <div class="col-sm-4 form-group"><label>IMO Number</label><input type="text" class="form-control"
+                          id="imoInput" required></div>
+                      <div class="col-sm-8 form-group"><label>Vessel Name</label><input type="text" class="form-control"
+                          id="nameInput" required></div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-4 form-group"><label>Vessel Type</label><input type="text" class="form-control"
+                          id="typeInput" required></div>
+                      <div class="col-sm-4 form-group"><label>Company</label><input type="text" class="form-control"
+                          id="companyInput" required></div>
+                      <div class="col-sm-4 form-group"><label>License Expiry Date</label><input type="date"
+                          class="form-control" id="expiryInput" required></div>
+                    </div>
+                    <div id="formActions">
+                      <button type="submit" id="saveVesselBtn" class="btn btn-success"><i class="fa fa-plus"></i> Add
+                        Vessel</button>
+                      <button type="button" class="btn btn-default" data-toggle="collapse"
+                        data-target="#addVesselForm">Close</button>
+                    </div>
+                  </form>
+                </div>
+                <div id="api" class="tab-pane fade">
+                  <div class="form-inline">
+                    <div class="form-group"><label for="apiImoInput">IMO Number</label><input type="text"
+                        class="form-control" id="apiImoInput" placeholder="Enter IMO"></div>
+                    <button id="fetchApiBtn" type="button" class="btn btn-primary"><i class="fa fa-download"></i> Fetch
+                      Data</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+  <script>
+    $(function () {
+      fetch('admin-sidebar.html')
+        .then(response => response.text())
+        .then(data => {
+          const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+          sidebarPlaceholder.innerHTML = data;
+          const currentPage = 'admin-vessel-setup';
+          const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+          if (activeLink) {
+            activeLink.classList.add('active');
+          }
+        })
+        .catch(error => console.error('Error fetching sidebar:', error));
+
+      $('.select2').select2();
+
+      let vessels = [
+        { imo: '9166778', name: 'MV Ocean Star', type: 'Cargo', company: 'Ripple Marine', expiry: '2026-02-10' },
+        { imo: '9783428', name: 'MV Golden Wave', type: 'Tanker', company: 'Oceanic Lines', expiry: '2025-11-01' }
+      ];
+
+      function renderTable() {
+        const tbody = $('#vesselList').empty();
+        vessels.forEach(vessel => {
+          tbody.append(`<tr data-imo="${vessel.imo}" data-company="${vessel.company}"><td>${vessel.imo}</td><td>${vessel.name}</td><td>${vessel.type}</td><td>${vessel.company}</td><td>${vessel.expiry}</td><td><button class="btn btn-xs btn-default edit-btn" title="Edit"><i class="fa fa-pencil"></i></button> <button class="btn btn-xs btn-danger delete-btn" title="Delete"><i class="fa fa-trash"></i></button></td></tr>`);
+        });
+      }
+
+      function populateCompanyFilter() {
+        const filter = $('#companyFilter').empty().append('<option value="">All Companies</option>');
+        const companies = [...new Set(vessels.map(v => v.company))]; // Get unique company names
+        companies.sort().forEach(company => {
+          filter.append(`<option value="${company}">${company}</option>`);
+        });
+      }
+
+      function clearAndResetForm() {
+        $('#vesselForm')[0].reset();
+        $('#editImo').val('');
+        $('#formTitle').text('Register New Vessel');
+        $('#saveVesselBtn').html('<i class="fa fa-plus"></i> Add Vessel').removeClass('btn-primary').addClass('btn-success');
+      }
+
+      // --- EVENT HANDLERS ---
+      $('#addVesselForm').on('show.bs.collapse', () => { if (!$('#editImo').val()) clearAndResetForm(); });
+
+      $('#companyFilter').on('change', function () {
+        const selectedCompany = $(this).val();
+        $('#vesselList tr').each(function () {
+          const rowCompany = $(this).data('company');
+          $(this).toggle(selectedCompany === "" || rowCompany === selectedCompany);
+        });
+      });
+
+      $('#vesselForm').on('submit', function (e) {
+        e.preventDefault();
+        const editingImo = $('#editImo').val();
+        const vesselData = { imo: $('#imoInput').val().trim(), name: $('#nameInput').val().trim(), type: $('#typeInput').val().trim(), company: $('#companyInput').val().trim(), expiry: $('#expiryInput').val() };
+        if (!vesselData.imo || !vesselData.name) { alert('IMO and Vessel Name are required.'); return; }
+
+        if (editingImo) {
+          const index = vessels.findIndex(v => v.imo === editingImo);
+          if (index > -1) { vessels[index] = vesselData; alert('Vessel updated successfully!'); }
+          $('#addVesselForm').collapse('hide');
+        } else {
+          if (vessels.some(v => v.imo === vesselData.imo)) { alert('A vessel with this IMO number already exists.'); return; }
+          vessels.push(vesselData);
+          alert('Vessel added successfully! You can add another.');
+        }
+        renderTable();
+        populateCompanyFilter();
+        clearAndResetForm();
+      });
+
+      $('#fetchApiBtn').on('click', function () {
+        const imo = $('#apiImoInput').val();
+        if (!imo) { alert("Please enter an IMO number."); return; }
+        clearAndResetForm();
+        const apiData = { name: 'MV Sea Serpent', type: 'Container Ship', company: 'Global Shipping Co.', expiry: '2027-08-15' };
+        $('#nameInput').val(apiData.name); $('#imoInput').val(imo); $('#typeInput').val(apiData.type);
+        $('#companyInput').val(apiData.company); $('#expiryInput').val(apiData.expiry);
+        $('a[href="#manual"]').tab('show');
+        $('#addVesselForm').collapse('show');
+      });
+
+      $('#vesselList').on('click', '.edit-btn', function () {
+        const imoToEdit = $(this).closest('tr').data('imo');
+        const vessel = vessels.find(v => v.imo == imoToEdit);
+        if (vessel) {
+          $('#editImo').val(vessel.imo); $('#imoInput').val(vessel.imo); $('#nameInput').val(vessel.name);
+          $('#typeInput').val(vessel.type); $('#companyInput').val(vessel.company); $('#expiryInput').val(vessel.expiry);
+          $('#formTitle').text(`Editing: ${vessel.name}`);
+          $('#saveVesselBtn').html('<i class="fa fa-save"></i> Update Vessel').removeClass('btn-success').addClass('btn-primary');
+          $('a[href="#manual"]').tab('show');
+          $('#addVesselForm').collapse('show');
+        }
+      });
+
+      $('#vesselList').on('click', '.delete-btn', function () {
+        if (confirm('Are you sure you want to delete this vessel?')) {
+          const imoToDelete = $(this).closest('tr').data('imo');
+          vessels = vessels.filter(v => v.imo != imoToDelete);
+          renderTable();
+          populateCompanyFilter();
+          if ($('#editImo').val() == imoToDelete) {
+            clearAndResetForm();
+            $('#addVesselForm').collapse('hide');
+          }
+        }
+      });
+
+      // --- INITIAL LOAD ---
+      renderTable();
+      populateCompanyFilter();
+    });
+  </script>
+</body>
+
+</html>

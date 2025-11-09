@@ -1,0 +1,138 @@
+
+body {
+  background-color: #f8f9fa;
+  font-family: 'Arial', sans-serif;
+}
+.sidebar {
+  background: #002366;
+  color: white;
+  height: 100vh;
+  position: fixed;
+  padding-top: 20px;
+  width: 220px;
+}
+.sidebar a {
+  color: #ddd;
+  display: block;
+  padding: 12px 15px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+.sidebar a:hover, .sidebar a.active {
+  color: white;
+  background: rgba(255,255,255,0.15);
+  border-left: 3px solid #FF7900;
+}
+.sidebar a i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+}
+.main-content {
+  margin-left: 220px;
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+.navbar-admin {
+  background: white;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.card {
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  border: none;
+}
+.card-header {
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-body {
+  padding: 20px;
+}
+.stat-card {
+  padding: 20px;
+  border-radius: 4px;
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.stat-card h3 {
+  margin-top: 5px;
+  font-weight: 700;
+}
+.stat-card p {
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+.stat-card.blue { background: #3498db; }
+.stat-card.green { background: #2ecc71; }
+.stat-card.orange { background: #FF7900; }
+.stat-card.purple { background: #9b59b6; }
+.badge-expiring {
+  background: #e74c3c;
+}
+.badge-active {
+  background: #2ecc71;
+}
+.table-actions {
+  white-space: nowrap;
+}
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+.settings-group {
+  margin-bottom: 25px;
+}
+.settings-group h4 {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-top: 0;
+}
+.tab-content {
+  background: white;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+}
+.nav-tabs {
+  margin-bottom: 0;
+}
+.logo-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 15px;
+}
+.logo-header img {
+  max-height: 30px;
+}
+.content-header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.content-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+.breadcrumb {
+  background: transparent;
+  padding: 0;
+  margin-bottom: 0;
+}

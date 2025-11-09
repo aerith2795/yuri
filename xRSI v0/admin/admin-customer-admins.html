@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RSI Admin • Manage Customer Admins</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link href="../assets/ripple.css" rel="stylesheet">
+    <link href="admin-page.css" rel="stylesheet">
+    <style>
+        .actions-col { width: 100px; text-align: center; }
+        .checkbox-col { width: 40px; text-align: center; }
+        #addEditAdminForm { margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+        .quick-actions-bar {
+            background-color: #f5f5f5;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>Customer Administrators</h2>
+                    <p>Manage administrator accounts for each vessel’s customer portal.</p>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-heading">
+                        <i class="fa fa-user-plus"></i> Customer Admins
+                        <button type="button" class="btn btn-primary btn-xs pull-right" data-toggle="collapse" data-target="#addEditAdminForm">
+                            <i class="fa fa-plus"></i> Add Customer Admin
+                        </button>
+                    </div>
+                    <div class="panel-body">
+                        <div class="quick-actions-bar">
+                            <strong style="margin-right: 15px;">With selected:</strong>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="reset-password"><i class="fa fa-refresh text-blue"></i> Reset Password</button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="delete"><i class="fa fa-trash text-danger"></i> Delete</button>
+                        </div>
+
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="checkbox-col"><input type="checkbox" id="selectAll"></th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Assigned Vessel</th>
+                                    <th>Status</th>
+                                    <th class="actions-col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-list-body"></tbody>
+                        </table>
+
+                        <div id="addEditAdminForm" class="collapse">
+                            <h4 id="formTitle">Add Customer Admin</h4>
+                            <form id="adminForm">
+                                <input type="hidden" id="editAdminId">
+                                <div class="row">
+                                    <div class="col-sm-6 form-group"><label>Full Name</label><input type="text" id="adminName" class="form-control" required></div>
+                                    <div class="col-sm-6 form-group"><label>Email</label><input type="email" id="adminEmail" class="form-control" required></div>
+                                </div>
+                                <div class="row">
+                                     <div class="col-sm-6 form-group"><label>Assign Vessel</label><select id="adminVessel" class="form-control select2"><option>MV Ocean Star</option><option>MV Golden Wave</option></select></div>
+                                     <div class="col-sm-6 form-group"><label>Status</label><select id="adminStatus" class="form-control"><option>Active</option><option>Inactive</option></select></div>
+                                </div>
+                                <hr>
+                                <div id="formActions">
+                                    <button type="submit" id="saveAdminBtn" class="btn btn-success"><i class="fa fa-plus"></i> Add Admin</button>
+                                    <button type="button" class="btn btn-default" data-toggle="collapse" data-target="#addEditAdminForm">Close</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="resetPasswordModal" class="modal fade" role="dialog">
+         <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><h4 class="modal-title">Reset Password</h4></div>
+                <div class="modal-body">
+                    <p>Select how to reset the password for the selected user(s).</p>
+                    <div class="radio"><label><input type="radio" name="resetType" value="auto" checked> Auto-generate a new password</label></div>
+                    <div class="radio"><label><input type="radio" name="resetType" value="manual"> Let me create a password</label></div>
+                    <div class="form-group" id="manualPasswordGroup" style="display:none; margin-top:15px;"><label>New Password</label><input type="password" class="form-control"></div>
+                    <hr>
+                    <div class="checkbox"><label><input type="checkbox" id="forceChange" checked> Force password change on first sign-in</label></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary">Reset Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+    <script>
+        $(function () {
+             fetch('admin-sidebar.html')
+            .then(response => response.text())
+            .then(data => {
+                const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
+                sidebarPlaceholder.innerHTML = data;
+                // FIX: Corrected the page name to highlight the correct menu item
+                const activeLink = sidebarPlaceholder.querySelector('[data-page="admin-customer-admins"]');
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+            })
+            .catch(error => console.error('Error fetching sidebar:', error));
+
+            $('.select2').select2({ width: '100%' });
+
+            let admins = [
+                { id: 1, name: 'John Doe', email: 'john@example.com', vessel: 'MV Ocean Star', status: 'Active' },
+                { id: 2, name: 'Jane Smith', email: 'jane@example.com', vessel: 'MV Golden Wave', status: 'Active' },
+                { id: 3, name: 'Peter Jones', email: 'peter@example.com', vessel: 'MV Ocean Star', status: 'Inactive' }
+            ];
+
+            function renderTable() {
+                const tbody = $('#admin-list-body').empty();
+                admins.forEach(admin => {
+                    tbody.append(`
+                        <tr data-id="${admin.id}">
+                            <td class="checkbox-col"><input type="checkbox" class="row-select"></td>
+                            <td>${admin.name}</td><td>${admin.email}</td><td>${admin.vessel}</td>
+                            <td><span class="label ${admin.status === 'Active' ? 'label-green' : 'label-default'}">${admin.status}</span></td>
+                            <td>
+                                <button class="btn btn-xs btn-default edit-btn" title="Edit"><i class="fa fa-pencil"></i></button>
+                                <button class="btn btn-xs btn-default action-btn" data-action="reset-password" title="Reset Password"><i class="fa fa-refresh"></i></button>
+                            </td>
+                        </tr>`);
+                });
+            }
+
+            function clearAndResetForm() {
+                $('#adminForm')[0].reset();
+                $('#adminVessel').val(null).trigger('change');
+                $('#editAdminId').val('');
+                $('#formTitle').text('Add Customer Admin');
+                $('#saveAdminBtn').html('<i class="fa fa-plus"></i> Add Admin').removeClass('btn-primary').addClass('btn-success');
+            }
+
+            function updateQuickActionsState() {
+                $('.row-select:checked').length > 0 ? $('.quick-actions-bar').fadeIn(200) : $('.quick-actions-bar').fadeOut(200);
+            }
+            $('#selectAll').on('change', function() {
+                $('.row-select').prop('checked', this.checked);
+                updateQuickActionsState();
+            });
+            $('#admin-list-body').on('change', '.row-select', updateQuickActionsState);
+            
+            function handleAction(action, ids) {
+                 if (ids.length === 0) { alert('Please select at least one admin.'); return; }
+                 switch(action) {
+                    case 'reset-password':
+                        $('#resetPasswordModal').modal('show');
+                        break;
+                    case 'delete':
+                        if (confirm(`Are you sure you want to delete ${ids.length} admin(s)?`)) {
+                           ids.forEach(id => {
+                               admins = admins.filter(a => a.id != id);
+                           });
+                           renderTable();
+                           alert(`${ids.length} admin(s) deleted.`);
+                        }
+                        break;
+                 }
+            }
+
+            $('#addEditAdminForm').on('show.bs.collapse', () => { if (!$('#editAdminId').val()) clearAndResetForm(); });
+            
+            $('#adminForm').on('submit', function (e) {
+                e.preventDefault();
+                const editingId = $('#editAdminId').val();
+                const adminData = { id: editingId || Date.now(), name: $('#adminName').val(), email: $('#adminEmail').val(), vessel: $('#adminVessel').val(), status: $('#adminStatus').val() };
+                if (!adminData.name || !adminData.email) { alert("Name and Email are required."); return; }
+
+                if (editingId) {
+                    const index = admins.findIndex(a => a.id == editingId);
+                    if (index > -1) { admins[index] = adminData; alert("Admin updated successfully!"); }
+                    $('#addEditAdminForm').collapse('hide');
+                } else {
+                    if (admins.some(a => a.email === adminData.email)) { alert("An admin with this email already exists."); return; }
+                    admins.push(adminData);
+                    alert("Admin added successfully! You can add another.");
+                }
+                renderTable();
+                clearAndResetForm();
+            });
+
+            $('#admin-list-body').on('click', '.edit-btn', function () {
+                const id = $(this).closest('tr').data('id');
+                const admin = admins.find(a => a.id == id);
+                if (admin) {
+                    $('#editAdminId').val(admin.id);
+                    $('#adminName').val(admin.name);
+                    $('#adminEmail').val(admin.email);
+                    $('#adminVessel').val(admin.vessel).trigger('change');
+                    $('#adminStatus').val(admin.status);
+                    $('#formTitle').text(`Editing: ${admin.name}`);
+                    $('#saveAdminBtn').html('<i class="fa fa-save"></i> Update Admin').removeClass('btn-success').addClass('btn-primary');
+                    $('#addEditAdminForm').collapse('show');
+                }
+            });
+
+            // Handle both individual and bulk actions
+            $('#admin-list-body').on('click', '.action-btn', function() { handleAction($(this).data('action'), [$(this).closest('tr').data('id')]); });
+            $('.bulk-action').on('click', function(e) {
+                e.preventDefault();
+                const selectedIds = $('.row-select:checked').map(function() { return $(this).closest('tr').data('id'); }).get();
+                handleAction($(this).data('action'), selectedIds);
+            });
+            $('input[name="resetType"]').on('change', function() { $('#manualPasswordGroup').toggle(this.value === 'manual'); });
+
+            renderTable();
+        });
+    </script>
+</body>
+</html>

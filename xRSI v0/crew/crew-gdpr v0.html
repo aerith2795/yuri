@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Crew • GDPR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+</head>
+
+<body>
+    <button type="button" id="sidebar-toggle" class="mobile-toggle">
+        <i class="fa fa-bars"></i>
+    </button>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <!-- Sidebar -->
+            <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
+
+
+            <!-- Main -->
+            <div class="col-sm-9 col-md-10 main-content">
+                <div class="page-header">
+                    <h2>GDPR & Data Privacy</h2>
+                    <p id="gdprInstructionsText" class="text-muted"></p>
+                </div>
+
+                <div id="gdprPanel" class="panel panel-default" style="display:none;">
+                    <div class="panel-heading"><i class="fa fa-shield"></i> GDPR & Data Privacy</div>
+                    <div class="panel-body" id="crewGdpr"></div>
+                    <div class="panel-footer">
+                        <button id="saveGdprCrew" class="btn btn-primary" disabled>
+                            <i class="fa fa-save"></i> Acknowledge & Save
+                        </button>
+                        <button id="requestDeleteBtn" class="btn btn-danger pull-right" style="display:none;">
+                            Request Profile Deletion
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+        $(function () {
+            // 🔹 Default GDPR text (same as Customer)
+            const defaultText = `RSI collects and processes personal data including names, contact information, seafarer certificates, and employment history in compliance with the EU General Data Protection Regulation (GDPR). Data is retained only as long as necessary for regulatory compliance and crew management purposes. We employ encryption, secure servers, and strict access controls to ensure data protection. Crew members have the right to request data access, correction, or deletion at any time. For full details, please refer to the official GDPR policy document provided during onboarding.`;
+
+            // 🔹 Load config or create default
+            let gdprConfig = JSON.parse(localStorage.getItem("gdprConfig"));
+
+            if (!gdprConfig || !gdprConfig.texts || gdprConfig.texts.length === 0) {
+                gdprConfig = {
+                    texts: [
+                        { title: "General Data Protection Policy", body: defaultText }
+                    ],
+                    showPage: true,
+                    requireAgree: true,
+                    allowDeletion: true,
+                    instructions: "Please review the GDPR policy carefully before proceeding."
+                };
+                localStorage.setItem("gdprConfig", JSON.stringify(gdprConfig));
+            }
+
+            // 🔹 Always show panel
+            $("#gdprPanel").show();
+
+            // Instructions
+            if (gdprConfig.instructions) {
+                $("#gdprInstructionsText").text(gdprConfig.instructions);
+            }
+
+            // GDPR texts
+            if (gdprConfig.texts && gdprConfig.texts.length > 0) {
+                gdprConfig.texts.forEach(t => {
+                    $("#crewGdpr").append(`<h4>${t.title}</h4><p>${t.body}</p><hr/>`);
+                });
+            } else {
+                $("#crewGdpr").append("<p>No GDPR texts configured yet.</p>");
+            }
+
+            // File attachment
+            if (gdprConfig.fileUrl) {
+                $("#crewGdpr").append(`
+                <div class="alert alert-info">
+                    <i class="fa fa-file-pdf-o"></i> File Attachment<br>
+                    <a href="${gdprConfig.fileUrl}" target="_blank" class="btn btn-xs btn-primary">
+                        <i class="fa fa-download"></i> View / Download File
+                    </a>
+                </div>
+            `);
+            }
+
+            // Require agreement
+            if (gdprConfig.requireAgree) {
+                $("#crewGdpr").append(`
+                <div class="checkbox">
+                    <label><input type="checkbox" id="gdprAgree"> I have read and agree to the GDPR policy</label>
+                </div>
+            `);
+                $("#gdprAgree").on("change", function () {
+                    $("#saveGdprCrew").prop("disabled", !this.checked);
+                });
+            } else {
+                $("#saveGdprCrew").prop("disabled", false);
+            }
+
+            // Allow deletion
+            if (gdprConfig.allowDeletion) {
+                $("#requestDeleteBtn").show();
+            }
+
+            // Save acknowledgement
+            $("#saveGdprCrew").on("click", function () {
+                alert("✅ Your acknowledgement has been saved.");
+            });
+
+            // Handle deletion state
+            if (localStorage.getItem("crewDeletionRequested") === "true") {
+                $("#requestDeleteBtn")
+                    .text("Profile Deletion Requested")
+                    .removeClass("btn-danger")
+                    .addClass("btn-default")
+                    .prop("disabled", true);
+            }
+
+            $("#requestDeleteBtn").on("click", function () {
+                localStorage.setItem("crewDeletionRequested", "true");
+                $(this)
+                    .text("Profile Deletion Requested")
+                    .removeClass("btn-danger")
+                    .addClass("btn-default")
+                    .prop("disabled", true);
+                alert("⚠️ Profile deletion request submitted.");
+            });
+        });
+    </script>
+
+
+    <script>
+        // Load sidebar (demo only)
+        $(function () {
+            $('#sidebar-toggle').on('click', function () {
+                $('.sidebar').toggleClass('active');
+            });
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-gdpr"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
+        });
+    </script>
+</body>
+
+</html>

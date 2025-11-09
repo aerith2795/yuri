@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RSI Crew • Certificates</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+  <style>
+    .required-field { font-weight:600; }
+    .text-orange { color: #ff7f00; }
+    .small-note { font-size:12px; color:#777; }
+  </style>
+</head>
+<body>
+  <button type="button" id="sidebar-toggle" class="mobile-toggle">
+    <i class="fa fa-bars"></i>
+  </button>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar -->
+      <div id="sidebar-placeholder" class="col-sm-3 col-md-2 sidebar"></div>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Certificates</h2>
+          <p>Please upload clear, readable copies of your documents. Mandatory certificates must be valid at least 6 months from embarkation.</p>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div id="certGeneralInstructions" class="alert alert-info small-note" style="display:none"></div>
+
+            <table class="table table-bordered certificate-table">
+              <thead>
+                <tr>
+                  <th>Certificate</th>
+                  <th style="width:140px">Status</th>
+                  <th style="width:300px">Action</th>
+                </tr>
+              </thead>
+              <tbody id="crewCertTable"></tbody>
+            </table>
+
+            <button id="saveCertificates" class="btn btn-primary"><i class="fa fa-save"></i> Save Certificates</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- libs -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <script>
+    $(function(){
+       $('#sidebar-toggle').on('click', function () {
+        $('.sidebar').toggleClass('active');
+      });
+      // sidebar
+      fetch('crew-sidebar.html').then(r=>r.text()).then(html=>{
+        $('#sidebar-placeholder').html(html);
+        $('#sidebar-placeholder').find('[data-page="crew-certificates"]').addClass('active');
+      });
+
+      // load vessel config from localStorage (preferred)
+      // let cfg = {};
+      // const stored = localStorage.getItem('vesselConfigCert');
+      // if(stored){
+      //   try { cfg = JSON.parse(stored); } catch(e){ console.warn('bad vesselConfigCert'); cfg = window.vesselConfigCert || {}; }
+      // } else {
+      //   cfg = window.vesselConfigCert || {};
+      // }
+      // Load vessel config (with defaults if none saved)
+let cfg = null;
+try {
+  cfg = JSON.parse(localStorage.getItem('vesselConfigCert'));
+} catch (e) {
+  cfg = null;
+}
+
+if (!cfg || !Array.isArray(cfg.certificatesRequired) || !cfg.certificatesRequired.length) {
+  // --- SEED SAMPLE CERTIFICATES ---
+  cfg = {
+    certificatesRequired: [
+      { name: "Passport", type: "Document", code: "DOC-001", category: "Identity", desc: "Valid passport for international travel.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 10, instructions: "Ensure validity of 6 months from embarkation." },
+      { name: "Seaman’s Book", type: "Document", code: "SBK-101", category: "Identity", desc: "Official seafarer identification booklet.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 5, instructions: "Upload scanned pages with details and previous contracts." },
+      { name: "Basic Safety Training (BST)", type: "Training", code: "BST-201", category: "Safety", desc: "Mandatory STCW safety training completion.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 5, instructions: "Upload your latest valid BST certificate." },
+      { name: "Medical Certificate", type: "Medical", code: "MED-310", category: "Health", desc: "Issued by approved maritime examiner.", isRequired: true, requireUpload: true, allowedFileType: "pdf", maxSizeMB: 5, instructions: "Submit a scanned copy valid for at least 1 year." },
+      { name: "Yellow Fever Vaccination", type: "Medical", code: "VAC-111", category: "Health", desc: "International vaccination certificate.", isRequired: false, requireUpload: true, allowedFileType: "image", maxSizeMB: 3, instructions: "Upload if required by destination country." }
+    ]
+  };
+}
+
+
+      const certs = Array.isArray(cfg.certificatesRequired) ? cfg.certificatesRequired : [];
+      if(cfg.certInstructions) {
+        $('#certGeneralInstructions').text(cfg.certInstructions).show();
+      } else {
+        $('#certGeneralInstructions').hide();
+      }
+
+      // load existing crew uploads (store filename + status) from localStorage
+      const storedUploads = JSON.parse(localStorage.getItem('crewCertUploads') || '{}');
+
+      function renderCrewCertificates(){
+        const $tbody = $('#crewCertTable').empty();
+        if(!certs.length){
+          $tbody.append('<tr><td colspan="3" class="text-muted text-center">No certificate requirements configured.</td></tr>');
+          return;
+        }
+
+        certs.forEach((cert, idx) => {
+          const uploadCell = cert.requireUpload
+            ? `<input type="file" class="cert-upload" data-idx="${idx}" accept="${acceptAttr(cert.allowedFileType)}" />`
+            : `<span class="text-muted">No Upload Required</span>`;
+
+          const markMissingBtn = !cert.isRequired ? `<button class="btn btn-xs btn-link mark-missing text-orange" data-idx="${idx}">Mark Missing</button>` : '';
+
+          const saved = storedUploads[cert.name] || null;
+          const statusLabel = saved ? `<span class="label label-success">Uploaded</span><div class="small-note">${escapeHtml(saved.filename)}</div>` : `<span class="label label-default">Pending</span>`;
+
+          $tbody.append(`
+            <tr data-idx="${idx}">
+              <td>
+                <label class="${cert.isRequired ? 'required-field' : ''}">${escapeHtml(cert.name)}</label>
+                <i class="fa fa-info-circle text-muted" title="${escapeHtml(cert.desc || '')}"></i>
+                ${cert.instructions ? `<div class="small-note">${escapeHtml(cert.instructions)}</div>` : ''}
+              </td>
+              <td class="cert-status">${statusLabel}</td>
+              <td>
+                ${uploadCell}
+                ${markMissingBtn}
+              </td>
+            </tr>
+          `);
+        });
+
+        // init tooltips
+        $('[title]').tooltip({container:'body'});
+      }
+
+      // helpers
+      function acceptAttr(allowed){
+        if(!allowed || allowed === 'any') return '';
+        if(allowed === 'pdf') return '.pdf';
+        if(allowed === 'image') return 'image/*';
+        if(allowed === 'doc') return '.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        return '';
+      }
+      function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, function(m){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); }); }
+
+      renderCrewCertificates();
+
+      // file input change (delegated)
+      $(document).on('change', '.cert-upload', function(e){
+        const idx = parseInt($(this).data('idx'),10);
+        const cert = certs[idx];
+        const file = this.files && this.files[0];
+        if(!file) return;
+
+        // validate size (MB)
+        const maxMB = cert.maxSizeMB || 5;
+        if(file.size > maxMB * 1024 * 1024){
+          alert(`File is too big. Max ${maxMB} MB allowed.`);
+          $(this).val('');
+          return;
+        }
+
+        // simple extension/type check
+        const allowed = cert.allowedFileType || 'any';
+        if(!checkAllowed(file.name, allowed)){
+          alert(`File type not allowed. Allowed: ${allowed}`);
+          $(this).val('');
+          return;
+        }
+
+        // update status (we store small metadata only)
+        const storedUploads = JSON.parse(localStorage.getItem('crewCertUploads') || '{}');
+        storedUploads[cert.name] = { filename: file.name, ts: Date.now() };
+        localStorage.setItem('crewCertUploads', JSON.stringify(storedUploads));
+
+        // update UI row
+        const $tr = $(this).closest('tr');
+        $tr.find('.cert-status').html(`<span class="label label-success">Uploaded</span><div class="small-note">${escapeHtml(file.name)}</div>`);
+        showToast('File accepted — status saved (demo).');
+      });
+
+      function checkAllowed(filename, allowed){
+        if(!allowed || allowed === 'any') return true;
+        const ext = filename.split('.').pop().toLowerCase();
+        if(allowed === 'pdf') return ext === 'pdf';
+        if(allowed === 'image') return ['jpg','jpeg','png','gif','bmp'].includes(ext);
+        if(allowed === 'doc') return ['doc','docx','pdf'].includes(ext); // allow pdf too for doc option
+        return true;
+      }
+
+      // mark missing
+      $(document).on('click', '.mark-missing', function(){
+        const idx = parseInt($(this).data('idx'),10);
+        const cert = certs[idx];
+        const storedUploads = JSON.parse(localStorage.getItem('crewCertUploads') || '{}');
+        storedUploads[cert.name] = { filename: null, status: 'missing', ts: Date.now() };
+        localStorage.setItem('crewCertUploads', JSON.stringify(storedUploads));
+        $(this).closest('tr').find('.cert-status').html(`<span class="label label-warning">Marked Missing</span>`);
+        showToast('Marked as missing (demo).');
+      });
+
+      // Save Certificates button saves the uploads metadata to localStorage (already saved on upload, but keep it)
+      $('#saveCertificates').on('click', function(){
+        showToast('Certificates metadata saved (demo).');
+      });
+
+      // small toast helper
+      function showToast(msg, timeout = 2500){
+        const $t = $(`<div class="alert alert-info toast-custom" role="alert" style="position:fixed;bottom:20px;right:20px;z-index:1050;">${escapeHtml(msg)}</div>`);
+        $('body').append($t);
+        setTimeout(()=> $t.fadeOut(300, ()=> $t.remove()), timeout);
+      }
+    });
+  </script>
+  <script>
+  $(function() {
+    const stored = localStorage.getItem('vesselConfigCert');
+    if (stored) {
+      try { window.vesselConfigCert = JSON.parse(stored); } catch(e){}
+    }
+    const certs = window.vesselConfigCert.certificatesRequired || [];
+
+    // Display general instructions
+    if (window.vesselConfigCert.certInstructions) {
+      $('#crewCertInstructions').text(window.vesselConfigCert.certInstructions);
+    }
+
+    // Render certs required
+    certs.forEach(cert => {
+      $('#crewCertTable tbody').append(`
+        <tr>
+          <td>${cert.name}</td>
+          <td>${cert.type || '-'}</td>
+          <td>${cert.code || '-'}</td>
+          <td>${cert.category || '-'}</td>
+          <td>${cert.isRequired ? 'Required' : 'Optional'}</td>
+          <td><input type="file" accept="${cert.allowedFileType==='any'?'*':cert.allowedFileType}"></td>
+        </tr>
+      `);
+    });
+  });
+</script>
+
+</body>
+</html>

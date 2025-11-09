@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RSI Customer Dashboard</title>
+
+  <!-- Bootstrap 3 -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome 4 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- Ripple Global CSS -->
+  <link rel="stylesheet" href="../assets/ripple.css">
+  <!-- Customer-specific CSS -->
+  <link rel="stylesheet" href="customer.css">
+</head>
+<body>
+  <div class="dashboard-layout row no-gutter">
+    
+    <!-- Sidebar -->
+    <div class="col-sm-3 sidebar">
+      <div class="logo text-center">
+        <img src="../assets/ripple-logo.png" alt="Ripple Logo" class="img-responsive" style="max-height:40px; margin:0 auto;">
+      </div>
+      <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#welcome" data-toggle="tab"><i class="fa fa-home"></i> Welcome</a></li>
+        <li><a href="#registration" data-toggle="tab"><i class="fa fa-user"></i> Registration Config</a></li>
+        <li><a href="#certificates" data-toggle="tab"><i class="fa fa-file"></i> Certificates</a></li>
+        <li><a href="#gdpr" data-toggle="tab"><i class="fa fa-shield"></i> GDPR</a></li>
+        <li><a href="#video" data-toggle="tab"><i class="fa fa-video-camera"></i> Familiarization</a></li>
+        <li><a href="#verification" data-toggle="tab"><i class="fa fa-check"></i> Verification</a></li>
+      </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-sm-9 main-content">
+      <div class="tab-content">
+        
+        <!-- Welcome -->
+        <div class="tab-pane active" id="welcome">
+          <div class="page-header">
+            <h2>Customer Dashboard</h2>
+            <p>Configure vessel onboarding requirements for your crew</p>
+          </div>
+          <div class="panel">
+            <div class="panel-heading"><i class="fa fa-home"></i> Welcome Page</div>
+            <div class="panel-body">
+              <p><strong>Hi John Doe,</strong> welcome to the Customer Portal. Here you can configure vessel onboarding requirements including registration fields, certificates, GDPR texts, and familiarization content for your crew.</p>
+
+              <blockquote>
+                Welcome to Ripple Smart Induction. This text is set by Admin and cannot be edited here.
+              </blockquote>
+              <p class="text-muted">To change this message, please contact Admin.</p>
+
+              <hr>
+              <h4>Vessel Information</h4>
+              <p><strong>Vessel:</strong> MV Ripple Voyager</p>
+
+              <div class="form-group">
+                <label><input type="checkbox" checked> Require embarkation details from crew</label>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-4">
+                  <label>Embarkation Date</label>
+                  <input type="date" class="form-control">
+                </div>
+                <div class="col-sm-4">
+                  <label>Embarkation Time</label>
+                  <input type="time" class="form-control">
+                </div>
+                <div class="col-sm-4">
+                  <label>Port</label>
+                  <input type="text" class="form-control" placeholder="Enter port">
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top:15px;">
+                <label>Import from Sail Activities API</label>
+                <select class="form-control">
+                  <option>-- Select Activity --</option>
+                  <option>Voyage #101 – Singapore → Manila</option>
+                  <option>Voyage #102 – Manila → Tokyo</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary"><i class="fa fa-edit"></i> Review & Update Embarkation Settings</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Registration -->
+        <div class="tab-pane" id="registration">
+          <div class="panel">
+            <div class="panel-heading"><i class="fa fa-user"></i> Registration & Personal Details</div>
+            <div class="panel-body">
+              <p>Manage which fields are required for crew registration. Locked fields are always required.</p>
+
+              <table class="table table-bordered">
+                <thead>
+                  <tr><th>Field</th><th>Visible</th><th>Required</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>First Name</td>
+                    <td><i class="fa fa-lock text-muted"></i></td>
+                    <td><i class="fa fa-lock text-muted"></i></td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td>Surname</td>
+                    <td><i class="fa fa-lock text-muted"></i></td>
+                    <td><i class="fa fa-lock text-muted"></i></td>
+                    <td>-</td>
+                  </tr>
+                  <tr>
+                    <td>Address</td>
+                    <td><input type="checkbox" checked></td>
+                    <td><input type="checkbox"></td>
+                    <td>
+                      <button class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i></button>
+                      <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <button class="btn btn-primary" data-toggle="modal" data-target="#addFieldModal">
+                <i class="fa fa-plus"></i> Add Field
+              </button>
+
+              <div class="form-group" style="margin-top:15px;">
+                <label>Instructions for Crew</label>
+                <textarea class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Certificates -->
+        <div class="tab-pane" id="certificates">
+          <div class="panel">
+            <div class="panel-heading"><i class="fa fa-file"></i> Certificates</div>
+            <div class="panel-body">
+              <p>Define certificate requirements for your vessel crew.</p>
+              <table class="table table-bordered">
+                <thead>
+                  <tr><th>Name</th><th>Type</th><th>Required</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Seaman’s Book</td>
+                    <td>PDF</td>
+                    <td><span class="label label-success">Yes</span></td>
+                    <td>
+                      <button class="btn btn-xs btn-warning"><i class="fa fa-pencil"></i></button>
+                      <button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <button class="btn btn-primary" data-toggle="modal" data-target="#addCertModal">
+                <i class="fa fa-plus"></i> Add Certificate
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- GDPR -->
+        <div class="tab-pane" id="gdpr">
+          <div class="panel">
+            <div class="panel-heading"><i class="fa fa-shield"></i> GDPR</div>
+            <div class="panel-body">
+              <textarea class="form-control" rows="5" placeholder="Enter GDPR-related instructions..."></textarea>
+              <p class="help-block">Upload GDPR documents and links will be created for crew access.</p>
+              <button class="btn btn-primary"><i class="fa fa-upload"></i> Upload GDPR Document</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video -->
+        <div class="tab-pane" id="video">
+          <div class="panel">
+            <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
+            <div class="panel-body text-center">
+              <div class="video-placeholder">Upload or replace video</div>
+              <button class="btn btn-primary" style="margin-top:15px;"><i class="fa fa-upload"></i> Upload New Video</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification -->
+        <div class="tab-pane" id="verification">
+          <div class="panel">
+            <div class="panel-heading"><i class="fa fa-check"></i> Verification & Thank You</div>
+            <div class="panel-body">
+              <textarea class="form-control" rows="3" placeholder="Message to display at end of registration..."></textarea>
+              <div class="checkbox" style="margin-top:10px;">
+                <label><input type="checkbox"> Require crew to approve info sharing with vessel</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.tab-content -->
+    </div><!-- /.main-content -->
+
+  </div><!-- /.dashboard-layout -->
+
+
+  <!-- Add Field Modal -->
+  <div class="modal fade" id="addFieldModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form>
+          <div class="modal-header">
+            <h4 class="modal-title">Add Registration Field</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Field Name</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select class="form-control">
+                <option>Text</option>
+                <option>Date</option>
+                <option>Email</option>
+                <option>Number</option>
+                <option>File Upload</option>
+              </select>
+            </div>
+            <div class="checkbox"><label><input type="checkbox"> Required</label></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Field</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Certificate Modal -->
+  <div class="modal fade" id="addCertModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form>
+          <div class="modal-header">
+            <h4 class="modal-title">Add Certificate Requirement</h4>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Certificate Name</label>
+              <input type="text" class="form-control" placeholder="Example: Seaman’s Book">
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select class="form-control">
+                <option>PDF</option>
+                <option>Image</option>
+                <option>Word/Doc</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Code</label>
+              <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea class="form-control" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select class="form-control">
+                <option>Safety</option>
+                <option>Medical</option>
+                <option>Training</option>
+              </select>
+            </div>
+            <div class="checkbox"><label><input type="checkbox" checked> Required</label></div>
+            <div class="form-group">
+              <label>Max File Size (MB)</label>
+              <input type="number" class="form-control" value="5">
+            </div>
+            <div class="form-group">
+              <label>Allowed File Types</label>
+              <input type="text" class="form-control" placeholder=".pdf, .jpg, .png">
+            </div>
+            <div class="form-group">
+              <label>Instructions for Crew</label>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Certificate</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RSI Customer Dashboard</title>
+
+  <!-- Bootstrap 3 CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- FontAwesome 4 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Select2 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Ripple Global CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <!-- Customer Dashboard Specific CSS -->
+  <link href="page.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <div class="col-sm-3 col-md-2 sidebar">
+        <div class="text-center logo">
+          <img
+            src="https://www.rippleoperations.com/static/4076f8c205c49d3cefcd1537610a4f35/60bff/Ripple_Operations_Logo_Color_e8200e4fa0.avif"
+            alt="Ripple Logo" style="max-width:160px; height:auto;" />
+        </div>
+        <ul class="nav nav-pills nav-stacked">
+          <li class="active"><a href="#welcome" data-toggle="tab"><i class="fa fa-home"></i> Welcome</a></li>
+          <li><a href="#registration-config" data-toggle="tab"><i class="fa fa-user"></i> Registration Config</a></li>
+          <li><a href="#certificates-config" data-toggle="tab"><i class="fa fa-file-text-o"></i> Certificates Config</a></li>
+          <li><a href="#gdpr-config" data-toggle="tab"><i class="fa fa-shield"></i> GDPR Config</a></li>
+          <li><a href="#video-config" data-toggle="tab"><i class="fa fa-video-camera"></i> Video Config</a></li>
+          <li><a href="#verification-config" data-toggle="tab"><i class="fa fa-check"></i> Verification Config</a></li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="tab-content">
+
+          <!-- Welcome -->
+          <div class="tab-pane active" id="welcome">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-home"></i> Welcome Page Configuration</div>
+              <div class="panel-body">
+                <p><strong>Note:</strong> This welcome message was set by <em>Ripple Admin</em> during vessel setup and cannot be edited.
+                  Contact your administrator if you need changes.</p>
+                <hr>
+                <h4>Assigned Vessel</h4>
+                <p><span class="label label-primary">MV Ocean Star (IMO: 1234567)</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Registration Config -->
+          <div class="tab-pane" id="registration-config">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-user"></i> Registration & Personal Details Config</div>
+              <div class="panel-body">
+                <p>Select which fields will appear in crew registration. Locked fields cannot be disabled.</p>
+                <form>
+                  <table class="table table-bordered table-config">
+                    <thead>
+                      <tr>
+                        <th>Field</th>
+                        <th>Show</th>
+                        <th>Required</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>First Name</td>
+                        <td><input type="checkbox" checked disabled></td>
+                        <td><input type="checkbox" checked disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Date of Birth</td>
+                        <td><input type="checkbox" checked disabled></td>
+                        <td><input type="checkbox" checked disabled></td>
+                      </tr>
+                      <tr>
+                        <td>Nationality</td>
+                        <td><input type="checkbox" checked></td>
+                        <td><input type="checkbox"></td>
+                      </tr>
+                      <tr>
+                        <td>Passport Number</td>
+                        <td><input type="checkbox"></td>
+                        <td><input type="checkbox"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="form-group">
+                    <label>Instructions for Crew</label>
+                    <textarea class="form-control" rows="3" placeholder="Enter guidance text shown to crew..."></textarea>
+                  </div>
+                  <button class="btn btn-primary"><i class="fa fa-save"></i> Save Configuration</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certificates Config -->
+          <div class="tab-pane" id="certificates-config">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates Configuration</div>
+              <div class="panel-body">
+                <p>Define required and optional certificates for your crew.</p>
+                <button class="btn btn-success btn-sm"><i class="fa fa-plus"></i> Add Certificate</button>
+                <table class="table table-bordered table-config m-t-15">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Required</th>
+                      <th>File Type</th>
+                      <th>Max Size</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Seaman’s Book</td>
+                      <td><input type="checkbox" checked></td>
+                      <td>PDF, JPG</td>
+                      <td>5MB</td>
+                      <td><button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="form-group">
+                  <label>Instructions for Crew</label>
+                  <textarea class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary"><i class="fa fa-save"></i> Save Certificates Config</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- GDPR Config -->
+          <div class="tab-pane" id="gdpr-config">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-shield"></i> GDPR Configuration</div>
+              <div class="panel-body">
+                <div class="checkbox">
+                  <label><input type="checkbox" checked> Show GDPR page in crew portal</label>
+                </div>
+                <div class="form-group">
+                  <label>GDPR Text</label>
+                  <textarea class="form-control" rows="5"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Upload GDPR Document (optional)</label>
+                  <input type="file" class="form-control">
+                </div>
+                <button class="btn btn-primary"><i class="fa fa-save"></i> Save GDPR Config</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video Config -->
+          <div class="tab-pane" id="video-config">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video Configuration</div>
+              <div class="panel-body">
+                <div class="checkbox">
+                  <label><input type="checkbox" checked> Show Familiarization Video in crew portal</label>
+                </div>
+                <div class="form-group">
+                  <label>Upload Video</label>
+                  <input type="file" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Instructions for Crew</label>
+                  <textarea class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary"><i class="fa fa-save"></i> Save Video Config</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Verification Config -->
+          <div class="tab-pane" id="verification-config">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-check"></i> Verification & Thank You Page Configuration</div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label>End of Registration Message</label>
+                  <textarea class="form-control" rows="4"></textarea>
+                </div>
+                <div class="checkbox">
+                  <label><input type="checkbox" checked> Include checkbox: “I confirm my information is correct and agree to share with the vessel.”</label>
+                </div>
+                <div class="form-group">
+                  <label>Instructions for Crew</label>
+                  <textarea class="form-control" rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary"><i class="fa fa-save"></i> Save Verification Config</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.tab-content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JS libs -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+</body>
+
+</html>

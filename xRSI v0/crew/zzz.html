@@ -1,0 +1,457 @@
+not working. heres the latest code dahsboard.html <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RSI Crew Dashboard</title>
+
+  <!-- Bootstrap 3 -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- FontAwesome 4 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Select2 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+
+  <!-- Ripple Global CSS -->
+  <link href="../assets/ripple.css" rel="stylesheet">
+  <!-- Dashboard Specific CSS -->
+  <link href="page.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <!-- Sidebar Navigation -->
+      <div class="col-sm-3 col-md-2 sidebar">
+        <h4 class="logo"><i class="fa fa-ship"></i> RSI Portal</h4>
+        <ul class="nav nav-pills nav-stacked">
+          <li class="active"><a href="#welcome" data-toggle="tab"><i class="fa fa-home"></i> Welcome</a></li>
+          <li><a href="#profile" data-toggle="tab"><i class="fa fa-user"></i> Profile</a></li>
+          <li><a href="#company" data-toggle="tab"><i class="fa fa-building"></i> Company</a></li>
+          <li><a href="#certificates" data-toggle="tab"><i class="fa fa-file-text-o"></i> Certificates</a></li>
+          <li><a href="#gdpr" data-toggle="tab"><i class="fa fa-shield"></i> GDPR</a></li>
+          <li><a href="#video" data-toggle="tab"><i class="fa fa-video-camera"></i> Familiarization</a></li>
+        </ul>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-sm-9 col-md-10 main-content">
+        <!-- Onboarding Progress -->
+        <div id="progressContainer" class="progress-container">
+          <div class="clearfix">
+            <span class="pull-left"><strong>Onboarding Progress</strong></span>
+            <span class="pull-right" id="progressText">0 of 3 tasks completed</span>
+          </div>
+          <div class="progress progress-with-steps">
+            <div id="progressBar" class="progress-bar progress-bar-striped active" role="progressbar"
+              style="width: 0%;">
+            </div>
+            <!-- Step markers -->
+            <div class="progress-steps">
+              <span class="step" data-target="#certificates" style="left: 33%;">Certificates</span>
+              <span class="step" data-target="#gdpr" style="left: 66%;">GDPR</span>
+              <span class="step" data-target="#video" style="left: 100%;">Video</span>
+            </div>
+          </div>
+        </div>
+        <!-- Reminder Banners -->
+        <div id="reminders">
+          <div class="alert alert-warning" id="certReminder">
+            <i class="fa fa-upload"></i> Please upload your certificates.
+            <button class="btn btn-xs btn-primary pull-right complete-task" data-target="#certReminder">Upload
+              Now</button>
+          </div>
+          <div class="alert alert-info" id="gdprReminder">
+            <i class="fa fa-shield"></i> Review GDPR to continue.
+            <button class="btn btn-xs btn-primary pull-right complete-task" data-target="#gdprReminder">Review</button>
+          </div>
+          <div class="alert alert-success" id="videoReminder">
+            <i class="fa fa-video-camera"></i> Watch the familiarization video.
+            <button class="btn btn-xs btn-primary pull-right complete-task" data-target="#videoReminder">Watch</button>
+          </div>
+        </div>
+
+        <div class="tab-content">
+          <!-- Welcome -->
+          <div class="tab-pane active" id="welcome">
+            <div class="panel panel-default">
+              <div class="panel-heading"><i class="fa fa-home"></i> Welcome to RSI Crew Dashboard</div>
+              <div class="panel-body">
+                <h3>Welcome aboard, Juan Dela Cruz!</h3>
+                <p class="lead">Your registration is complete. To continue, please provide your embarkation details.</p>
+
+                <div class="alert alert-info">
+                  <i class="fa fa-info-circle"></i> Please select your vessel and embarkation details. These are
+                  required before uploading certificates or completing GDPR and familiarization.
+                </div>
+
+                <form id="welcomeForm">
+                  <div class="form-group">
+                    <label for="vesselSelect" class="required-field">Vessel</label>
+                    <select class="form-control select2" id="vesselSelect" name="vesselSelect" required>
+                      <option></option>
+                      <option value="IMO1234567">MV Ocean Star (IMO: 1234567)</option>
+                      <option value="IMO7654321">MV Blue Horizon (IMO: 7654321)</option>
+                      <option value="IMO9876543">MV Golden Wave (IMO: 9876543)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="embarkationDate" class="required-field">Embarkation Date</label>
+                    <input type="date" class="form-control" id="embarkationDate" name="embarkationDate" required />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="embarkationPort">Embarkation Port</label>
+                    <input type="text" class="form-control" id="embarkationPort" name="embarkationPort"
+                      placeholder="Auto-filled if vessel API is connected" />
+                  </div>
+
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Save Embarkation Details
+                  </button>
+                </form>
+
+                <hr />
+
+                <div class="next-steps">
+                  <h4>Next Steps</h4>
+                  <ul class="list-group">
+                    <li class="list-group-item"><i class="fa fa-file-text-o text-primary"></i> Upload your required
+                      certificates</li>
+                    <li class="list-group-item"><i class="fa fa-shield text-info"></i> Review GDPR and confirm agreement
+                    </li>
+                    <li class="list-group-item"><i class="fa fa-video-camera text-success"></i> Watch the
+                      familiarization video</li>
+                  </ul>
+                </div>
+
+                </ul>
+
+
+                <p class="text-muted">Once these are done, your profile will be ready for vessel assignment and
+                  compliance checks.</p>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Profile -->
+          <div class="tab-pane" id="profile">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <i class="fa fa-user"></i> Personal Information
+                <button class="btn btn-xs btn-default pull-right toggle-edit"><i class="fa fa-pencil"></i> Edit</button>
+              </div>
+              <div class="panel-body">
+                <form id="profileForm">
+                  <div class="row">
+                    <div class="col-sm-6 form-group">
+                      <label>First Name</label>
+                      <input type="text" class="form-control" value="Juan" readonly>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <label>Surname</label>
+                      <input type="text" class="form-control" value="Dela Cruz" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4 form-group">
+                      <label>Gender</label>
+                      <input type="text" class="form-control" value="Male" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Date of Birth</label>
+                      <input type="date" class="form-control" value="1990-05-20" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Place of Birth</label>
+                      <input type="text" class="form-control" value="Manila" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6 form-group">
+                      <label>Nationality</label>
+                      <input type="text" class="form-control" value="Filipino" readonly>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                      <label>Residence Address</label>
+                      <input type="text" class="form-control" value="123 Port Street, Manila" readonly>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-4 form-group">
+                      <label>Phone</label>
+                      <input type="text" class="form-control" value="+63 2 123 4567" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Mobile</label>
+                      <input type="text" class="form-control" value="+63 917 123 4567" readonly>
+                    </div>
+                    <div class="col-sm-4 form-group">
+                      <label>Email (Username)</label>
+                      <input type="email" class="form-control" value="juan.delacruz@email.com" readonly>
+                    </div>
+                  </div>
+                  <button class="btn btn-success hidden save-btn" type="submit"><i class="fa fa-save"></i> Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Company -->
+          <div class="tab-pane" id="company">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <i class="fa fa-building"></i> Company & Emergency Contact
+                <button class="btn btn-xs btn-default pull-right toggle-edit"><i class="fa fa-pencil"></i> Edit</button>
+              </div>
+              <div class="panel-body">
+                <form id="companyForm">
+                  <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" class="form-control" value="Ripple Shipping Inc." readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Position / Rank</label>
+                    <input type="text" class="form-control" value="Chief Engineer" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Emergency Contact (Company)</label>
+                    <input type="text" class="form-control" value="+63 2 765 4321" readonly>
+                  </div>
+
+                  <hr>
+                  <h4>Next of Kin (NOK)</h4>
+                  <div class="nok-item">
+                    <div class="row">
+                      <div class="col-sm-4 form-group">
+                        <label>Relationship</label>
+                        <input type="text" class="form-control" value="Spouse" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>First Name</label>
+                        <input type="text" class="form-control" value="Maria" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>Surname</label>
+                        <input type="text" class="form-control" value="Dela Cruz" readonly>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6 form-group">
+                        <label>Address</label>
+                        <input type="text" class="form-control" value="456 Harbor Road, Cebu" readonly>
+                      </div>
+                      <div class="col-sm-6 form-group">
+                        <label>Residence</label>
+                        <input type="text" class="form-control" value="Philippines" readonly>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-4 form-group">
+                        <label>Phone</label>
+                        <input type="text" class="form-control" value="+63 32 555 6789" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>Mobile</label>
+                        <input type="text" class="form-control" value="+63 917 987 6543" readonly>
+                      </div>
+                      <div class="col-sm-4 form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" value="maria@email.com" readonly>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="btn btn-success hidden save-btn" type="submit"><i class="fa fa-save"></i> Save</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certificates -->
+<div class="tab-pane" id="certificates">
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-file-text-o"></i> Certificates</div>
+    <div class="panel-body">
+      <p>Upload or manage your required certificates here. Bulk upload supported.</p>
+      <div class="alert alert-info">
+        <i class="fa fa-info-circle"></i> Accepted formats: PDF, JPG, PNG. Max file size: 5MB.
+      </div>
+
+      <!-- Upload control -->
+      <input type="file" id="certUpload" multiple class="form-control" />
+      <br>
+      <!-- Uploaded list -->
+      <ul id="certList" class="list-group"></ul>
+
+      <button id="saveCertificates" class="btn btn-primary">
+        <i class="fa fa-save"></i> Save Certificates
+      </button>
+    </div>
+  </div>
+</div>
+
+
+          <!-- GDPR -->
+<div class="tab-pane" id="gdpr">
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-shield"></i> GDPR & Data Privacy</div>
+    <div class="panel-body">
+      <h4>General Data Protection Regulation (GDPR)</h4>
+      <div style="max-height:200px; overflow-y:auto; border:1px solid #ddd; padding:10px;">
+        <p>[Sample long GDPR Privacy Policy text placeholder...]</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus...</p>
+        <p>[More paragraphs...]</p>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" id="gdprAgree"> I agree to the GDPR policy</label>
+      </div>
+      <button id="saveGdpr" class="btn btn-primary"><i class="fa fa-save"></i> Save</button>
+      <hr>
+      <button class="btn btn-danger"><i class="fa fa-trash"></i> Request Profile Deletion</button>
+    </div>
+  </div>
+</div>
+
+
+
+          <!-- Video -->
+<div class="tab-pane" id="video">
+  <div class="panel panel-default">
+    <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
+    <div class="panel-body text-center">
+      <div class="video-placeholder">
+        <i class="fa fa-play-circle fa-4x"></i>
+        <p>Video Placeholder - Watch required familiarization video.</p>
+      </div>
+      <div class="checkbox">
+        <label><input type="checkbox" id="videoWatched"> I have watched the video</label>
+      </div>
+      <button class="btn btn-success btn-confirm-video"><i class="fa fa-check"></i> Confirm Watched</button>
+    </div>
+  </div>
+</div>
+
+        </div><!-- /.tab-content -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+  <script>
+    $(function () {
+      $('.select2').select2({ placeholder: "Select an option" });
+
+      // Edit toggle
+      $('.toggle-edit').on('click', function () {
+        const panel = $(this).closest('.panel');
+        panel.find('input').prop('readonly', function (_, val) { return !val; });
+        panel.find('.save-btn').toggleClass('hidden');
+        $(this).find('i').toggleClass('fa-pencil fa-times');
+        $(this).toggleClass('btn-default btn-warning');
+      });
+
+      // Track onboarding progress
+  let totalTasks = 3;
+  let completedTasks = 0;
+
+  function updateProgress() {
+    let percent = (completedTasks / totalTasks) * 100;
+    $('#progressBar').css('width', percent + '%');
+    $('#progressText').text(completedTasks + " of " + totalTasks + " tasks completed");
+
+    if (completedTasks === totalTasks) {
+      $('#progressContainer').fadeOut();
+      $("#welcome .next-steps").fadeOut();
+      $("#welcome p.text-muted").fadeOut();
+      $("#reminders").fadeOut();
+
+      if ($("#successBanner").length === 0) {
+        $(".main-content").prepend(`
+          <div id="successBanner" class="alert alert-success alert-dismissible fade in">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <i class="fa fa-check-circle"></i> Onboarding complete! You can now fully use the dashboard.
+          </div>
+        `);
+      }
+    }
+  }
+
+  function markStepComplete(tabId) {
+    const step = $(".progress-steps .step[data-target='" + tabId + "']");
+    if (!step.hasClass("done")) {
+      step.addClass("done").append(" ✅");
+    }
+  }
+
+  // Certificates Upload Preview
+  $("#certUpload").on("change", function () {
+    let list = $("#certList");
+    list.empty();
+    $.each(this.files, function (i, file) {
+      list.append(`<li class="list-group-item">${file.name} <span class="label label-default">Pending</span></li>`);
+    });
+  });
+
+  // Certificates Save
+  $("#saveCertificates").on("click", function () {
+    if (!$("#certReminder").hasClass("completed")) {
+      $("#certReminder").addClass("completed").fadeOut();
+      completedTasks++;
+      markStepComplete("#certificates");
+      updateProgress();
+      $("#certList .label").removeClass("label-default").addClass("label-success").text("Uploaded");
+    }
+  });
+
+  // GDPR Save
+  $("#saveGdpr").on("click", function () {
+    if ($("#gdprAgree").is(":checked")) {
+      if (!$("#gdprReminder").hasClass("completed")) {
+        $("#gdprReminder").addClass("completed").fadeOut();
+        completedTasks++;
+        markStepComplete("#gdpr");
+        updateProgress();
+      }
+    } else {
+      alert("You must agree to the GDPR policy first.");
+    }
+  });
+
+  // Video Confirm
+  $(".btn-confirm-video").on("click", function () {
+    if ($("#videoWatched").is(":checked")) {
+      if (!$("#videoReminder").hasClass("completed")) {
+        $("#videoReminder").addClass("completed").fadeOut();
+        completedTasks++;
+        markStepComplete("#video");
+        updateProgress();
+      }
+    } else {
+      alert("Please check the box after watching the video.");
+    }
+  });
+
+  // Progress step click → go to tab
+  $(".progress-steps .step").on("click", function () {
+    const targetTab = $(this).data("target");
+    $('.nav-pills a[href="' + targetTab + '"]').tab('show');
+    $('html, body').animate({ scrollTop: $("#progressContainer").offset().top }, 400);
+  });
+
+  updateProgress(); // init
+    });
+  </script>
+
+</body>
+
+</html>
