@@ -7,17 +7,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
   <style>
     body {
       padding-bottom: 80px;
+      background: #F7F9FC;
     }
 
-    
+    .top-nav {
+      background: #fff;
+      border: 1px solid #E6ECF3;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(7, 10, 26, .06);
+    }
+
+    .top-nav .title {
+      font-weight: 600;
+      margin: 4px 0 4px;
+    }
+
+    .text-muted-2 {
+      color: #6B84A8;
+    }
+
+    .panel {
+      border-radius: 14px;
+      border: 1px solid #E6ECF3;
+      box-shadow: 0 2px 6px rgba(7, 10, 26, .06);
+      overflow: hidden;
+    }
+
+    .panel-heading {
+      background: #fff;
+      border-bottom: 1px solid #E6ECF3;
+      padding: 12px 16px;
+      font-weight: 600;
+    }
+
+    .panel-body {
+      background: #fff;
+      padding: 12px 16px 16px;
+    }
+
+    #certInstructions {
+      resize: none;
+    }
+
+    .section-header {
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .subtle-help {
+      font-size: 11px;
+      color: #6B84A8;
+      margin-bottom: 8px;
+    }
+
     .cert-description {
       color: #777;
       font-size: 12px;
+      margin-top: 4px;
     }
 
     .table .label {
@@ -26,32 +81,49 @@
       display: inline-block;
     }
 
-    #certInstructions {
-      resize: none;
-    }
-
-    /* Table layout */
-    #certTable {
-      table-layout: fixed;
-      word-wrap: break-word;
-    }
-
-    .col-details {
-      width: 25%;
-    }
-
-    .col-requirements {
-      width: 20%;
-    }
-
-    .col-actions {
-      width: 100px;
+    .empty-row {
+      color: #6B84A8;
       text-align: center;
+      font-size: 12px;
     }
 
-    /* Disabled state for buttons instead of hiding */
-    .edit-controls .btn:disabled {
-      cursor: not-allowed;
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 8px 15px;
+      z-index: 1030;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .nav-tabs {
+      margin-top: 8px;
+    }
+
+    .nav-tabs > li > a {
+      cursor: pointer;
+    }
+
+    .select2-container--default .select2-selection--single,
+    .select2-container--default .select2-selection--multiple {
+      border-radius: 4px;
+      border: 1px solid #ccd6e5;
+      min-height: 32px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      line-height: 30px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+      height: 32px;
     }
   </style>
 </head>
@@ -60,63 +132,161 @@
   <div class="container-fluid dashboard-layout">
     <div class="row">
       <div id="sidebar-placeholder"></div>
+
       <div class="col-sm-9 col-md-10 main-content">
         <div class="page-header">
           <h2>Certificates Configuration</h2>
-          <p>Define which certificates are required from crew during registration.</p>
+          <p>Define which certificates and identification documents are collected from crew during registration.</p>
         </div>
 
-        <div class="panel">
-          <div class="panel-heading"><i class="fa fa-hdd-o"></i> Storage Quota
-            <i class="fa fa-info-circle small pull-right" data-toggle="tooltip"
-              title="You have used 82% of your 500 MB storage quota." style="cursor:pointer;"></i>
-          </div>
-          <div class="panel-body">
-            <h4>82% of 500 MB Used</h4>
-            <div class="progress" style="margin-bottom:0;">
-              <div class="progress-bar progress-bar-info" style="width:82%" title="410 MB Used"></div>
+        <!-- Editing vessel selector (single) -->
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="top-nav">
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="title">
+                    <i class="fa fa-ship text-primary"></i> Editing vessel
+                    <i class="fa fa-info-circle text-muted" data-toggle="tooltip" data-placement="top"
+                       title="Choose a vessel to view and edit its certificate setup. Use “Apply to other vessels” to reuse the same configuration."></i>
+                  </div>
+                </div>
+                <div class="col-sm-9">
+                  <select class="form-control" id="editing-vessel"></select>
+                  <p class="text-muted-2" style="font-style: italic; margin-top: 2px; font-size: smaller;">
+                    You are editing this vessel’s certificates. Use “Apply to other vessels” to reuse the same setup.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
+        <!-- General instructions -->
         <div class="panel panel-default">
-          <div class="panel-heading"><i class="fa fa-info-circle"></i> General Instructions for Crew</div>
-          <div class="panel-body"><textarea class="form-control" id="certInstructions" rows="2" disabled></textarea>
+          <div class="panel-heading">
+            <i class="fa fa-info-circle"></i> General Instructions for Crew
+          </div>
+          <div class="panel-body">
+            <textarea class="form-control" id="certInstructions" rows="2" disabled></textarea>
           </div>
         </div>
 
+        <!-- Certificates + ID Papers (Tabs) -->
         <div class="panel">
           <div class="panel-heading">
-            <i class="fa fa-list"></i> Required Certificates
-            <button class="btn btn-primary btn-xs pull-right" id="btnAddCert"><i class="fa fa-plus"></i> Add
-              Certificate</button>
+            <i class="fa fa-list"></i> Certificates & Identification Papers
+            <button class="btn btn-primary btn-xs pull-right" id="btnAddCert">
+              <i class="fa fa-plus"></i> Add Certificate / Document
+            </button>
           </div>
           <div class="panel-body">
             <div class="form-group">
-              <label for="certSearch">Search Certificates</label>
-              <input type="text" id="certSearch" class="form-control" placeholder="Type to filter by name...">
+              <label for="certSearch">Search</label>
+              <input type="text" id="certSearch" class="form-control"
+                     placeholder="Type to filter by name, code or category...">
             </div>
-            <table class="table table-bordered" id="certTable">
-              <thead>
-                <tr>
-                  <th>Certificate</th>
-                  <th class="col-details">Details</th>
-                  <th class="col-requirements">Requirements</th>
-                  <th class="col-actions">Actions</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+
+            <ul class="nav nav-tabs" id="certTabs">
+              <li class="active">
+                <a href="#tab-cert" data-toggle="tab">Certificates (STCW & Company-defined)</a>
+              </li>
+              <li>
+                <a href="#tab-id" data-toggle="tab">Identification Papers</a>
+              </li>
+            </ul>
+
+            <div class="tab-content" style="margin-top: 10px;">
+              <!-- STCW & Company-defined -->
+              <div id="tab-cert" class="tab-pane fade in active">
+                <p class="subtle-help">
+                  STCW certificates are imported by default. You can add company-specific certificates as needed.
+                  <br><span class="text-muted">Required flags are defined at company level and reused for all vessels.</span>
+                </p>
+                <table class="table table-bordered" id="table-certificates">
+                  <thead>
+                    <tr>
+                      <th>Certificate</th>
+                      <th style="width:28%;">Details</th>
+                      <th style="width:22%;">Requirements</th>
+                      <th style="width:90px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <!-- Identification Papers -->
+              <div id="tab-id" class="tab-pane fade">
+                <p class="subtle-help">
+                  Documents such as Passport, Seaman’s Book and government-issued IDs.
+                </p>
+                <table class="table table-bordered" id="table-idpapers">
+                  <thead>
+                    <tr>
+                      <th>Document</th>
+                      <th style="width:28%;">Details</th>
+                      <th style="width:22%;">Requirements</th>
+                      <th style="width:90px;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Sticky footer -->
   <div class="sticky-footer">
-    <div class="footer-container" id="footer-btn-container"></div>
+    <div class="footer-container">
+      <div class="row">
+        <div class="col-xs-6">
+          <button id="applyConfigBtn" class="btn btn-default btn-sm">
+            <i class="fa fa-clone"></i> Apply to other vessels
+          </button>
+        </div>
+        <div class="col-xs-6" id="footer-btn-container"></div>
+      </div>
+    </div>
   </div>
 
+  <!-- Apply to other vessels modal -->
+  <div class="modal fade" id="applyToVesselsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Apply certificates setup to other vessels</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted">
+            This will copy the <strong>certificates and identification papers configuration</strong> from
+            <strong id="apply-source-vessel-name"></strong> to the selected vessels below.
+          </p>
+          <div class="form-group">
+            <label for="apply-vessels-select">Choose vessels to update</label>
+            <select id="apply-vessels-select" class="form-control" multiple></select>
+            <p class="help-block">You can select one or more vessels. The current editing vessel is excluded.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="applyConfigConfirmBtn">
+            Apply to selected vessel(s)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add / Edit Certificate modal -->
   <div class="modal fade" id="modalCert">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -124,177 +294,509 @@
           <div class="modal-header">
             <h4 class="modal-title">Add / Edit Certificate</h4>
           </div>
-          <div class="modal-body"><input type="hidden" id="certRowIndex">
+          <div class="modal-body">
+            <input type="hidden" id="certRowIndex">
             <div class="row">
               <div class="col-md-6">
-                <div class="form-group"><label>Certificate Name</label><input id="certName" type="text"
-                    class="form-control" required></div>
-                <div class="form-group"><label>Category</label><input id="certCategory" type="text" class="form-control"
-                    placeholder="e.g., Identity, Health, Safety"></div>
-                <div class="form-group"><label>Description</label><textarea id="certDesc" class="form-control"
-                    rows="2"></textarea></div>
-                <div class="form-group"><label>Instructions for Crew</label><textarea id="certInstructionsPerCert"
-                    class="form-control" rows="2"></textarea></div>
+                <div class="form-group">
+                  <label>Group</label>
+                  <select id="certGroup" class="form-control">
+                    <option value="cert">Certificates (STCW / Company-defined)</option>
+                    <option value="id">Identification Papers</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Certificate / Document Name</label>
+                  <input id="certName" type="text" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <input id="certCategory" type="text" class="form-control"
+                         placeholder="e.g., STCW, Identity, Health, Safety">
+                </div>
+                <div class="form-group">
+                  <label>Description</label>
+                  <textarea id="certDesc" class="form-control" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Instructions for Crew</label>
+                  <textarea id="certInstructionsPerCert" class="form-control" rows="2"></textarea>
+                </div>
               </div>
               <div class="col-md-6">
-                <div class="form-group"><label>Type</label><input id="certType" type="text" class="form-control"
-                    placeholder="e.g., Document, Medical"></div>
-                <div class="form-group"><label>Code</label><input id="certCode" type="text" class="form-control"
-                    placeholder="e.g., SBK-01"></div>
+                <div class="form-group">
+                  <label>Type</label>
+                  <input id="certType" type="text" class="form-control"
+                         placeholder="e.g., Document, Training, Medical">
+                </div>
+                <div class="form-group">
+                  <label>Code</label>
+                  <input id="certCode" type="text" class="form-control"
+                         placeholder="e.g., BT, PSCRB, PASSPORT">
+                </div>
                 <div class="row">
-                  <div class="col-sm-6 form-group"><label>Allowed File Type</label><select id="certAllowedFileType"
-                      class="form-control">
+                  <div class="col-sm-6 form-group">
+                    <label>Allowed File Type</label>
+                    <select id="certAllowedFileType" class="form-control">
                       <option value="any">Any</option>
                       <option value="pdf">PDF</option>
                       <option value="image">Image (jpg/png)</option>
-                    </select></div>
-                  <div class="col-sm-6 form-group"><label>Max Size (MB)</label><input id="certMaxSize" type="number"
-                      class="form-control" value="5" min="1"></div>
+                    </select>
+                  </div>
+                  <div class="col-sm-6 form-group">
+                    <label>Max Size (MB)</label>
+                    <input id="certMaxSize" type="number" class="form-control" value="5" min="1">
+                  </div>
                 </div>
                 <hr>
-                <div class="checkbox" style="margin-top:20px;"><label><input id="certIsRequired" type="checkbox">
-                    <strong>Required to Fill In Details</strong></label></div>
-                <div class="checkbox"><label><input id="certRequireUpload" type="checkbox"> <strong>Required to Upload
-                      File</strong></label></div>
+                <div class="checkbox" style="margin-top:10px;">
+                  <label>
+                    <input id="certIsRequired" type="checkbox">
+                    <strong>Required certificate (company-wide)</strong>
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input id="certRequireUpload" type="checkbox">
+                    <strong>Required to upload file</strong>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
-          <div class="modal-footer"><button type="button" class="btn btn-default"
-              data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save
-              Certificate</button></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Certificate</button>
+          </div>
         </form>
       </div>
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
   <script>
     $(function () {
-      // --- INITIALIZATION & DATA ---
-        // load sidebar
-      fetch('customer-sidebar.html').then(r => r.text()).then(html => {
-        $('#sidebar-placeholder').html(html);
-        const active = $('#sidebar-placeholder').find('[data-page="customer-certificates"]');
-        if (active.length) active.addClass('active');
-      });
+      // --- SIDEBAR ---
+      fetch('customer-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const active = $('#sidebar-placeholder').find('[data-page="customer-certificates"]');
+          if (active.length) active.addClass('active');
+        });
+
       $('[data-toggle="tooltip"]').tooltip();
 
-      const configKey = "certificatesConfig";
+      // KEYS
+      const COMPANY_CONFIG_KEY = 'certificatesConfig';
+      const CERT_CONFIG_BY_VESSEL_KEY = 'certificatesConfigByVessel';
+
       let config = {};
-      const defaultCerts = [{ name: "Passport", type: "Document", code: "DOC-001", category: "Identity", desc: "Valid passport for international travel.", isRequired: true, requireUpload: true }, { name: "Seaman’s Book", type: "Document", code: "SBK-101", category: "Identity", desc: "Official seafarer identification booklet.", isRequired: true, requireUpload: true }, { name: "Basic Safety Training (BST)", type: "Training", code: "BST-201", category: "Safety", desc: "Mandatory STCW safety training.", isRequired: true, requireUpload: true }, { name: "Medical Certificate", type: "Medical", code: "MED-310", category: "Health", desc: "Issued by an approved maritime medical examiner.", isRequired: true, requireUpload: true }];
+      let certConfigsByVessel = {};
+      let currentVesselId = null;
 
-      // --- CORE FUNCTIONS ---
-      function toggleViewMode(isEditing) {
-        $('#certInstructions').prop('disabled', !isEditing);
-        $('#btnAddCert, .edit-cert, .delete-cert').prop('disabled', !isEditing); // Disable/enable buttons
+      // Shared vessel list
+      let vessels = JSON.parse(localStorage.getItem('vessels') || 'null') || [
+        { id: 'VES-001', name: 'M/V Ocean Explorer' },
+        { id: 'VES-002', name: 'M/V Yurisan Dozo' },
+        { id: 'VES-003', name: 'M/V Ripple Star' }
+      ];
+      localStorage.setItem('vessels', JSON.stringify(vessels));
 
-        if (isEditing) {
-          $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
-        } else {
-          $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
-        }
+      // Default STCW + ID
+      function createDefaultConfig() {
+        const stcwList = [
+          {
+            name: "Basic Training (BT)",
+            type: "Training",
+            code: "BT",
+            category: "STCW",
+            desc: "Mandatory STCW basic safety training.",
+            isRequired: true,
+            requireUpload: true
+          },
+          {
+            name: "Proficiency in Survival Craft and Rescue Boats (PSCRB)",
+            type: "Training",
+            code: "PSCRB",
+            category: "STCW",
+            desc: "Survival craft and rescue boat proficiency certificate.",
+            isRequired: true,
+            requireUpload: true
+          },
+          {
+            name: "Advanced Fire Fighting (AFF)",
+            type: "Training",
+            code: "AFF",
+            category: "STCW",
+            desc: "Advanced fire fighting training certificate.",
+            isRequired: true,
+            requireUpload: true
+          },
+          {
+            name: "Medical Care / Medical First Aid",
+            type: "Training",
+            code: "MEDCARE",
+            category: "STCW",
+            desc: "Approved maritime medical care / first aid certificate.",
+            isRequired: false,
+            requireUpload: true
+          }
+        ];
+
+        const idPapers = [
+          {
+            name: "Passport",
+            type: "Document",
+            code: "PASSPORT",
+            category: "Identity",
+            desc: "Valid passport for international travel.",
+            isRequired: true,
+            requireUpload: true
+          },
+          {
+            name: "Seaman’s Book",
+            type: "Document",
+            code: "SEABOOK",
+            category: "Identity",
+            desc: "Official seafarer identification booklet.",
+            isRequired: true,
+            requireUpload: true
+          },
+          {
+            name: "National ID / Government ID",
+            type: "Document",
+            code: "NAT-ID",
+            category: "Identity",
+            desc: "Government-issued ID (National ID, Driver’s License, etc.).",
+            isRequired: false,
+            requireUpload: true
+          }
+        ];
+
+        const markGroup = (arr, group) => arr.map(c => ({
+          ...c,
+          group,
+          allowedFileType: 'any',
+          maxSize: 5
+        }));
+
+        return {
+          instructions: "Please upload clear, readable copies of all required certificates and identification documents.",
+          certificates: [
+            ...markGroup(stcwList, 'cert'),
+            ...markGroup(idPapers, 'id')
+          ]
+        };
       }
 
-      function saveConfig() {
-        config.instructions = $('#certInstructions').val();
-        localStorage.setItem(configKey, JSON.stringify(config));
-        alert("Configuration saved!");
-        toggleViewMode(false);
+      function getVesselName(id) {
+        const v = vessels.find(v => v.id === id);
+        return v ? v.name : id;
       }
 
-      function loadConfig() {
-        const savedConfig = JSON.parse(localStorage.getItem(configKey));
-        if (savedConfig) {
-          config = savedConfig;
-        } else {
-          config = { instructions: "Please upload clear, readable copies of all required certificates.", certificates: defaultCerts };
-        }
-        $('#certInstructions').val(config.instructions);
-        renderCertTable();
-        return !!savedConfig;
-      }
+      function renderTableGroup(groupKey, $tbody) {
+        $tbody.empty();
+        const items = (config.certificates || []).filter(c => c.group === groupKey);
 
-      function renderCertTable() {
-        const tbody = $('#certTable tbody').empty();
-        if (!config.certificates || config.certificates.length === 0) {
-          tbody.append(`<tr><td colspan="4" class="text-muted text-center">No certificates defined.</td></tr>`);
+        if (!items.length) {
+          $tbody.append('<tr><td colspan="4" class="empty-row">No items defined for this group.</td></tr>');
           return;
         }
-        config.certificates.forEach((c, i) => {
-          const row = `
-                        <tr data-index="${i}">
-                            <td><strong>${c.name}</strong><p class="cert-description">${c.desc || ''}</p></td>
-                            <td><span class="label label-light">${c.type || '-'}</span><span class="label label-light">${c.code || '-'}</span><span class="label label-light">${c.category || '-'}</span></td>
-                            <td><span class="label ${c.isRequired ? 'label-red' : 'label-gray'}">Fill Details</span> <span class="label ${c.requireUpload ? 'label-blue' : 'label-gray'}">Upload File</span></td>
-                            <td class="col-actions edit-controls">
-                                <button class="btn btn-xs btn-default edit-cert"><i class="fa fa-pencil"></i></button>
-                                <button class="btn btn-xs btn-danger delete-cert"><i class="fa fa-trash"></i></button>
-                            </td>
-                        </tr>`;
-          tbody.append(row);
+
+        items.forEach(c => {
+          const idxInAll = config.certificates.indexOf(c);
+
+          const badgesHtml =
+            '<span class="label label-light">' + (c.type || '-') + '</span>' +
+            '<span class="label label-light">' + (c.code || '-') + '</span>' +
+            '<span class="label label-light">' + (c.category || '-') + '</span>';
+
+          const reqFillClass = c.isRequired ? 'label-danger' : 'label-default';
+          const reqUploadClass = c.requireUpload ? 'label-primary' : 'label-default';
+
+          const rowHtml = `
+            <tr data-index="${idxInAll}">
+              <td>
+                <strong>${c.name || '-'}</strong>
+                <p class="cert-description">${c.desc || ''}</p>
+              </td>
+              <td>${badgesHtml}</td>
+              <td>
+                <span class="label ${reqFillClass}">Required Certificate</span>
+                <span class="label ${reqUploadClass}">Upload File</span>
+              </td>
+              <td class="text-center">
+                <button class="btn btn-xs btn-default edit-cert"><i class="fa fa-pencil"></i></button>
+                <button class="btn btn-xs btn-danger delete-cert"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>`;
+          $tbody.append(rowHtml);
         });
       }
 
-      // --- EVENT HANDLERS ---
-      $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
-      $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
+      function renderTables() {
+        renderTableGroup('cert', $('#table-certificates tbody'));
+        renderTableGroup('id', $('#table-idpapers tbody'));
+      }
 
-      $('#certSearch').on('input', function () {
-        const query = $(this).val().toLowerCase();
-        $('#certTable tbody tr').each(function () {
-          const certName = $(this).find('strong').text().toLowerCase();
-          $(this).toggle(certName.includes(query));
+      function applySearchFilter() {
+        const q = $('#certSearch').val().toLowerCase();
+        ['#table-certificates', '#table-idpapers'].forEach(sel => {
+          $(sel + ' tbody tr').each(function () {
+            const txt = $(this).text().toLowerCase();
+            if ($(this).hasClass('empty-row')) {
+              $(this).toggle(q === '');
+            } else {
+              $(this).toggle(txt.indexOf(q) !== -1);
+            }
+          });
         });
-      });
+      }
 
+      function toggleViewMode(isEditing) {
+        $('#certInstructions').prop('disabled', !isEditing);
+        $('#btnAddCert').prop('disabled', !isEditing);
+        $('.edit-cert, .delete-cert').prop('disabled', !isEditing);
+
+        if (isEditing) {
+          $('#footer-btn-container').html(
+            '<button id="saveBtn" class="btn btn-success btn-block btn-sm">' +
+            '<i class="fa fa-save"></i> Save &amp; Post Changes</button>'
+          );
+        } else {
+          $('#footer-btn-container').html(
+            '<button id="editBtn" class="btn btn-primary btn-block btn-sm">' +
+            '<i class="fa fa-pencil"></i> Edit Configuration</button>'
+          );
+        }
+      }
+
+      function syncFromUI() {
+        config.instructions = $('#certInstructions').val();
+      }
+
+      function saveConfig(showToggle = true) {
+        syncFromUI();
+
+        if (currentVesselId) {
+          certConfigsByVessel[currentVesselId] = config;
+          localStorage.setItem(CERT_CONFIG_BY_VESSEL_KEY, JSON.stringify(certConfigsByVessel));
+        }
+
+        localStorage.setItem(COMPANY_CONFIG_KEY, JSON.stringify(config));
+
+        if (showToggle) {
+          alert('Certificate configuration saved!');
+          toggleViewMode(false);
+        }
+      }
+
+      function loadConfigForCurrentVessel() {
+        certConfigsByVessel = JSON.parse(localStorage.getItem(CERT_CONFIG_BY_VESSEL_KEY) || '{}');
+        let cfg = currentVesselId ? certConfigsByVessel[currentVesselId] : null;
+
+        if (!cfg) {
+          const globalCfg = JSON.parse(localStorage.getItem(COMPANY_CONFIG_KEY) || 'null');
+          if (globalCfg) {
+            cfg = globalCfg;
+          } else {
+            cfg = createDefaultConfig();
+          }
+        }
+
+        config = cfg;
+        $('#certInstructions').val(config.instructions || '');
+        renderTables();
+        applySearchFilter();
+      }
+
+      function handleFormUpdate(cb) {
+        cb();
+        renderTables();
+        applySearchFilter();
+      }
+
+      // Vessel select + Select2
+      function initEditingVesselSelect() {
+        const $sel = $('#editing-vessel').empty();
+        vessels.forEach(v => $sel.append('<option value="' + v.id + '">' + v.name + '</option>'));
+
+        const storedId = localStorage.getItem('certCurrentVesselId');
+        if (storedId && vessels.some(v => v.id === storedId)) {
+          currentVesselId = storedId;
+        } else if (vessels.some(v => v.id === 'VES-002')) {
+          currentVesselId = 'VES-002';
+        } else if (vessels.length) {
+          currentVesselId = vessels[0].id;
+        }
+
+        $sel.val(currentVesselId);
+
+        $sel.select2({
+          placeholder: 'Select a vessel to edit',
+          width: '100%'
+        });
+
+        $sel.on('change', function () {
+          currentVesselId = $(this).val();
+          localStorage.setItem('certCurrentVesselId', currentVesselId);
+          loadConfigForCurrentVessel();
+          const isEditing = $('#certInstructions').prop('disabled') === false;
+          toggleViewMode(isEditing);
+        });
+      }
+
+      function openApplyModal() {
+        if (!currentVesselId) {
+          alert('Select a vessel to edit first.');
+          return;
+        }
+
+        saveConfig(false);
+
+        $('#apply-source-vessel-name').text(getVesselName(currentVesselId));
+
+        const $sel = $('#apply-vessels-select').empty();
+        vessels.forEach(v => {
+          if (v.id !== currentVesselId) {
+            $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+          }
+        });
+
+        $sel.val(null).trigger('change');
+
+        // Init / re-init select2
+        $sel.select2({
+          placeholder: 'Select vessel(s) to apply to',
+          width: '100%'
+        });
+
+        $('#applyToVesselsModal').modal('show');
+      }
+
+      function applyConfigToTargets() {
+        const targets = $('#apply-vessels-select').val() || [];
+        if (!targets.length) {
+          alert('Please select at least one vessel to apply to.');
+          return;
+        }
+
+        const sourceCfg =
+          (currentVesselId && certConfigsByVessel[currentVesselId]) || config;
+        const copyData = JSON.parse(JSON.stringify(sourceCfg || {}));
+
+        targets.forEach(id => {
+          certConfigsByVessel[id] = JSON.parse(JSON.stringify(copyData));
+        });
+
+        localStorage.setItem(CERT_CONFIG_BY_VESSEL_KEY, JSON.stringify(certConfigsByVessel));
+        $('#applyToVesselsModal').modal('hide');
+        alert('Certificates setup applied to ' + targets.length + ' vessel(s).');
+      }
+
+      // Footer buttons
+      $('#footer-btn-container')
+        .on('click', '#saveBtn', function () { saveConfig(true); })
+        .on('click', '#editBtn', function () { toggleViewMode(true); });
+
+      $('#applyConfigBtn').on('click', openApplyModal);
+      $('#applyConfigConfirmBtn').on('click', applyConfigToTargets);
+
+      // Search
+      $('#certSearch').on('input', applySearchFilter);
+
+      // Add
       $('#btnAddCert').on('click', function () {
         $('#formCert')[0].reset();
         $('#certRowIndex').val('');
+        $('#certGroup').val('cert').trigger('change');
+        $('#certAllowedFileType').val('any').trigger('change');
+        $('#certMaxSize').val(5);
         $('#modalCert .modal-title').text('Add Certificate');
         $('#modalCert').modal('show');
       });
 
-      $('#certTable').on('click', '.edit-cert', function () {
+      // Edit
+      $('#table-certificates, #table-idpapers').on('click', '.edit-cert', function () {
         const index = $(this).closest('tr').data('index');
-        const cert = config.certificates[index];
-        if (cert) {
-          $('#certRowIndex').val(index);
-          $('#certName').val(cert.name); $('#certCategory').val(cert.category);
-          $('#certType').val(cert.type); $('#certCode').val(cert.code);
-          $('#certDesc').val(cert.desc); $('#certInstructionsPerCert').val(cert.instructions);
-          $('#certIsRequired').prop('checked', cert.isRequired);
-          $('#certRequireUpload').prop('checked', cert.requireUpload);
-          $('#modalCert .modal-title').text('Edit Certificate');
-          $('#modalCert').modal('show');
-        }
+        const c = config.certificates[index];
+        if (!c) return;
+
+        $('#certRowIndex').val(index);
+        $('#certGroup').val(c.group || 'cert').trigger('change');
+        $('#certName').val(c.name || '');
+        $('#certCategory').val(c.category || '');
+        $('#certType').val(c.type || '');
+        $('#certCode').val(c.code || '');
+        $('#certDesc').val(c.desc || '');
+        $('#certInstructionsPerCert').val(c.instructions || '');
+        $('#certAllowedFileType').val(c.allowedFileType || 'any').trigger('change');
+        $('#certMaxSize').val(c.maxSize || 5);
+        $('#certIsRequired').prop('checked', !!c.isRequired);
+        $('#certRequireUpload').prop('checked', !!c.requireUpload);
+
+        $('#modalCert .modal-title').text('Edit Certificate');
+        $('#modalCert').modal('show');
       });
 
-      $('#certTable').on('click', '.delete-cert', function () {
-        if (!confirm('Are you sure you want to delete this certificate?')) return;
+      // Delete
+      $('#table-certificates, #table-idpapers').on('click', '.delete-cert', function () {
+        if (!confirm('Are you sure you want to delete this certificate / document?')) return;
         const index = $(this).closest('tr').data('index');
-        config.certificates.splice(index, 1);
-        renderCertTable();
-        toggleViewMode(true); // Re-apply disabled state after re-render
+        handleFormUpdate(() => {
+          config.certificates.splice(index, 1);
+        });
       });
 
+      // Add/Edit submit
       $('#formCert').on('submit', function (e) {
         e.preventDefault();
         const index = $('#certRowIndex').val();
-        const certData = { name: $('#certName').val(), category: $('#certCategory').val(), type: $('#certType').val(), code: $('#certCode').val(), desc: $('#certDesc').val(), instructions: $('#certInstructionsPerCert').val(), isRequired: $('#certIsRequired').prop('checked'), requireUpload: $('#certRequireUpload').prop('checked') };
-        if (index === '') {
-          config.certificates.push(certData);
-        } else {
-          config.certificates[parseInt(index, 10)] = certData;
-        }
-        renderCertTable();
-        toggleViewMode(true); // Re-apply disabled state after re-render
+        const data = {
+          group: $('#certGroup').val() || 'cert',
+          name: $('#certName').val(),
+          category: $('#certCategory').val(),
+          type: $('#certType').val(),
+          code: $('#certCode').val(),
+          desc: $('#certDesc').val(),
+          instructions: $('#certInstructionsPerCert').val(),
+          allowedFileType: $('#certAllowedFileType').val(),
+          maxSize: parseInt($('#certMaxSize').val(), 10) || 5,
+          isRequired: $('#certIsRequired').prop('checked'),
+          requireUpload: $('#certRequireUpload').prop('checked')
+        };
+
+        handleFormUpdate(() => {
+          if (index === '') {
+            config.certificates.push(data);
+          } else {
+            config.certificates[parseInt(index, 10)] = data;
+          }
+        });
+
         $('#modalCert').modal('hide');
       });
 
-      // --- INITIAL LOAD ---
-      const hasData = loadConfig();
-      toggleViewMode(!hasData);
+      // Init Select2 for modal dropdowns
+      $('#certGroup, #certAllowedFileType').select2({
+        width: '100%',
+        minimumResultsForSearch: Infinity
+      });
+
+      // Init
+      function init() {
+        initEditingVesselSelect();
+        loadConfigForCurrentVessel();
+        const hasData = !!JSON.parse(localStorage.getItem(COMPANY_CONFIG_KEY) || 'null');
+        toggleViewMode(!hasData);
+      }
+
+      init();
     });
   </script>
 </body>

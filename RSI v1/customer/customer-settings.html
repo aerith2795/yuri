@@ -36,7 +36,7 @@
             padding: 15px;
             min-height: 160px;
         }
-        /* Style for the new blockquote previews */
+        /* Style for the blockquote preview */
         blockquote.live-preview {
             font-size: 14px;
             padding: 10px 15px;
@@ -58,20 +58,7 @@
             <div class="col-sm-9 col-md-10 main-content">
                 <div class="page-header">
                     <h2>Other Settings</h2>
-                    <p>Configure other settings likemessages and content displayed on the Crew Portal.</p>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-heading"><i class="fa fa-pencil-square-o"></i> Welcome Message</div>
-                    <div class="panel-body">
-                        <label>Live Preview:</label>
-                        <blockquote id="welcomePreview" class="live-preview"></blockquote>
-                        <div class="form-group">
-                            <label for="welcomeText">Editor</label>
-                            <textarea id="welcomeText" class="form-control"></textarea>
-                            <p class="help-block">Use placeholders <code>{User}</code> and <code>{Vessel}</code> which will be auto-filled.</p>
-                        </div>
-                    </div>
+                    <p>Configure other settings like end-of-registration messages and content displayed on the Crew Portal.</p>
                 </div>
 
                 <div class="panel">
@@ -141,19 +128,20 @@
 
     <script>
         $(function () {
-            // Mock Sidebar Load (Retained as requested)
-             fetch('customer-sidebar.html')
+            // Sidebar
+            fetch('customer-sidebar.html')
                 .then(response => response.text())
                 .then(data => {
                     const sidebarPlaceholder = document.getElementById('sidebar-placeholder');
                     sidebarPlaceholder.innerHTML = data;
                     const currentPage = 'customer-settings';
-                    const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
+                    const activeLink = sidebarPlaceholder.querySelector('[data-page="' + currentPage + '"]');
                     if (activeLink) activeLink.classList.add('active');
                 })
                 .catch(error => console.error('Error fetching sidebar:', error));
 
-            $('#welcomeText, #finalMessage').summernote({
+            // Only finalMessage uses Summernote now
+            $('#finalMessage').summernote({
                 height: 150,
                 toolbar: [
                     ['style', ['style']],
@@ -172,7 +160,6 @@
             const settingsKey = "customerSettings";
 
             function toggleViewMode(isEditing) {
-                $('#welcomeText').summernote(isEditing ? 'enable' : 'disable');
                 $('#finalMessage').summernote(isEditing ? 'enable' : 'disable');
                 $('#finalCheckbox, #showActivityLogs, #activityLogCount, #showVesselHistory, #vesselHistoryCount').prop('disabled', !isEditing);
                 if (isEditing) {
@@ -184,7 +171,7 @@
 
             function saveSettings() {
                 const settings = {
-                    welcomeText: $('#welcomeText').summernote('code'),
+                    // welcomeText removed as requested
                     finalMessage: $('#finalMessage').summernote('code'),
                     includeCheckbox: $('#finalCheckbox').is(':checked'),
                     showActivityLogs: $('#showActivityLogs').is(':checked'),
@@ -198,9 +185,6 @@
             }
             
             function renderAllPreviews() {
-                const welcomeContent = $('#welcomeText').summernote('code');
-                $('#welcomePreview').html(welcomeContent || '<p class="text-muted"><em>Preview will appear here...</em></p>');
-
                 const finalContent = $('#finalMessage').summernote('code');
                 const finalCheckboxChecked = $('#finalCheckbox').is(':checked');
                 let finalPreviewHtml = finalContent || '<p class="text-muted"><em>Preview will appear here...</em></p>';
@@ -222,7 +206,7 @@
             function loadSettings() {
                 const savedSettings = JSON.parse(localStorage.getItem(settingsKey));
                 if (savedSettings) {
-                    $('#welcomeText').summernote('code', savedSettings.welcomeText || '');
+                    // welcomeText ignored / removed
                     $('#finalMessage').summernote('code', savedSettings.finalMessage || '');
                     $('#finalCheckbox').prop('checked', savedSettings.includeCheckbox);
                     $('#showActivityLogs').prop('checked', savedSettings.showActivityLogs);
@@ -231,7 +215,7 @@
                     $('#vesselHistoryCount').val(savedSettings.vesselHistoryCount || 5);
                     return true;
                 } else {
-                    $('#welcomeText').summernote('code', '<h1>Hi, {User}!</h1><p>Welcome to <b>{Vessel}</b> Smart Induction.</p>');
+                    // Default values when no settings yet
                     $('#finalMessage').summernote('code', '<p>Thank you for completing your registration.</p>');
                     $('#finalCheckbox').prop('checked', true);
                     $('#showActivityLogs').prop('checked', true);
@@ -242,7 +226,9 @@
                 }
             }
 
-            $('#finalCheckbox, #showActivityLogs, #activityLogCount, #showVesselHistory, #vesselHistoryCount').on('change input', renderAllPreviews);
+            $('#finalCheckbox, #showActivityLogs, #activityLogCount, #showVesselHistory, #vesselHistoryCount')
+              .on('change input', renderAllPreviews);
+
             $('#footer-btn-container').on('click', '#saveBtn', saveSettings);
             $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
 

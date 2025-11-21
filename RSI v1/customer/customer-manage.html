@@ -5,11 +5,20 @@
     <meta charset="UTF-8">
     <title>RSI Customer • Manage Crew</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap + FontAwesome -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Select2 (for Vessel Assigned) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Ripple + Page CSS -->
     <link href="../assets/ripple.css" rel="stylesheet">
     <link href="page.css" rel="stylesheet">
+
     <style>
         .status-badge {
             display: inline-block;
@@ -66,8 +75,6 @@
             text-align: center;
         }
 
-        /* Increased width for 3 buttons */
-
         .panel-heading .btn {
             margin-top: -5px;
         }
@@ -79,11 +86,48 @@
             border-radius: 4px;
             margin-bottom: 15px;
             display: none;
-            /* Hidden by default */
         }
 
         .modal-body .nav-tabs {
             margin-bottom: 20px;
+        }
+
+        /* Highlight vessel at top of modal */
+        .vessel-summary {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: #f7f9fc;
+            border-radius: 6px;
+            border: 1px solid #e0e6f0;
+        }
+
+        .vessel-summary label {
+            margin-bottom: 4px;
+        }
+
+        .vessel-summary .help-block {
+            margin-bottom: 0;
+        }
+
+        /* Select2 styling for BS3 + Ripple */
+        .select2-container--bootstrap .select2-selection--single {
+            height: 34px !important;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .select2-container--bootstrap .select2-selection__arrow {
+            top: 4px !important;
+        }
+
+        .select2-results__option {
+            font-size: 13px;
+        }
+
+        /* Ensure dropdown appears over modal */
+        .select2-container {
+            z-index: 99999 !important;
         }
     </style>
 </head>
@@ -94,9 +138,8 @@
             <div id="sidebar-placeholder"></div>
             <div class="col-sm-9 col-md-10 main-content">
                 <div class="page-header">
-                    <h2>Manage Crew & Invitations</h2>
-                    <p>Manage registered crew, process requests, and invite new members to the Smart Induction portal.
-                    </p>
+                    <h2>Manage Crew</h2>
+                    <p>Manage registered crew and process onboarding / deletion requests.</p>
                 </div>
 
                 <div class="panel">
@@ -104,14 +147,19 @@
                     <div class="panel-body">
                         <div class="quick-actions-bar">
                             <strong style="margin-right: 15px;">With selected:</strong>
-                            <button class="btn btn-sm btn-default bulk-action" data-action="accept" title="Accept"><i
-                                    class="fa fa-check text-success"></i> Accept</button>
-                            <button class="btn btn-sm btn-default bulk-action" data-action="reject" title="Reject"><i
-                                    class="fa fa-times text-danger"></i> Reject</button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="accept" title="Accept">
+                                <i class="fa fa-check text-success"></i> Accept
+                            </button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="reject" title="Reject">
+                                <i class="fa fa-times text-danger"></i> Reject
+                            </button>
                             <button class="btn btn-sm btn-default bulk-action" data-action="reset-password"
-                                title="Reset Password"><i class="fa fa-refresh text-blue"></i> Reset Password</button>
-                            <button class="btn btn-sm btn-default bulk-action" data-action="delete" title="Delete"><i
-                                    class="fa fa-trash text-danger"></i> Delete</button>
+                                title="Reset Password">
+                                <i class="fa fa-refresh text-blue"></i> Reset Password
+                            </button>
+                            <button class="btn btn-sm btn-default bulk-action" data-action="delete" title="Delete">
+                                <i class="fa fa-trash text-danger"></i> Delete
+                            </button>
                         </div>
 
                         <div class="status-legend">
@@ -126,10 +174,14 @@
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th class="checkbox-col"><input type="checkbox" id="selectAll"></th>
+                                    <th class="checkbox-col">
+                                        <input type="checkbox" id="selectAll">
+                                    </th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Rank / Position</th>
+                                    <!-- Vessel column: quick visibility -->
+                                    <th>Vessel Assigned</th>
                                     <th class="action-col">Actions</th>
                                     <th>Remarks</th>
                                 </tr>
@@ -139,29 +191,11 @@
                     </div>
                 </div>
 
-                <div class="panel">
-                    <div class="panel-heading">
-                        <i class="fa fa-paper-plane"></i> Invitation Hub
-                        <button class="btn btn-primary btn-xs pull-right" data-toggle="modal"
-                            data-target="#inviteModal"><i class="fa fa-plus"></i> Invite Crew</button>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Date Invited</th>
-                                </tr>
-                            </thead>
-                            <tbody id="invitationsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
+    <!-- View / Edit modal -->
     <div id="viewEditModal" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -169,75 +203,293 @@
                     <h4 class="modal-title">View / Edit Crew</h4>
                 </div>
                 <div class="modal-body">
+                    <!-- TOP: Vessel Assigned (Select2, editable) -->
+                    <div class="vessel-summary">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <label for="editVesselAssigned"><strong>Vessel Assigned</strong></label>
+                                <select id="editVesselAssigned" class="form-control">
+                                    <option value="">Not assigned</option>
+                                </select>
+                                <p class="help-block small">
+                                    Note that you can correct the vessel if the crew selected the wrong one.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs aligned with registration config -->
                     <ul class="nav nav-tabs">
                         <li class="active"><a data-toggle="tab" href="#tabProfile">Profile Summary</a></li>
                         <li><a data-toggle="tab" href="#tabPersonal">Personal Details</a></li>
-                        <li><a data-toggle="tab" href="#tabNok">Next of Kin</a></li>
+                        <li><a data-toggle="tab" href="#tabCompany">Company &amp; Emergency Contact</a></li>
+                        <li><a data-toggle="tab" href="#tabIdDocs">Identification Documents</a></li>
+                        <li><a data-toggle="tab" href="#tabNok">Next of Kin 1 &amp; 2</a></li>
                     </ul>
+
                     <div class="tab-content">
+                        <!-- Profile Summary (high-level) -->
                         <div id="tabProfile" class="tab-pane fade in active">
                             <div class="row" style="padding-top:20px;">
-                                <div class="form-group col-sm-6"><label>First Name</label><input type="text"
-                                        id="editFirstName" class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Surname</label><input type="text"
-                                        id="editLastName" class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Email</label><input type="email" id="editEmail"
-                                        class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Mobile</label><input type="tel" id="editMobile"
-                                        class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Company</label><input type="text"
-                                        id="editCompany" class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Position / Rank</label><input type="text"
-                                        id="editRank" class="form-control"></div>
-                                <div class="form-group col-sm-12"><label>Remarks</label><textarea id="editRemarks"
-                                        class="form-control" rows="2"></textarea></div>
+                                <div class="form-group col-sm-6">
+                                    <label>First Name / Nickname</label>
+                                    <input type="text" id="editFirstNameNickname" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-6">
+                                    <label>Surname</label>
+                                    <input type="text" id="editLastName" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-6">
+                                    <label>Email</label>
+                                    <input type="email" id="editEmail" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Position / Rank</label>
+                                    <input type="text" id="editRank" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-6">
+                                    <label>Company</label>
+                                    <input type="text" id="editCompany" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-12">
+                                    <label>Remarks</label>
+                                    <textarea id="editRemarks" class="form-control" rows="2"></textarea>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Personal Details (Registration: Personal Details) -->
                         <div id="tabPersonal" class="tab-pane fade">
                             <div class="row" style="padding-top:20px;">
-                                <div class="form-group col-sm-4"><label>Gender</label><input type="text" id="editGender"
-                                        class="form-control"></div>
-                                <div class="form-group col-sm-4"><label>Date of Birth</label><input type="date"
-                                        id="editDob" class="form-control"></div>
-                                <div class="form-group col-sm-4"><label>Place of Birth</label><input type="text"
-                                        id="editPob" class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Nationality</label><input type="text"
-                                        id="editNationality" class="form-control"></div>
-                                <div class="form-group col-sm-6"><label>Phone</label><input type="tel" id="editPhone"
-                                        class="form-control"></div>
-                                <div class="form-group col-sm-12"><label>Residence Address</label><input type="text"
-                                        id="editAddress" class="form-control"></div>
+                                <div class="form-group col-sm-4">
+                                    <label>Gender</label>
+                                    <!-- select to match registration; still bound to editGender -->
+                                    <select id="editGender" class="form-control">
+                                        <option value="">Select gender</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Date of Birth</label>
+                                    <input type="date" id="editDob" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Place of Birth</label>
+                                    <input type="text" id="editPob" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-4">
+                                    <label>Nationality</label>
+                                    <!-- select to follow registration config; still bound to editNationality -->
+                                    <select id="editNationality" class="form-control">
+                                        <option value="">Select nationality</option>
+                                        <option value="Filipino">Filipino</option>
+                                        <option value="American">American</option>
+                                        <option value="Spanish">Spanish</option>
+                                        <option value="Japanese">Japanese</option>
+                                        <option value="Emirati">Emirati</option>
+                                        <option value="Vietnamese">Vietnamese</option>
+                                        <!-- add more as needed -->
+                                    </select>
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Mobile Number</label>
+                                    <!-- Mobile is part of Personal Details in registration -->
+                                    <input type="text" id="editMobile" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Phone (Landline)</label>
+                                    <input type="tel" id="editPhone" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-12">
+                                    <label>Residence Address</label>
+                                    <input type="text" id="editAddress" class="form-control">
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Company & Emergency Contact (Registration section) -->
+                        <div id="tabCompany" class="tab-pane fade">
+                            <div class="row" style="padding-top:20px;">
+                                <div class="form-group col-sm-6">
+                                    <label>Company</label>
+                                    <input type="text" id="editCompanyCompanyTab" class="form-control"
+                                        placeholder="(Synced with Profile Summary)">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Position / Rank</label>
+                                    <input type="text" id="editRankCompanyTab" class="form-control"
+                                        placeholder="(Synced with Profile Summary)">
+                                </div>
+
+                                <div class="form-group col-sm-6">
+                                    <label>Embarkation Date</label>
+                                    <input type="date" id="editEmbarkDate" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-6">
+                                    <label>Emergency Contact in Company</label>
+                                    <input type="text" id="editEmergencyCompany" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Identification Documents (Registration section) -->
+                        <div id="tabIdDocs" class="tab-pane fade">
+                            <div class="row" style="padding-top:20px;">
+                                <div class="form-group col-sm-4">
+                                    <label>Passport Number</label>
+                                    <input type="text" id="editPassportNo" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>Seaman's Book Number</label>
+                                    <input type="text" id="editSeamansNo" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-4">
+                                    <label>National ID No. (Optional)</label>
+                                    <input type="text" id="editNationalId" class="form-control">
+                                </div>
+
+                                <div class="form-group col-sm-6">
+                                    <label>Passport Upload</label>
+                                    <input type="file" id="editPassportUpload" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <label>Passport Expiry</label>
+                                    <input type="date" id="editPassportExpiry" class="form-control">
+                                </div>
+                                <div class="form-group col-sm-3">
+                                    <label>Seaman's Book Expiry</label>
+                                    <input type="date" id="editSeamansExpiry" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Next of Kin 1 & 2 (Registration section) -->
                         <div id="tabNok" class="tab-pane fade">
                             <div style="padding-top:20px;">
                                 <h4>Next of Kin 1</h4>
                                 <div class="row">
-                                    <div class="form-group col-sm-4"><label>Relationship</label><input type="text"
-                                            id="editNok1Rel" class="form-control"></div>
-                                    <div class="form-group col-sm-8"><label>Full Name</label><input type="text"
-                                            id="editNok1Name" class="form-control"></div>
-                                    <div class="form-group col-sm-6"><label>Mobile</label><input type="tel"
-                                            id="editNok1Mobile" class="form-control"></div>
-                                    <div class="form-group col-sm-6"><label>Email</label><input type="email"
-                                            id="editNok1Email" class="form-control"></div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Relationship</label>
+                                        <select id="editNok1Rel" class="form-control">
+                                            <option value="">Select relationship</option>
+                                            <option value="Mother">Mother</option>
+                                            <option value="Father">Father</option>
+                                            <option value="Spouse">Spouse</option>
+                                            <option value="Sibling">Sibling</option>
+                                            <option value="Child">Child</option>
+                                            <option value="Friend">Friend</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>First Name</label>
+                                        <input type="text" id="editNok1FirstName" class="form-control">
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Surname</label>
+                                        <input type="text" id="editNok1Surname" class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-12">
+                                        <label>Address</label>
+                                        <input type="text" id="editNok1Address" class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-4">
+                                        <label>Residence</label>
+                                        <select id="editNok1Residence" class="form-control">
+                                            <option value="">Select residence</option>
+                                            <option value="Philippines">Philippines</option>
+                                            <option value="Onboard Vessel">Onboard Vessel</option>
+                                            <option value="Abroad">Abroad</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Phone</label>
+                                        <input type="text" id="editNok1Phone" class="form-control">
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Mobile</label>
+                                        <input type="text" id="editNok1Mobile" class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-6">
+                                        <label>Email</label>
+                                        <input type="email" id="editNok1Email" class="form-control">
+                                    </div>
                                 </div>
+
                                 <hr>
+
                                 <h4>Next of Kin 2</h4>
                                 <div class="row">
-                                    <div class="form-group col-sm-4"><label>Relationship</label><input type="text"
-                                            id="editNok2Rel" class="form-control"></div>
-                                    <div class="form-group col-sm-8"><label>Full Name</label><input type="text"
-                                            id="editNok2Name" class="form-control"></div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Relationship</label>
+                                        <select id="editNok2Rel" class="form-control">
+                                            <option value="">Select relationship</option>
+                                            <option value="Mother">Mother</option>
+                                            <option value="Father">Father</option>
+                                            <option value="Spouse">Spouse</option>
+                                            <option value="Sibling">Sibling</option>
+                                            <option value="Child">Child</option>
+                                            <option value="Friend">Friend</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>First Name</label>
+                                        <input type="text" id="editNok2FirstName" class="form-control">
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Surname</label>
+                                        <input type="text" id="editNok2Surname" class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-12">
+                                        <label>Address</label>
+                                        <input type="text" id="editNok2Address" class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-4">
+                                        <label>Residence</label>
+                                        <select id="editNok2Residence" class="form-control">
+                                            <option value="">Select residence</option>
+                                            <option value="Philippines">Philippines</option>
+                                            <option value="Onboard Vessel">Onboard Vessel</option>
+                                            <option value="Abroad">Abroad</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Phone</label>
+                                        <input type="text" id="editNok2Phone" class="form-control">
+                                    </div>
+                                    <div class="form-group col-sm-4">
+                                        <label>Mobile</label>
+                                        <input type="text" id="editNok2Mobile" class="form-control">
+                                    </div>
+
+                                    <div class="form-group col-sm-6">
+                                        <label>Email</label>
+                                        <input type="email" id="editNok2Email" class="form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    </div> <!-- /.tab-content -->
                 </div>
                 <div class="modal-footer" id="viewEditModalFooter"></div>
             </div>
         </div>
     </div>
+
+    <!-- Reset Password modal (unchanged) -->
     <div id="resetPasswordModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -245,44 +497,41 @@
                     <h4 class="modal-title">Reset Password</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="radio"><label><input type="radio" name="resetType" value="auto" checked> Auto-generate a
-                            new password</label></div>
-                    <div class="radio"><label><input type="radio" name="resetType" value="manual"> Let me create a
-                            password</label></div>
-                    <div class="form-group" id="manualPasswordGroup" style="display:none; margin-top:15px;"><label>New
-                            Password</label><input type="password" class="form-control"></div>
+                    <div class="radio">
+                        <label><input type="radio" name="resetType" value="auto" checked> Auto-generate a new
+                            password</label>
+                    </div>
+                    <div class="radio">
+                        <label><input type="radio" name="resetType" value="manual"> Let me create a password</label>
+                    </div>
+                    <div class="form-group" id="manualPasswordGroup" style="display:none; margin-top:15px;">
+                        <label>New Password</label>
+                        <input type="password" class="form-control">
+                    </div>
                     <hr>
-                    <div class="checkbox"><label><input type="checkbox" id="forceChange" checked> Force password change
-                            on first sign-in</label></div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="forceChange" checked> Force password change on first
+                            sign-in</label>
+                    </div>
                 </div>
-                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
-                        class="btn btn-primary">Reset Password</button></div>
-            </div>
-        </div>
-    </div>
-    <div id="inviteModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Invite Crew to Smart Induction</h4>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary">Reset Password</button>
                 </div>
-                <div class="modal-body"><label>Select Joiners to Invite</label><select class="form-control"
-                        id="joinerList" multiple style="width:100%;"></select>
-                    <p class="help-block">The searchable list makes it easy to find a name even with hundreds of
-                        entries.</p>
-                </div>
-                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
-                        class="btn btn-primary" id="sendInvitesBtn">Send Invitation</button></div>
             </div>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Select2 JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
     <script>
         $(function () {
-            // --- INITIALIZATION & MOCK DATA ---
+            // --- Sidebar ---
             fetch('customer-sidebar.html')
                 .then(response => response.text())
                 .then(data => {
@@ -290,123 +539,652 @@
                     sidebarPlaceholder.innerHTML = data;
 
                     const currentPage = 'customer-manage';
-                    const activeLink = sidebarPlaceholder.querySelector(`[data-page="${currentPage}"]`);
-                    if (activeLink) {
-                        activeLink.classList.add('active');
-                    }
+                    const activeLink = sidebarPlaceholder.querySelector('[data-page="' + currentPage + '"]');
+                    if (activeLink) activeLink.classList.add('active');
                 })
                 .catch(error => console.error('Error fetching sidebar:', error));
 
+            // --- Vessels (shared across customer pages: reuse with registration config) ---
+            const vessels = JSON.parse(localStorage.getItem('vessels') || 'null') || [
+                { id: 'VES-001', name: 'M/V Ocean Explorer' },
+                { id: 'VES-002', name: 'M/V Yurisan Dozo' },
+                { id: 'VES-003', name: 'M/V Ripple Star' }
+            ];
+            localStorage.setItem('vessels', JSON.stringify(vessels));
 
-            const joinerData = [{ id: 1, text: 'Adonis Reyes' }, { id: 2, text: 'Isabela Santos' }, { id: 3, text: 'Mateo de Leon' }, { id: 4, text: 'Sofia Mercado' }, { id: 5, text: 'Liam Anderson' }, { id: 6, text: 'Olivia Chen' }];
-            $('#joinerList').select2({ placeholder: "Search for a joiner...", data: joinerData, dropdownParent: $('#inviteModal') });
-            const crewData = [{ id: 1, firstName: 'Anya', lastName: 'Bautista', email: 'anya.b@example.com', rank: 'Deck Cadet', status: 'blue', remarks: 'New application received.', dob: '2001-05-10', phone: 'N/A', mobile: '+63-917-555-0101', nationality: 'Filipino', company: 'RSI', gender: 'Female', pob: 'Manila', address: '123 Rizal Ave, Manila', nok1: { rel: 'Mother', name: 'Maria Bautista', mobile: '+63-918-555-0102', email: 'maria.b@example.com' }, nok2: { rel: 'Father', name: 'Roberto Bautista' } }, { id: 2, firstName: 'Liam', lastName: 'Smith', email: 'liam.s@example.com', rank: 'Chief Officer', status: 'green', remarks: 'Onboarding completed on 2025-09-28.', dob: '1988-11-20', phone: '+1-202-555-0179', mobile: '+1-202-555-0180', nationality: 'American', company: 'RSI', gender: 'Male', pob: 'New York', address: '456 5th Ave, New York', nok1: { rel: 'Spouse', name: 'Emma Smith', mobile: '+1-202-555-0181', email: 'emma.s@example.com' }, nok2: {} }, { id: 3, firstName: 'Isabella', lastName: 'Garcia', email: 'isabella.g@example.com', rank: '2nd Engineer', status: 'orange', remarks: 'Needs to upload GDPR.', dob: '1992-02-15', phone: '+34-91-555-0142', mobile: '+34-60-555-0143', nationality: 'Spanish', company: 'RSI', gender: 'Female', pob: 'Madrid', address: '789 Gran Vía, Madrid', nok1: { rel: 'Brother', name: 'Mateo Garcia', mobile: '+34-60-555-0144', email: 'mateo.g@example.com' }, nok2: {} }, { id: 4, firstName: 'Kenji', lastName: 'Tanaka', email: 'kenji.t@example.com', rank: 'Oiler', status: 'orange', remarks: 'Accepted on 2025-09-30. Needs to complete onboarding.', dob: '1995-07-22', phone: '+81-3-5555-0181', mobile: '+81-90-5555-0182', nationality: 'Japanese', company: 'RSI', gender: 'Male', pob: 'Tokyo', address: '1-1 Chiyoda, Tokyo', nok1: { rel: 'Father', name: 'Haruto Tanaka', mobile: '+81-90-5555-0183', email: '' }, nok2: {} }, { id: 5, firstName: 'Carlos', lastName: 'Dela Cruz', email: 'carlos.d@example.com', rank: 'Able Seaman', status: 'red', remarks: 'Deletion requested on 2025-10-01.', dob: '1990-06-01', phone: '+63-917-555-0123', mobile: '+63-917-555-0124', nationality: 'Filipino', company: 'RSI', gender: 'Male', pob: 'Cebu', address: '101 Colon St, Cebu', nok1: { rel: 'Sister', name: 'Ana Dela Cruz', mobile: '+63-919-555-0125', email: 'ana.d@example.com' }, nok2: {} }, { id: 6, firstName: 'Fatima', lastName: 'Al-Jamil', email: 'fatima.a@example.com', rank: 'Cook', status: 'green', remarks: 'Onboarding completed on 2025-09-29.', dob: '1985-12-05', phone: '+971-4-555-0199', mobile: '+971-50-555-0199', nationality: 'Emirati', company: 'RSI', gender: 'Female', pob: 'Dubai', address: '22 Sheikh Zayed Rd, Dubai', nok1: { rel: 'Husband', name: 'Yusuf Al-Jamil', mobile: '+971-50-555-0200', email: '' }, nok2: {} }, { id: 7, firstName: 'Andres', lastName: 'Mercado', email: 'andres.m@example.com', rank: 'Captain', status: 'gray', remarks: 'Rejected on 2025-10-02.', dob: '1978-03-30', phone: '+63-928-555-0155', mobile: '+63-928-555-0156', nationality: 'Filipino', company: 'RSI', gender: 'Male', pob: 'Davao', address: '333 Bonifacio St, Davao', nok1: { rel: 'Spouse', name: 'Elena Mercado', mobile: '+63-928-555-0157', email: '' }, nok2: {} }, { id: 8, firstName: 'Chloe', lastName: 'Nguyen', email: 'chloe.n@example.com', rank: 'Stewardess', status: 'blue', remarks: 'New application received.', dob: '1999-08-12', phone: '+84-90-555-0168', mobile: '+84-90-555-0169', nationality: 'Vietnamese', company: 'RSI', gender: 'Female', pob: 'Hanoi', address: '44 Hang Gai, Hanoi', nok1: { rel: 'Brother', name: 'Bao Nguyen', mobile: '+84-90-555-0170', email: 'bao.n@example.com' }, nok2: {} }];
-            const invitations = [{ name: 'Miguel Castro', email: 'miguel.c@example.com', date: '2025-10-01' }];
+            function getVesselName(id) {
+                const v = vessels.find(v => v.id === id);
+                return v ? v.name : '';
+            }
 
-            // --- TABLE RENDERING ---
+            function populateVesselDropdown() {
+                const $sel = $('#editVesselAssigned');
+                $sel.empty();
+                $sel.append('<option value="">Not assigned</option>');
+                vessels.forEach(v => {
+                    $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+                });
+            }
+
+            // --- Mock Crew Data (includes vesselId etc) ---
+            const crewData = [
+                {
+                    id: 1,
+                    firstName: 'Anya',
+                    lastName: 'Bautista',
+                    nickname: '',
+                    email: 'anya.b@example.com',
+                    rank: 'Deck Cadet',
+                    status: 'blue',
+                    remarks: 'New application received.',
+                    dob: '2001-05-10',
+                    phone: 'N/A',
+                    mobile: '+63-917-555-0101',
+                    nationality: 'Filipino',
+                    company: 'RSI',
+                    gender: 'Female',
+                    pob: 'Manila',
+                    address: '123 Rizal Ave, Manila',
+                    vesselId: 'VES-001',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Mother',
+                        firstName: 'Maria',
+                        surname: 'Bautista',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+63-918-555-0102',
+                        email: 'maria.b@example.com'
+                    },
+                    nok2: {
+                        rel: 'Father',
+                        firstName: 'Roberto',
+                        surname: 'Bautista',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 2,
+                    firstName: 'Liam',
+                    lastName: 'Smith',
+                    nickname: '',
+                    email: 'liam.s@example.com',
+                    rank: 'Chief Officer',
+                    status: 'green',
+                    remarks: 'Onboarding completed on 2025-09-28.',
+                    dob: '1988-11-20',
+                    phone: '+1-202-555-0179',
+                    mobile: '+1-202-555-0180',
+                    nationality: 'American',
+                    company: 'RSI',
+                    gender: 'Male',
+                    pob: 'New York',
+                    address: '456 5th Ave, New York',
+                    vesselId: 'VES-002',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Spouse',
+                        firstName: 'Emma',
+                        surname: 'Smith',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+1-202-555-0181',
+                        email: 'emma.s@example.com'
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 3,
+                    firstName: 'Isabella',
+                    lastName: 'Garcia',
+                    nickname: '',
+                    email: 'isabella.g@example.com',
+                    rank: '2nd Engineer',
+                    status: 'orange',
+                    remarks: 'Needs to upload GDPR.',
+                    dob: '1992-02-15',
+                    phone: '+34-91-555-0142',
+                    mobile: '+34-60-555-0143',
+                    nationality: 'Spanish',
+                    company: 'RSI',
+                    gender: 'Female',
+                    pob: 'Madrid',
+                    address: '789 Gran Vía, Madrid',
+                    vesselId: 'VES-001',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Brother',
+                        firstName: 'Mateo',
+                        surname: 'Garcia',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+34-60-555-0144',
+                        email: 'mateo.g@example.com'
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 4,
+                    firstName: 'Kenji',
+                    lastName: 'Tanaka',
+                    nickname: '',
+                    email: 'kenji.t@example.com',
+                    rank: 'Oiler',
+                    status: 'orange',
+                    remarks: 'Accepted on 2025-09-30. Needs to complete onboarding.',
+                    dob: '1995-07-22',
+                    phone: '+81-3-5555-0181',
+                    mobile: '+81-90-5555-0182',
+                    nationality: 'Japanese',
+                    company: 'RSI',
+                    gender: 'Male',
+                    pob: 'Tokyo',
+                    address: '1-1 Chiyoda, Tokyo',
+                    vesselId: 'VES-003',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Father',
+                        firstName: 'Haruto',
+                        surname: 'Tanaka',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+81-90-5555-0183',
+                        email: ''
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 5,
+                    firstName: 'Carlos',
+                    lastName: 'Dela Cruz',
+                    nickname: '',
+                    email: 'carlos.d@example.com',
+                    rank: 'Able Seaman',
+                    status: 'red',
+                    remarks: 'Deletion requested on 2025-10-01.',
+                    dob: '1990-06-01',
+                    phone: '+63-917-555-0123',
+                    mobile: '+63-917-555-0124',
+                    nationality: 'Filipino',
+                    company: 'RSI',
+                    gender: 'Male',
+                    pob: 'Cebu',
+                    address: '101 Colon St, Cebu',
+                    vesselId: '',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Sister',
+                        firstName: 'Ana',
+                        surname: 'Dela Cruz',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+63-919-555-0125',
+                        email: 'ana.d@example.com'
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 6,
+                    firstName: 'Fatima',
+                    lastName: 'Al-Jamil',
+                    nickname: '',
+                    email: 'fatima.a@example.com',
+                    rank: 'Cook',
+                    status: 'green',
+                    remarks: 'Onboarding completed on 2025-09-29.',
+                    dob: '1985-12-05',
+                    phone: '+971-4-555-0199',
+                    mobile: '+971-50-555-0199',
+                    nationality: 'Emirati',
+                    company: 'RSI',
+                    gender: 'Female',
+                    pob: 'Dubai',
+                    address: '22 Sheikh Zayed Rd, Dubai',
+                    vesselId: 'VES-002',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Husband',
+                        firstName: 'Yusuf',
+                        surname: 'Al-Jamil',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+971-50-555-0200',
+                        email: ''
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 7,
+                    firstName: 'Andres',
+                    lastName: 'Mercado',
+                    nickname: '',
+                    email: 'andres.m@example.com',
+                    rank: 'Captain',
+                    status: 'gray',
+                    remarks: 'Rejected on 2025-10-02.',
+                    dob: '1978-03-30',
+                    phone: '+63-928-555-0155',
+                    mobile: '+63-928-555-0156',
+                    nationality: 'Filipino',
+                    company: 'RSI',
+                    gender: 'Male',
+                    pob: 'Davao',
+                    address: '333 Bonifacio St, Davao',
+                    vesselId: '',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Spouse',
+                        firstName: 'Elena',
+                        surname: 'Mercado',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+63-928-555-0157',
+                        email: ''
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                },
+                {
+                    id: 8,
+                    firstName: 'Chloe',
+                    lastName: 'Nguyen',
+                    nickname: '',
+                    email: 'chloe.n@example.com',
+                    rank: 'Stewardess',
+                    status: 'blue',
+                    remarks: 'New application received.',
+                    dob: '1999-08-12',
+                    phone: '+84-90-555-0168',
+                    mobile: '+84-90-555-0169',
+                    nationality: 'Vietnamese',
+                    company: 'RSI',
+                    gender: 'Female',
+                    pob: 'Hanoi',
+                    address: '44 Hang Gai, Hanoi',
+                    vesselId: 'VES-003',
+                    embarkDate: '',
+                    emergencyCompany: '',
+                    nok1: {
+                        rel: 'Brother',
+                        firstName: 'Bao',
+                        surname: 'Nguyen',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '+84-90-555-0170',
+                        email: 'bao.n@example.com'
+                    },
+                    nok2: {
+                        rel: '',
+                        firstName: '',
+                        surname: '',
+                        address: '',
+                        residence: '',
+                        phone: '',
+                        mobile: '',
+                        email: ''
+                    }
+                }
+            ];
+
+            // --- Table rendering ---
             function renderCrewTable() {
-                const tableBody = $('#crewTableBody').empty();
-                const statusMap = { green: "Onboarding Complete", orange: "Pending Onboarding", red: "Deletion Requested", blue: "New Applicant", gray: "Rejected" };
+                const $body = $('#crewTableBody').empty();
+                const statusMap = {
+                    green: 'Onboarding Complete',
+                    orange: 'Pending Onboarding',
+                    red: 'Deletion Requested',
+                    blue: 'New Applicant',
+                    gray: 'Rejected'
+                };
+
                 crewData.forEach(crew => {
                     let actionsHtml = '';
                     if (crew.status === 'blue') {
-                        actionsHtml = `<button class="btn btn-xs btn-default action-btn" data-action="accept" title="Accept"><i class="fa fa-check text-success"></i></button> <button class="btn btn-xs btn-default action-btn" data-action="reject" title="Reject"><i class="fa fa-times text-danger"></i></button> <button class="btn btn-xs btn-default action-btn" data-action="view" title="View/Edit"><i class="fa fa-eye"></i></button>`;
+                        actionsHtml =
+                            '<button class="btn btn-xs btn-default action-btn" data-action="accept" title="Accept"><i class="fa fa-check text-success"></i></button> ' +
+                            '<button class="btn btn-xs btn-default action-btn" data-action="reject" title="Reject"><i class="fa fa-times text-danger"></i></button> ' +
+                            '<button class="btn btn-xs btn-default action-btn" data-action="view" title="View/Edit"><i class="fa fa-eye"></i></button>';
                     } else if (crew.status !== 'gray') {
-                        actionsHtml = `<button class="btn btn-xs btn-default action-btn" data-action="view" title="View/Edit"><i class="fa fa-eye"></i></button>`;
+                        actionsHtml =
+                            '<button class="btn btn-xs btn-default action-btn" data-action="view" title="View/Edit"><i class="fa fa-eye"></i></button>';
                     }
-                    const row = $(`<tr data-id="${crew.id}"></tr>`).html(`
-                        <td class="checkbox-col"><input type="checkbox" class="row-select"></td>
-                        <td><span class="status-badge ${crew.status}" data-toggle="tooltip" title="${statusMap[crew.status]}"></span> ${crew.firstName} ${crew.lastName}</td>
-                        <td>${crew.email}</td><td>${crew.rank}</td>
-                        <td class="action-col">${actionsHtml}</td><td>${crew.remarks}</td>`);
-                    tableBody.append(row);
+
+                    const vesselName = crew.vesselId ? getVesselName(crew.vesselId) : '';
+
+                    const row = $(
+                        '<tr data-id="' + crew.id + '"></tr>'
+                    ).html(
+                        '<td class="checkbox-col"><input type="checkbox" class="row-select"></td>' +
+                        '<td><span class="status-badge ' + crew.status + '" data-toggle="tooltip" title="' + statusMap[crew.status] + '"></span> ' +
+                        crew.firstName + ' ' + crew.lastName + '</td>' +
+                        '<td>' + crew.email + '</td>' +
+                        '<td>' + crew.rank + '</td>' +
+                        '<td>' + (vesselName || '<span class="text-muted">Not assigned</span>') + '</td>' +
+                        '<td class="action-col">' + actionsHtml + '</td>' +
+                        '<td>' + crew.remarks + '</td>'
+                    );
+
+                    $body.append(row);
                 });
+
                 $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
                 updateQuickActionsState();
             }
-            function renderInvitationsTable() {
-                const tableBody = $('#invitationsTableBody').empty();
-                invitations.forEach(invite => { tableBody.append(`<tr><td>${invite.name}</td><td>${invite.email}</td><td>${invite.date}</td></tr>`); });
+
+            // --- Checkbox & quick actions ---
+            function updateQuickActionsState() {
+                $('.row-select:checked').length > 0
+                    ? $('.quick-actions-bar').fadeIn(200)
+                    : $('.quick-actions-bar').fadeOut(200);
             }
 
-            // --- CHECKBOX & QUICK ACTIONS LOGIC ---
-            function updateQuickActionsState() {
-                $('.row-select:checked').length > 0 ? $('.quick-actions-bar').fadeIn(200) : $('.quick-actions-bar').fadeOut(200);
-            }
-            $('#selectAll').on('change', function () { $('.row-select').prop('checked', this.checked); updateQuickActionsState(); });
+            $('#selectAll').on('change', function () {
+                $('.row-select').prop('checked', this.checked);
+                updateQuickActionsState();
+            });
+
             $('#crewTableBody').on('change', '.row-select', updateQuickActionsState);
 
-            // --- ACTION HANDLING ---
+            // --- Action handling ---
             function handleAction(action, ids) {
-                if (ids.length === 0) { alert('Please select at least one crew member.'); return; }
+                if (!ids.length) {
+                    alert('Please select at least one crew member.');
+                    return;
+                }
+
                 const today = new Date().toISOString().slice(0, 10);
+
                 ids.forEach(id => {
-                    const crewMember = crewData.find(c => c.id === parseInt(id));
+                    const crewMember = crewData.find(c => c.id === parseInt(id, 10));
                     if (!crewMember) return;
+
                     switch (action) {
                         case 'accept':
-                            if (crewMember.status === 'blue') { crewMember.status = 'orange'; crewMember.remarks = `Accepted on ${today}. Awaiting onboarding.`; }
+                            if (crewMember.status === 'blue') {
+                                crewMember.status = 'orange';
+                                crewMember.remarks = 'Accepted on ' + today + '. Awaiting onboarding.';
+                            }
                             break;
                         case 'reject':
-                            if (crewMember.status === 'blue') { crewMember.status = 'gray'; crewMember.remarks = `Rejected on ${today}.`; }
+                            if (crewMember.status === 'blue') {
+                                crewMember.status = 'gray';
+                                crewMember.remarks = 'Rejected on ' + today + '.';
+                            }
                             break;
                         case 'view':
-                            $('#viewEditModal').data('crewId', crewMember.id);
-                            // Tab 1
-                            $('#editFirstName').val(crewMember.firstName); $('#editLastName').val(crewMember.lastName); $('#editEmail').val(crewMember.email); $('#editMobile').val(crewMember.mobile); $('#editCompany').val(crewMember.company); $('#editRank').val(crewMember.rank); $('#editRemarks').val(crewMember.remarks);
-                            // Tab 2
-                            $('#editGender').val(crewMember.gender); $('#editDob').val(crewMember.dob); $('#editPob').val(crewMember.pob); $('#editNationality').val(crewMember.nationality); $('#editPhone').val(crewMember.phone); $('#editAddress').val(crewMember.address);
-                            // Tab 3
-                            $('#editNok1Rel').val(crewMember.nok1.rel); $('#editNok1Name').val(crewMember.nok1.name); $('#editNok1Mobile').val(crewMember.nok1.mobile); $('#editNok1Email').val(crewMember.nok1.email);
-                            $('#editNok2Rel').val(crewMember.nok2.rel); $('#editNok2Name').val(crewMember.nok2.name);
-
-                            // Dynamic Footer
-                            const footer = $('#viewEditModalFooter').empty();
-                            if (crewMember.status === 'blue') {
-                                footer.html(`<button class="btn btn-danger" id="modalBtnReject">Reject</button>
-                                             <button class="btn btn-default" data-dismiss="modal">Close</button>
-                                             <button class="btn btn-success" id="modalBtnAccept">Accept</button>`);
-                            } else {
-                                footer.html(`<button class="btn btn-default" id="modalBtnReset">Reset Password</button>
-                                             <button class="btn btn-default" data-dismiss="modal">Close</button>
-                                             <button class="btn btn-primary" id="modalBtnSave">Save Changes</button>`);
-                            }
-                            $('#viewEditModal').modal('show');
+                            openViewEditModal(crewMember);
                             return;
-                        case 'reset-password': $('#resetPasswordModal').modal('show'); return;
+                        case 'reset-password':
+                            $('#resetPasswordModal').modal('show');
+                            return;
+                        case 'delete':
+                            // handled after loop
+                            break;
                     }
                 });
-                if (action === 'delete' && confirm(`Are you sure you want to delete ${ids.length} crew member(s)?`)) { alert(`Simulating deletion of crew IDs: ${ids.join(', ')}`); }
-                else if (action !== 'view' && action !== 'reset-password' && action !== 'delete') { renderCrewTable(); }
+
+                if (action === 'delete') {
+                    if (confirm('Are you sure you want to delete ' + ids.length + ' crew member(s)?')) {
+                        alert('Simulating deletion of crew IDs: ' + ids.join(', '));
+                    }
+                } else if (action !== 'view' && action !== 'reset-password') {
+                    renderCrewTable();
+                }
             }
-            $('#crewTableBody').on('click', '.action-btn', function () { handleAction($(this).data('action'), [$(this).closest('tr').data('id')]); });
+
+            function openViewEditModal(crewMember) {
+                $('#viewEditModal').data('crewId', crewMember.id);
+
+                // Vessel on top
+                // (No need to repopulate or re-init, vessels are already loaded and Select2 is initialized)
+                $('#editVesselAssigned')
+                    .val(crewMember.vesselId || '')
+                    .trigger('change.select2');
+
+
+                // Profile tab
+                $('#editFirstNameNickname').val(crewMember.firstNameNickname || '');
+                $('#editNickname').val(crewMember.nickname || '');
+                $('#editLastName').val(crewMember.lastName || '');
+                $('#editEmail').val(crewMember.email || '');
+                $('#editRank').val(crewMember.rank || '');
+                $('#editCompany').val(crewMember.company || '');
+                $('#editRemarks').val(crewMember.remarks || '');
+
+                // Personal tab
+                $('#editGender').val(crewMember.gender || '');
+                $('#editDob').val(crewMember.dob || '');
+                $('#editPob').val(crewMember.pob || '');
+                $('#editNationality').val(crewMember.nationality || '');
+                $('#editMobile').val(crewMember.mobile || '');
+                $('#editPhone').val(crewMember.phone || '');
+                $('#editAddress').val(crewMember.address || '');
+
+                // Company tab
+                $('#editCompanyCompanyTab').val(crewMember.company || '');
+                $('#editRankCompanyTab').val(crewMember.rank || '');
+                $('#editEmbarkDate').val(crewMember.embarkDate || '');
+                $('#editEmergencyCompany').val(crewMember.emergencyCompany || '');
+
+                // NOK tab
+                $('#editNok1Rel').val(crewMember.nok1.rel || '');
+                $('#editNok1FirstName').val(crewMember.nok1.firstName || '');
+                $('#editNok1Surname').val(crewMember.nok1.surname || '');
+                $('#editNok1Address').val(crewMember.nok1.address || '');
+                $('#editNok1Residence').val(crewMember.nok1.residence || '');
+                $('#editNok1Phone').val(crewMember.nok1.phone || '');
+                $('#editNok1Mobile').val(crewMember.nok1.mobile || '');
+                $('#editNok1Email').val(crewMember.nok1.email || '');
+
+                $('#editNok2Rel').val(crewMember.nok2.rel || '');
+                $('#editNok2FirstName').val(crewMember.nok2.firstName || '');
+                $('#editNok2Surname').val(crewMember.nok2.surname || '');
+                $('#editNok2Address').val(crewMember.nok2.address || '');
+                $('#editNok2Residence').val(crewMember.nok2.residence || '');
+                $('#editNok2Phone').val(crewMember.nok2.phone || '');
+                $('#editNok2Mobile').val(crewMember.nok2.mobile || '');
+                $('#editNok2Email').val(crewMember.nok2.email || '');
+
+                // Dynamic footer
+                const $footer = $('#viewEditModalFooter').empty();
+                if (crewMember.status === 'blue') {
+                    $footer.html(
+                        '<button class="btn btn-danger" id="modalBtnReject">Reject</button>' +
+                        '<button class="btn btn-default" data-dismiss="modal">Close</button>' +
+                        '<button class="btn btn-success" id="modalBtnAccept">Accept</button>'
+                    );
+                } else {
+                    $footer.html(
+                        '<button class="btn btn-default" id="modalBtnReset">Reset Password</button>' +
+                        '<button class="btn btn-default" data-dismiss="modal">Close</button>' +
+                        '<button class="btn btn-primary" id="modalBtnSave">Save Changes</button>'
+                    );
+                }
+
+                $('#viewEditModal').modal('show');
+            }
+
+            $('#crewTableBody').on('click', '.action-btn', function () {
+                const id = $(this).closest('tr').data('id');
+                handleAction($(this).data('action'), [id]);
+            });
+
             $('.bulk-action').on('click', function (e) {
                 e.preventDefault();
-                const selectedIds = $('.row-select:checked').map(function () { return $(this).closest('tr').data('id'); }).get();
-                handleAction($(this).data('action'), selectedIds);
+                const ids = $('.row-select:checked')
+                    .map(function () { return $(this).closest('tr').data('id'); })
+                    .get();
+                handleAction($(this).data('action'), ids);
             });
-            $('#sendInvitesBtn').on('click', function () {
-                const selected = $('#joinerList').select2('data');
-                if (selected.length > 0) { alert(`Simulating sending invites to: ${selected.map(s => s.text).join(', ')}`); $('#inviteModal').modal('hide'); } else { alert('Please select at least one joiner to invite.'); }
-            });
-            $('input[name="resetType"]').on('change', function () { $('#manualPasswordGroup').toggle(this.value === 'manual'); });
 
-            // --- DYNAMIC MODAL FOOTER ACTIONS ---
-            $('#viewEditModal').on('click', '#modalBtnSave', function () { alert('Crew details saved (simulation).'); $('#viewEditModal').modal('hide'); });
-            $('#viewEditModal').on('click', '#modalBtnReset', function () { $('#resetPasswordModal').modal('show'); });
+            $('input[name="resetType"]').on('change', function () {
+                $('#manualPasswordGroup').toggle(this.value === 'manual');
+            });
+
+            // Modal footer actions
+            $('#viewEditModal').on('click', '#modalBtnSave', function () {
+                const id = $('#viewEditModal').data('crewId');
+                const crewMember = crewData.find(c => c.id === id);
+                if (crewMember) {
+                    // Save back from form (Profile + Personal + Company + Vessel)
+                    crewMember.firstNameNickname = $('#editFirstNameNickname').val();
+                    crewMember.nickname = $('#editNickname').val();
+                    crewMember.lastName = $('#editLastName').val();
+                    crewMember.email = $('#editEmail').val();
+                    crewMember.rank = $('#editRank').val();
+                    crewMember.company = $('#editCompany').val();
+                    crewMember.remarks = $('#editRemarks').val();
+
+                    // Vessel (Select2) - user can change it here
+                    crewMember.vesselId = $('#editVesselAssigned').val() || '';
+
+                    crewMember.gender = $('#editGender').val();
+                    crewMember.dob = $('#editDob').val();
+                    crewMember.pob = $('#editPob').val();
+                    crewMember.nationality = $('#editNationality').val();
+                    crewMember.mobile = $('#editMobile').val();
+                    crewMember.phone = $('#editPhone').val();
+                    crewMember.address = $('#editAddress').val();
+
+                    // Company & Emergency Contact
+                    const companyFromCompanyTab = $('#editCompanyCompanyTab').val();
+                    const rankFromCompanyTab = $('#editRankCompanyTab').val();
+                    crewMember.company = companyFromCompanyTab || crewMember.company;
+                    crewMember.rank = rankFromCompanyTab || crewMember.rank;
+
+                    $('#editCompany').val(crewMember.company);
+                    $('#editRank').val(crewMember.rank);
+
+                    crewMember.embarkDate = $('#editEmbarkDate').val();
+                    crewMember.emergencyCompany = $('#editEmergencyCompany').val();
+
+                    // NOK 1
+                    crewMember.nok1.rel = $('#editNok1Rel').val();
+                    crewMember.nok1.firstName = $('#editNok1FirstName').val();
+                    crewMember.nok1.surname = $('#editNok1Surname').val();
+                    crewMember.nok1.address = $('#editNok1Address').val();
+                    crewMember.nok1.residence = $('#editNok1Residence').val();
+                    crewMember.nok1.phone = $('#editNok1Phone').val();
+                    crewMember.nok1.mobile = $('#editNok1Mobile').val();
+                    crewMember.nok1.email = $('#editNok1Email').val();
+
+                    // NOK 2
+                    crewMember.nok2.rel = $('#editNok2Rel').val();
+                    crewMember.nok2.firstName = $('#editNok2FirstName').val();
+                    crewMember.nok2.surname = $('#editNok2Surname').val();
+                    crewMember.nok2.address = $('#editNok2Address').val();
+                    crewMember.nok2.residence = $('#editNok2Residence').val();
+                    crewMember.nok2.phone = $('#editNok2Phone').val();
+                    crewMember.nok2.mobile = $('#editNok2Mobile').val();
+                    crewMember.nok2.email = $('#editNok2Email').val();
+                }
+
+                renderCrewTable();
+                alert('Crew details saved (simulation).');
+                $('#viewEditModal').modal('hide');
+            });
+
+            $('#viewEditModal').on('click', '#modalBtnReset', function () {
+                $('#resetPasswordModal').modal('show');
+            });
+
             $('#viewEditModal').on('click', '#modalBtnAccept', function () {
                 const id = $('#viewEditModal').data('crewId');
                 handleAction('accept', [id]);
                 $('#viewEditModal').modal('hide');
             });
+
             $('#viewEditModal').on('click', '#modalBtnReject', function () {
                 const id = $('#viewEditModal').data('crewId');
                 handleAction('reject', [id]);
                 $('#viewEditModal').modal('hide');
             });
 
+            // Init
+            populateVesselDropdown();
+
+            // Initialize Select2 once here
+            $('#editVesselAssigned').select2({
+                theme: "bootstrap",
+                width: "100%",
+                placeholder: "Select vessel...",
+                allowClear: true
+            });
+
             renderCrewTable();
-            renderInvitationsTable();
+
         });
     </script>
 </body>

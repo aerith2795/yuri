@@ -8,8 +8,9 @@
 
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.css" rel="stylesheet" />
+
   <!-- Ripple + Customer CSS -->
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
@@ -17,22 +18,35 @@
   <style>
     body {
       padding-bottom: 80px;
-      /* Add padding for the sticky footer */
+      /* space for sticky footer */
+      font-family: "Overpass", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     }
 
+    .top-nav {
+      background: #fff;
+      border: 1px solid #E6ECF3;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin: 0 0 16px;
+      box-shadow: 0 2px 6px rgba(7, 10, 26, .06);
+    }
 
+    .top-nav .title {
+      font-weight: 600;
+      margin: 4px 0 4px;
+    }
 
-    /* Panel and Block Styling */
+    .text-muted-2 {
+      color: #6B84A8;
+    }
+
     .panel-body.scrollable-panel {
       padding: 0;
-      /* Remove padding from body as container will have it */
     }
 
     #journeyBlocksContainer {
       max-height: 65vh;
-      /* Sets a maximum height relative to the screen */
       overflow-y: auto;
-      /* Adds a scrollbar when content exceeds the height */
       padding: 15px;
     }
 
@@ -52,17 +66,13 @@
       z-index: 10;
     }
 
-    /* Fixed Heights for Editor and Image Area */
     .note-editor .note-editable {
       height: 220px !important;
-      /* Fixed height */
       overflow-y: auto !important;
-      /* Ensures editor is scrollable */
     }
 
     .image-upload-area {
       height: 220px;
-      /* Match the Summernote height */
       border: 2px dashed #ddd;
       border-radius: 4px;
       padding: 15px;
@@ -90,7 +100,6 @@
     .image-preview-container img {
       max-width: 100%;
       max-height: 180px;
-      /* Adjust for padding */
       object-fit: contain;
     }
 
@@ -110,7 +119,6 @@
       z-index: 5;
     }
 
-    /* Preview State Styling */
     .preview-content {
       border: 1px solid #e3e3e3;
       background-color: #fff;
@@ -127,7 +135,6 @@
       margin-bottom: 10px;
     }
 
-    /* Client Preview Modal Styling */
     #clientPreviewModal .modal-body {
       min-height: 400px;
     }
@@ -152,6 +159,22 @@
       overflow-y: auto;
       max-height: 350px;
     }
+
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 8px 15px;
+      z-index: 1030;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
   </style>
 </head>
 
@@ -166,6 +189,30 @@
           <p>Maintain vessel details to ensure accurate information is displayed in the crew portal.</p>
         </div>
 
+        <!-- Editing vessel selector (single) -->
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="top-nav">
+              <div class="row">
+                <div class="col-sm-2">
+                  <div class="title">
+                    <i class="fa fa-ship text-primary"></i> Editing vessel
+                    <i class="fa fa-info-circle text-muted" data-toggle="tooltip" data-placement="top"
+                      title="Choose a vessel to view and edit its Visual Journey and Embarkation details."></i>
+                  </div>
+                </div>
+                <div class="col-sm-10">
+                  <select class="form-control" id="editing-vessel"></select>
+                  <p class="text-muted" style="font-style: italic; margin-top: 2px; font-size: smaller;">
+                    You are editing this vessel’s content. Use “Apply to other vessels” to reuse the same setup.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Journey -->
         <div class="panel panel-default">
           <div class="panel-heading">
             <i class="fa fa-ship"></i> Visual Journey Aboard
@@ -174,11 +221,11 @@
             </button>
           </div>
           <div class="panel-body scrollable-panel">
-            <div id="journeyBlocksContainer">
-            </div>
+            <div id="journeyBlocksContainer"></div>
           </div>
         </div>
 
+        <!-- Embarkation (commented out for now)
         <div class="panel panel-default">
           <div class="panel-heading"><i class="fa fa-anchor"></i> Next Embarkation Schedule</div>
           <div class="panel-body">
@@ -198,29 +245,78 @@
             </div>
           </div>
         </div>
+        -->
 
-      </div>
+      </div> <!-- /.main-content -->
     </div>
   </div>
 
+  <!-- Sticky footer -->
   <div class="sticky-footer">
     <div class="footer-container">
       <div class="row">
+        <!-- LEFT: Apply to other vessels -->
         <div class="col-xs-6">
-          <button id="previewBtn" class="btn btn-info btn-block btn-sm"><i class="fa fa-eye"></i> Client
-            Preview</button>
+          <button id="applyConfigBtn" class="btn btn-default btn-sm">
+            <i class="fa fa-clone"></i> Apply to other vessels…
+          </button>
         </div>
-        <div class="col-xs-6" id="main-action-btn-wrapper"></div>
+
+        <!-- RIGHT: Preview + primary Save/Edit -->
+        <div class="col-xs-6">
+          <div class="row">
+            <div class="col-xs-6">
+              <button id="previewBtn" class="btn btn-info btn-block btn-sm">
+                <i class="fa fa-eye"></i> Client Preview
+              </button>
+            </div>
+            <div class="col-xs-6" id="primary-action-wrapper">
+              <!-- Filled by JS: Save & Post Changes / Edit Page -->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Apply to other vessels modal -->
+  <div class="modal fade" id="applyToVesselsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Apply configuration to other vessels</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted">
+            This will copy the <strong>Visual Journey</strong> and <strong>Next Embarkation</strong> from
+            <strong id="apply-source-vessel-name"></strong> to the selected vessels below. Existing data for those
+            vessels will be overwritten.
+          </p>
+          <div class="form-group">
+            <label for="apply-vessels-select">Choose vessels to update</label>
+            <select id="apply-vessels-select" class="form-control" multiple></select>
+            <p class="help-block">You can select one or more vessels. The current editing vessel is excluded.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="applyConfigConfirmBtn">Apply to selected vessel(s)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client preview modal -->
   <div class="modal fade" id="clientPreviewModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-              aria-hidden="true">&times;</span></button>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
           <h4 class="modal-title">Client Portal Preview</h4>
         </div>
         <div class="modal-body">
@@ -231,26 +327,30 @@
         </div>
         <div class="modal-footer">
           <div class="pull-left">
-            <button type="button" class="btn btn-default" id="preview-prev-btn"><i class="fa fa-chevron-left"></i>
-              Previous</button>
+            <button type="button" class="btn btn-default" id="preview-prev-btn">
+              <i class="fa fa-chevron-left"></i> Previous
+            </button>
           </div>
           <div class="pull-right">
             <span id="preview-page-indicator" style="margin: 0 10px; vertical-align: middle;"></span>
-            <button type="button" class="btn btn-default" id="preview-next-btn">Next <i
-                class="fa fa-chevron-right"></i></button>
+            <button type="button" class="btn btn-default" id="preview-next-btn">
+              Next <i class="fa fa-chevron-right"></i>
+            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
 
   <script>
     $(function () {
-      // --- GLOBALS & DEFAULT DATA ---
+      // --- SIDEBAR ---
       fetch('customer-sidebar.html')
         .then(res => res.text())
         .then(data => {
@@ -260,11 +360,27 @@
           if (activeLink) activeLink.classList.add('active');
         });
 
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // --- GLOBALS & DEFAULT DATA ---
+      const VESSEL_CONFIG_KEY = 'vesselConfigs';
+
       let blockCounter = 0;
       let isEditMode = true;
       let previewBlocksData = [];
       let currentPreviewIndex = 0;
+      let currentVesselId = null;
 
+      let vessels = JSON.parse(localStorage.getItem('vessels') || 'null') || [
+        { id: 'VES-001', name: 'M/V Ocean Explorer' },
+        { id: 'VES-002', name: 'M/V Yurisan Dozo' },
+        { id: 'VES-003', name: 'M/V Ripple Star' }
+      ];
+      localStorage.setItem('vessels', JSON.stringify(vessels));
+
+      let vesselConfigs = JSON.parse(localStorage.getItem(VESSEL_CONFIG_KEY) || '{}');
+
+      // Default sample for M/V Yurisan Dozo
       const defaultPageData = {
         embarkation: {
           date: "2025-11-15",
@@ -287,7 +403,102 @@
         ]
       };
 
-      // --- MAIN FUNCTIONS ---
+      // --- DEMO SEED: different content per vessel (only if nothing exists yet) ---
+      if (!vesselConfigs || Object.keys(vesselConfigs).length === 0) {
+        vesselConfigs = {
+          // Ocean Explorer demo content
+          'VES-001': {
+            embarkation: {
+              date: "2025-12-01",
+              time: "14:30",
+              location: "Manila International Port"
+            },
+            journey: [
+              {
+                content: '<h1>Vessel Overview: M/V Ocean Explorer</h1><p>The <b>M/V Ocean Explorer</b> is a passenger vessel designed for coastal exploration cruises with a focus on guest comfort and scenic itineraries.</p><ul><li><b>Vessel Type:</b> Expedition Cruise</li><li><b>Guest Capacity:</b> 220 passengers</li><li><b>Cabins:</b> 110 outside cabins, most with balconies</li><li><b>Special Feature:</b> 270° observation lounge at the bow</li></ul>',
+                image: '../assets/rsi2.2.png'
+              },
+              {
+                content: '<h2>Guest Experience Highlights</h2><p>Guests can enjoy multiple dining options, lecture rooms for enrichment programs, and open deck spaces for wildlife and aurora viewing.</p><ul><li>All-day buffet restaurant with ocean views</li><li>Observation deck with heated benches</li><li>Onboard expedition team and zodiac landings</li></ul>',
+                image: '../assets/rsi3.1.png'
+              }
+            ]
+          },
+          // Yurisan Dozo demo content (your main example)
+          'VES-002': defaultPageData,
+          // Ripple Star demo content
+          'VES-003': {
+            embarkation: {
+              date: "2025-11-20",
+              time: "18:00",
+              location: "Osaka Port"
+            },
+            journey: [
+              {
+                content: '<h1>Vessel Overview: M/V Ripple Star</h1><p><b>M/V Ripple Star</b> is a modern Ro-Ro vessel serving mixed cargo and vehicle lanes across multiple Asian ports.</p><ul><li><b>Vessel Type:</b> Ro-Ro / General Cargo</li><li><b>Trading Area:</b> Japan – Korea – Philippines</li><li><b>Decks:</b> 5 vehicle decks with adjustable ramps</li></ul>',
+                image: '../assets/rsi1.png'
+              },
+              {
+                content: '<h2>Crew & Safety Familiarization</h2><p>All newly-joining crew undergo a digital familiarization sequence in Ripple Smart Induction before embarkation.</p><ul><li>Step-by-step cargo operations overview</li><li>Vehicle deck safety checkpoints</li><li>Emergency muster and evacuation routes</li></ul>',
+                image: '../assets/rsi3.1.png'
+              }
+            ]
+          }
+        };
+        localStorage.setItem(VESSEL_CONFIG_KEY, JSON.stringify(vesselConfigs));
+
+        // Also keep global fallback aligned with Yurisan sample
+        localStorage.setItem('vesselPageData', JSON.stringify(defaultPageData));
+      }
+
+      // --- HELPERS ---
+      function showAlert(msg, type = 'success') {
+        const alert = $(
+          `<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`
+        );
+        $('body').append(alert);
+        setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
+      }
+
+      function updateImageThumbnail(src, $container) {
+        $container.empty().append(`
+          <div class="img-thumbnail-wrapper">
+            <img src="${src}" />
+            <button class="remove-img-btn">&times;</button>
+          </div>`);
+        $container.siblings('.upload-text').hide();
+      }
+
+      function toggleRemoveButtons() {
+        $('.journey-block .remove-block-btn').toggle($('.journey-block').length > 1);
+      }
+
+      function toggleViewMode(editMode) {
+        isEditMode = editMode;
+        // Embarkation inputs are commented out in HTML; this will just no-op.
+        $('#embarkDate, #embarkTime, #embarkLocation').prop('disabled', !editMode);
+
+        if (editMode) {
+          $('#addBlockBtn').prop('disabled', false);
+          $('.edit-view').show();
+          $('.preview-view').hide();
+          $('.remove-block-btn').show();
+          toggleRemoveButtons();
+          $('#primary-action-wrapper').html(
+            '<button id="saveAllBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save &amp; Post Changes</button>'
+          );
+        } else {
+          $('#addBlockBtn').prop('disabled', true);
+          updateAllPreviews();
+          $('.edit-view').hide();
+          $('.preview-view').show();
+          $('.remove-block-btn').hide();
+          $('#primary-action-wrapper').html(
+            '<button id="editAllBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Page</button>'
+          );
+        }
+      }
+
       function addBlock(data = {}) {
         const id = blockCounter++;
         const blockId = `journey-block-${id}`;
@@ -329,7 +540,7 @@
         const $currentBlock = $(`#${blockId}`);
 
         $currentBlock.find('.rich-text-editor').summernote({
-          height: 220, // Match CSS fixed height
+          height: 220,
           toolbar: [
             ['style', ['style']],
             ['font', ['bold', 'italic', 'underline', 'clear']],
@@ -342,49 +553,8 @@
         if (image) {
           updateImageThumbnail(image, $currentBlock.find('.image-preview-container'));
         }
+
         toggleRemoveButtons();
-      }
-
-      function toggleViewMode(editMode) {
-        isEditMode = editMode;
-        $('#embarkDate, #embarkTime, #embarkLocation').prop('disabled', !editMode);
-
-        if (editMode) {
-          $('#addBlockBtn').prop('disabled', false);
-          $('.edit-view').show();
-          $('.preview-view').hide();
-          $('.remove-block-btn').show();
-          toggleRemoveButtons();
-          $('#main-action-btn-wrapper').html('<button id="saveAllBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
-        } else {
-          $('#addBlockBtn').prop('disabled', true);
-          updateAllPreviews();
-          $('.edit-view').hide();
-          $('.preview-view').show();
-          $('.remove-block-btn').hide();
-          $('#main-action-btn-wrapper').html('<button id="editAllBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Page</button>');
-        }
-      }
-
-      function saveAllData() {
-        const journeyData = [];
-        $('.journey-block').each(function () {
-          const content = $(this).find('.rich-text-editor').summernote('code');
-          const image = $(this).find('.image-preview-container img').attr('src') || null;
-          journeyData.push({ content, image });
-        });
-
-        const embarkationData = {
-          date: $('#embarkDate').val(),
-          time: $('#embarkTime').val(),
-          location: $('#embarkLocation').val()
-        };
-
-        const allPageData = { journey: journeyData, embarkation: embarkationData };
-        localStorage.setItem('vesselPageData', JSON.stringify(allPageData));
-
-        showAlert('All changes have been saved!', 'success');
-        toggleViewMode(false);
       }
 
       function updateAllPreviews() {
@@ -404,26 +574,147 @@
         });
       }
 
-      function updateImageThumbnail(src, $container) {
-        $container.empty().append(`
-            <div class="img-thumbnail-wrapper">
-              <img src="${src}" />
-              <button class="remove-img-btn">&times;</button>
-            </div>`);
-        $container.siblings('.upload-text').hide();
+      function collectPageData() {
+        const journeyData = [];
+        $('.journey-block').each(function () {
+          const content = $(this).find('.rich-text-editor').summernote('code');
+          const image = $(this).find('.image-preview-container img').attr('src') || null;
+          journeyData.push({ content, image });
+        });
+
+        // Embarkation is kept in the model but currently not shown in UI.
+        const embarkationData = {
+          date: $('#embarkDate').val() || "",
+          time: $('#embarkTime').val() || "",
+          location: $('#embarkLocation').val() || ""
+        };
+
+        return {
+          journey: journeyData,
+          embarkation: embarkationData
+        };
       }
 
-      function toggleRemoveButtons() {
-        $('.remove-block-btn').toggle($('.journey-block').length > 1);
+      function clearBlocks() {
+        $('#journeyBlocksContainer').empty();
+        blockCounter = 0;
       }
 
-      function showAlert(msg, type = 'success') {
-        const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`);
-        $('body').append(alert);
-        setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
+      function deepCopy(obj) {
+        return JSON.parse(JSON.stringify(obj || {}));
       }
 
-      // --- CLIENT PREVIEW MODAL LOGIC ---
+      function getVesselName(id) {
+        const v = vessels.find(v => v.id === id);
+        return v ? v.name : id;
+      }
+
+      function loadConfigForCurrentVessel() {
+        if (!currentVesselId) return;
+        clearBlocks();
+
+        const allConfigs = vesselConfigs || {};
+        let cfg = allConfigs[currentVesselId];
+
+        if (!cfg) {
+          const global = JSON.parse(localStorage.getItem('vesselPageData') || 'null');
+          cfg = global || defaultPageData;
+        }
+
+        // Embarkation part kept but not visible in UI.
+        if (cfg.embarkation) {
+          $('#embarkDate').val(cfg.embarkation.date || "");
+          $('#embarkTime').val(cfg.embarkation.time || "");
+          $('#embarkLocation').val(cfg.embarkation.location || "");
+        } else {
+          $('#embarkDate').val("");
+          $('#embarkTime').val("");
+          $('#embarkLocation').val("");
+        }
+
+        if (cfg.journey && cfg.journey.length > 0) {
+          cfg.journey.forEach(blockData => addBlock(blockData));
+        } else {
+          addBlock();
+        }
+
+        const hasSavedConfig = !!vesselConfigs[currentVesselId];
+        toggleViewMode(!hasSavedConfig ? true : false);
+      }
+
+      function saveAllData() {
+        if (!currentVesselId) {
+          showAlert('No vessel selected.', 'warning');
+          return;
+        }
+        const pageData = collectPageData();
+
+        vesselConfigs[currentVesselId] = deepCopy(pageData);
+        localStorage.setItem(VESSEL_CONFIG_KEY, JSON.stringify(vesselConfigs));
+        localStorage.setItem('vesselPageData', JSON.stringify(pageData));
+
+        showAlert('All changes have been saved for ' + getVesselName(currentVesselId) + '!', 'success');
+        toggleViewMode(false);
+      }
+
+      // --- APPLY TO OTHER VESSELS ---
+      function openApplyModal() {
+        if (!currentVesselId) {
+          showAlert('Select a vessel to edit first.', 'warning');
+          return;
+        }
+
+        const pageData = collectPageData();
+        vesselConfigs[currentVesselId] = deepCopy(pageData);
+        localStorage.setItem(VESSEL_CONFIG_KEY, JSON.stringify(vesselConfigs));
+        localStorage.setItem('vesselPageData', JSON.stringify(pageData));
+
+        $('#apply-source-vessel-name').text(getVesselName(currentVesselId));
+
+        const $sel = $('#apply-vessels-select').empty();
+        vessels.forEach(v => {
+          if (v.id !== currentVesselId) {
+            $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+          }
+        });
+
+        $sel.val(null);
+        $('#applyToVesselsModal').modal('show');
+      }
+
+      function applyConfigToTargets() {
+        const targets = $('#apply-vessels-select').val() || [];
+        if (!targets.length) {
+          showAlert('Please select at least one vessel to apply to.', 'warning');
+          return;
+        }
+
+        const sourceData = vesselConfigs[currentVesselId] || collectPageData();
+        const copyData = deepCopy(sourceData);
+        targets.forEach(id => {
+          vesselConfigs[id] = deepCopy(copyData);
+        });
+        localStorage.setItem(VESSEL_CONFIG_KEY, JSON.stringify(vesselConfigs));
+
+        // Optional: log to shared activity
+        try {
+          let activityLog = JSON.parse(localStorage.getItem('customerActivityLog') || '[]');
+          activityLog.unshift({
+            icon: 'fa-copy',
+            action: 'Applied vessel configuration from <strong>' + getVesselName(currentVesselId) + '</strong> to ' + targets.length + ' vessel(s).',
+            ts: Date.now()
+          });
+          if (activityLog.length > 50) activityLog = activityLog.slice(0, 50);
+          localStorage.setItem('customerActivityLog', JSON.stringify(activityLog));
+        } catch (err) {
+          console.warn('Could not append to activity log', err);
+        }
+
+        $('#applyToVesselsModal').modal('hide');
+        showAlert('Configuration applied to ' + targets.length + ' vessel(s).', 'success');
+      }
+
+      // --- PREVIEW MODAL ---
       function launchPreviewModal() {
         previewBlocksData = [];
         $('.journey-block').each(function () {
@@ -433,7 +724,8 @@
         });
 
         if (previewBlocksData.length === 0) {
-          showAlert('Add at least one block to preview.', 'warning'); return;
+          showAlert('Add at least one block to preview.', 'warning');
+          return;
         }
         currentPreviewIndex = 0;
         renderPreviewSlide(currentPreviewIndex);
@@ -453,11 +745,45 @@
         $('#preview-next-btn').prop('disabled', index === previewBlocksData.length - 1);
       }
 
-      // --- EVENT HANDLERS ---
+      // --- VESSEL SELECT INIT ---
+      function initEditingVesselSelect() {
+        const $sel = $('#editing-vessel').empty();
+        vessels.forEach(v => $sel.append('<option value="' + v.id + '">' + v.name + '</option>'));
+
+        const storedId = localStorage.getItem('currentVesselId');
+        if (storedId && vessels.some(v => v.id === storedId)) {
+          currentVesselId = storedId;
+        } else if (vessels.some(v => v.id === 'VES-002')) {
+          // Default to M/V Yurisan Dozo for demo
+          currentVesselId = 'VES-002';
+        } else if (vessels.length) {
+          currentVesselId = vessels[0].id;
+        }
+
+        $sel.val(currentVesselId);
+
+        $sel.select2({
+          placeholder: 'Select a vessel to edit',
+          width: '100%'
+        });
+
+        $sel.on('change', function () {
+          currentVesselId = $(this).val();
+          localStorage.setItem('currentVesselId', currentVesselId);
+          loadConfigForCurrentVessel();
+        });
+      }
+
+      // --- EVENTS ---
       $('#addBlockBtn').on('click', () => addBlock());
-      $('#main-action-btn-wrapper').on('click', '#saveAllBtn', saveAllData);
-      $('#main-action-btn-wrapper').on('click', '#editAllBtn', () => toggleViewMode(true));
+
+      $('#primary-action-wrapper')
+        .on('click', '#saveAllBtn', saveAllData)
+        .on('click', '#editAllBtn', () => toggleViewMode(true));
+
       $('#previewBtn').on('click', launchPreviewModal);
+      $('#applyConfigBtn').on('click', openApplyModal);
+      $('#applyConfigConfirmBtn').on('click', applyConfigToTargets);
 
       $('#journeyBlocksContainer').on('click', '.remove-block-btn', function () {
         $(this).closest('.journey-block').remove();
@@ -489,25 +815,9 @@
         if (currentPreviewIndex > 0) { renderPreviewSlide(--currentPreviewIndex); }
       });
 
-      // --- ON PAGE LOAD ---
-      let savedPageData = JSON.parse(localStorage.getItem('vesselPageData'));
-      const startInEditMode = !savedPageData; // Start in edit if no saved data exists
-
-      if (!savedPageData) {
-        savedPageData = defaultPageData; // Load sample data if local storage is empty
-      }
-
-      if (savedPageData.embarkation) {
-        $('#embarkDate').val(savedPageData.embarkation.date || "");
-        $('#embarkTime').val(savedPageData.embarkation.time || "");
-        $('#embarkLocation').val(savedPageData.embarkation.location || "");
-      }
-      if (savedPageData.journey && savedPageData.journey.length > 0) {
-        savedPageData.journey.forEach(blockData => addBlock(blockData));
-      } else {
-        addBlock();
-      }
-      toggleViewMode(startInEditMode);
+      // --- INIT ---
+      initEditingVesselSelect();
+      loadConfigForCurrentVessel();
     });
   </script>
 

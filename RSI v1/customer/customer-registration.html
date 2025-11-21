@@ -2,436 +2,1178 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>RSI Customer • Registration Config</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="../assets/ripple.css" rel="stylesheet" />
-    <link href="page.css" rel="stylesheet" />
-    <style>
-        body {
-            padding-bottom: 80px !important;
-        }
+  <meta charset="UTF-8" />
+  <title>RSI Customer • Registration Config</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+  <style>
+    body {
+      padding-bottom: 80px !important;
+    }
 
-        .nav-tabs>li>a {
-            cursor: pointer;
-        }
+    .nav-tabs>li>a {
+      cursor: pointer;
+    }
 
-        .nav-tabs>li.add-tab>a {
-            color: var(--r-green);
-            font-weight: bold;
-        }
+    .tab-content {
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+    }
 
-        .tab-content {
-            background-color: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-top: none;
-            border-radius: 0 0 4px 4px;
-        }
+    .field-item {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 3px;
+      background-color: #f9f9f9;
+      border: 1px solid #eee;
+    }
 
-        .field-item {
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            margin-bottom: 5px;
-            border-radius: 3px;
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-        }
+    .field-item:hover {
+      background-color: #f0f0f0;
+    }
 
-        .field-item:hover {
-            background-color: #f0f0f0;
-        }
+    .field-info {
+      flex-grow: 1;
+    }
 
-        .field-info {
-            flex-grow: 1;
-        }
+    .drag-handle {
+      cursor: grab;
+      color: #ccc;
+      margin-right: 15px;
+    }
 
-        .drag-handle {
-            cursor: grab;
-            color: #ccc;
-            margin-right: 15px;
-        }
+    #clientPreviewModal .modal-dialog {
+      width: 90%;
+      max-width: 900px;
+    }
 
-        #clientPreviewModal .modal-dialog {
-            width: 90%;
-            max-width: 900px;
-        }
+    #clientPreviewModal .form-group label.required-field::after {
+      content: " *";
+      color: var(--r-red);
+    }
 
-        #clientPreviewModal .form-group label.required-field::after {
-            content: " *";
-            color: var(--r-red);
-        }
+    .edit-controls {
+      display: none;
+    }
 
-        .edit-controls {
-            display: none;
-        }
+    .edit-mode .edit-controls {
+      display: inline-block;
+    }
 
-        .edit-mode .edit-controls {
-            display: inline-block;
-        }
-    </style>
+    .top-nav {
+      background: #fff;
+      border: 1px solid #E6ECF3;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(7, 10, 26, .06);
+    }
+
+    .top-nav .title {
+      font-weight: 600;
+      margin: 4px 0 4px;
+    }
+
+    .text-muted-2 {
+      color: #6B84A8;
+    }
+
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 8px 15px;
+      z-index: 1030;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .locked-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #f5f7fb;
+      border: 1px solid #d9e2f0;
+      font-size: 11px;
+      margin-left: 6px;
+      color: #475a7b;
+    }
+
+    .locked-pill i {
+      margin-right: 4px;
+    }
+
+    .locked-hint {
+      font-size: 12px;
+      color: #6B84A8;
+      margin-top: 6px;
+    }
+
+    /* Quick Add compact layout */
+    .quick-add-header {
+      font-size: 12px;
+      color: #6B84A8;
+      margin-bottom: 6px;
+    }
+
+    .quick-add-groups .checkbox {
+      margin: 4px 0;
+    }
+
+    .quick-add-group-title {
+      font-size: 12px;
+      font-weight: 600;
+      margin: 4px 0 4px;
+      color: #364765;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container-fluid dashboard-layout">
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Registration Form Configuration</h2>
+          <p>Configure which fields the crew must fill out when registering, per vessel.</p>
+        </div>
+
+        <!-- Editing vessel selector (single) -->
         <div class="row">
-            <div id="sidebar-placeholder"></div>
-            <div class="col-sm-9 col-md-10 main-content">
-                <div class="page-header">
-                    <h2>Registration Form Configuration</h2>
-                    <p>Organize the registration form into sections using the tabs below. Drag and drop to reorder.</p>
+          <div class="col-sm-12">
+            <div class="top-nav" id="vessel-nav">
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="title">
+                    <i class="fa fa-ship text-primary"></i> Editing vessel
+                    <i class="fa fa-info-circle text-muted" data-toggle="tooltip" data-placement="top"
+                      title="Choose a vessel to view and edit its registration fields. Use “Apply to other vessels” to reuse the same setup."></i>
+                  </div>
                 </div>
-
-                <div class="alert alert-info"><i class="fa fa-lock"></i> <strong>Locked Fields:</strong> First Name,
-                    Surname, Email, Password, etc., are always included by default.</div>
-
-                <div class="panel panel-default">
-                    <div class="panel-heading"><i class="fa fa-info-circle"></i> General Instructions for Crew</div>
-                    <div class="panel-body"><textarea class="form-control" id="generalInstructions" rows="3"
-                            disabled></textarea></div>
+                <div class="col-sm-9">
+                  <select class="form-control" id="editing-vessel"></select>
+                  <p class="text-muted-2" style="font-style: italic; margin-top: 2px; font-size: smaller;">
+                    You are editing this vessel’s registration setup. Use “Apply to other vessels” to reuse the same setup.
+                  </p>
                 </div>
-
-                <div>
-                    <ul class="nav nav-tabs" id="sectionTabs"></ul>
-                    <div class="tab-content" id="sectionTabContent"></div>
-                </div>
-
+              </div>
             </div>
+          </div>
         </div>
-    </div>
 
-    <div class="sticky-footer">
-    <div class="footer-container">
-      <div class="row">
-        <div class="col-xs-6">
-          <button id="clientPreviewBtn" class="btn btn-info btn-block btn-sm"><i class="fa fa-eye"></i> Client
-            Preview</button>
+        <!-- General instructions -->
+        <div class="panel panel-default">
+          <div class="panel-heading"><i class="fa fa-info-circle"></i> General Instructions for Crew</div>
+          <div class="panel-body">
+            <textarea class="form-control" id="generalInstructions" rows="3" disabled></textarea>
+          </div>
         </div>
-        <div class="col-xs-6" id="footer-btn-container"></div>
+
+        <!-- Sections / Tabs -->
+        <div>
+          <ul class="nav nav-tabs" id="sectionTabs"></ul>
+          <div class="tab-content" id="sectionTabContent"></div>
+        </div>
       </div>
     </div>
   </div>
 
-    <div class="modal fade" id="clientPreviewModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header"><button class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Crew Registration Form Preview</h4>
-                </div>
-                <div class="modal-body" id="modal-preview-body"></div>
-                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Close</button></div>
-            </div>
+  <!-- Sticky footer -->
+  <div class="sticky-footer">
+    <div class="footer-container">
+      <div class="row">
+        <!-- LEFT: Apply to other vessels -->
+        <div class="col-xs-6">
+          <button id="applyConfigBtn" class="btn btn-default btn-sm">
+            <i class="fa fa-clone"></i> Apply to other vessels
+          </button>
         </div>
-    </div>
-    <div class="modal fade" id="addEditSectionModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="sectionModalTitle"></h4>
-                </div>
-                <div class="modal-body"><input type="hidden" id="editSectionId">
-                    <div class="form-group"><label>Section Title</label><input type="text" id="sectionTitleInput"
-                            class="form-control"></div>
-                </div>
-                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
-                        class="btn btn-primary" id="saveSectionBtn">Save</button></div>
+
+        <!-- RIGHT: Preview + Save/Edit -->
+        <div class="col-xs-6">
+          <div class="row">
+            <div class="col-xs-6">
+              <button id="clientPreviewBtn" class="btn btn-info btn-block btn-sm">
+                <i class="fa fa-eye"></i> Client Preview
+              </button>
             </div>
-        </div>
-    </div>
-    <div class="modal fade" id="addFieldModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form id="formField">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="fieldModalTitle"></h4>
-                    </div>
-                    <div class="modal-body"><input type="hidden" id="fieldSectionId"><input type="hidden"
-                            id="fieldUniqueId">
-                        <div class="form-group"><label>Field Label</label><input type="text" class="form-control"
-                                id="fldLabel" required /></div>
-                        <div class="form-group"><label>Field Type</label><select id="fldType" class="form-control">
-                                <option value="text">Text</option>
-                                <option value="date">Date</option>
-                                <option value="email">Email</option>
-                                <option value="select">Dropdown</option>
-                                <option value="file">File Upload</option>
-                                <option value="textarea">Text Area</option>
-                            </select></div>
-                        <div class="row">
-                            <div class="col-sm-6"><label>Visible</label><select id="fldVisible" class="form-control">
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select></div>
-                            <div class="col-sm-6"><label>Required</label><select id="fldRequired" class="form-control">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select></div>
-                        </div>
-                        <div class="form-group" style="margin-top:10px;"><label>Validation / Notes</label><input
-                                type="text" class="form-control" id="fldValidation"
-                                placeholder="For Dropdowns, use comma-separated values" /></div>
-                    </div>
-                    <div class="modal-footer"><button type="button" class="btn btn-default"
-                            data-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Save
-                            Field</button></div>
-                </form>
+            <div class="col-xs-6" id="footer-btn-container">
+              <!-- Save & Post / Edit Configuration injected by JS -->
             </div>
+          </div>
         </div>
+      </div>
     </div>
-    <div class="modal fade" id="quickAddFieldsModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Quick Add Fields</h4>
+  </div>
+
+  <!-- Client preview modal -->
+  <div class="modal fade" id="clientPreviewModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Crew Registration Form Preview</h4>
+        </div>
+        <div class="modal-body" id="modal-preview-body"></div>
+        <div class="modal-footer">
+          <button class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Apply to other vessels modal -->
+  <div class="modal fade" id="applyToVesselsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Apply registration setup to other vessels</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted">
+            This will copy the <strong>registration sections and fields</strong> from
+            <strong id="apply-source-vessel-name"></strong> to the selected vessels below.
+            Existing registration setups for those vessels will be overwritten.
+          </p>
+          <div class="form-group">
+            <label for="apply-vessels-select">Choose vessels to update</label>
+            <select id="apply-vessels-select" class="form-control" multiple></select>
+            <p class="help-block">You can select one or more vessels. The current editing vessel is excluded.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="applyConfigConfirmBtn">
+            Apply to selected vessel(s)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Field modal (Field rules only, no Visible) -->
+  <div class="modal fade" id="addFieldModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formField">
+          <div class="modal-header">
+            <h4 class="modal-title" id="fieldModalTitle"></h4>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="fieldSectionId">
+            <input type="hidden" id="fieldUniqueId">
+
+            <div class="form-group">
+              <label>Field Label</label>
+              <input type="text" class="form-control" id="fldLabel" required />
+            </div>
+
+            <div class="form-group">
+              <label>Field Type</label>
+              <select id="fldType" class="form-control">
+                <option value="text">Text</option>
+                <option value="date">Date</option>
+                <option value="email">Email</option>
+                <option value="select">Dropdown</option>
+                <option value="file">File Upload</option>
+                <option value="textarea">Text Area</option>
+              </select>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+                <label>Field rules</label>
+                <div class="checkbox" style="margin-top:0;">
+                  <label>
+                    <input type="checkbox" id="fldRequired"> This field is required
+                  </label>
                 </div>
-                <div class="modal-body" id="quickAddFieldsBody"></div>
-                <div class="modal-footer"><button class="btn btn-default" data-dismiss="modal">Cancel</button><button
-                        class="btn btn-primary" id="saveQuickAddBtn">Add Selected Fields</button></div>
+                <div class="checkbox" id="fileRequiredWrapper" style="margin-top:4px; display:none;">
+                  <label>
+                    <input type="checkbox" id="fldFileRequired"> Required to upload file
+                  </label>
+                </div>
+              </div>
             </div>
-        </div>
+
+            <div class="form-group" style="margin-top:10px;">
+              <label>Validation / Notes</label>
+              <input type="text" class="form-control" id="fldValidation"
+                placeholder="For Dropdowns, use comma-separated values" />
+            </div>
+
+            <p id="lockedFieldHint" class="locked-hint" style="display:none;">
+              <i class="fa fa-lock"></i> This is a locked system field. It is always visible and required in the crew
+              registration and cannot be changed here.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default"
+              data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Field</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <script>
-        $(function () {
-            // --- INITIALIZATION & DATA ---
-            fetch('customer-sidebar.html')
-                .then(res => res.text())
-                .then(html => {
-                    $('#sidebar-placeholder').html(html);
-                    $('[data-page="customer-registration"]').addClass('active');
-                });
-            const configKey = "registrationFormConfig_v4";
-            let formConfig = {};
-            const poFields = [{ id: 'pob', label: 'Place of Birth', type: 'text' }, { id: 'nationality', label: 'Nationality', type: 'select' }, { id: 'phone', label: 'Phone', type: 'text' }, { id: 'mobile', label: 'Mobile', type: 'text' }, { id: 'address', label: 'Residence Address', type: 'text' }, { id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text' }, { id: 'passport', label: 'Passport Upload', type: 'file' }, { id: 'nok_rel', label: 'NOK Relationship', type: 'select' }, { id: 'nok_fname', label: 'NOK First Name', type: 'text' }, { id: 'nok_lname', label: 'NOK Surname', type: 'text' }, { id: 'nok_address', label: 'NOK Address', type: 'text' }, { id: 'nok_residence', label: 'NOK Residence', type: 'select' }, { id: 'nok_phone', label: 'NOK Phone', type: 'text' }, { id: 'nok_mobile', label: 'NOK Mobile', type: 'text' }, { id: 'nok_email', label: 'NOK Email', type: 'email' }];
-            const nokFieldTemplates = [{ id: 'nok_rel', label: 'Relationship', type: 'select', visible: true, required: true, validation: 'Spouse, Parent, Sibling, Other' }, { id: 'nok_fname', label: 'First Name', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_lname', label: 'Surname', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_address', label: 'Address', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_residence', label: 'Residence', type: 'select', visible: true, required: true, validation: 'Philippines, Norway, Greece' }, { id: 'nok_phone', label: 'Phone', type: 'text', visible: true, required: false, validation: '' }, { id: 'nok_mobile', label: 'Mobile', type: 'text', visible: true, required: true, validation: '' }, { id: 'nok_email', label: 'Email', type: 'email', visible: true, required: false, validation: '' }];
+  <!-- Quick Add -->
+  <div class="modal fade" id="quickAddFieldsModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Quick Add Fields</h4>
+        </div>
+        <div class="modal-body" id="quickAddFieldsBody"></div>
+        <div class="modal-footer">
+          <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button class="btn btn-primary" id="saveQuickAddBtn">Add Selected Fields</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            // --- CORE FUNCTIONS ---
-            function generateUniqueId(prefix = 'id_') { return prefix + Date.now() + Math.floor(Math.random() * 1000); }
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
-            function toggleViewMode(isEditing) {
-                $('body').toggleClass('edit-mode', isEditing);
-                $('#generalInstructions').prop('disabled', !isEditing);
-                renderForm();
-                if (isEditing) {
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
-                } else {
-                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
-                }
-            }
-
-            function renderForm(activeTabId = null) {
-                const tabs = $('#sectionTabs').empty();
-                const content = $('#sectionTabContent').empty();
-
-                formConfig.sections.forEach((section, index) => {
-                    const isActive = activeTabId ? `#tab_${section.id}` === activeTabId : index === 0;
-                    tabs.append(`<li class="${isActive ? 'active' : ''}"><a data-toggle="tab" href="#tab_${section.id}">${section.title}</a></li>`);
-
-                    const tabPane = $(`<div id="tab_${section.id}" class="tab-pane fade ${isActive ? 'in active' : ''}"></div>`).appendTo(content);
-
-                    const sectionControls = `<div class="pull-right edit-controls"><button class="btn btn-default btn-xs btn-edit-section"><i class="fa fa-pencil"></i></button> <button class="btn btn-danger btn-xs btn-delete-section"><i class="fa fa-trash"></i></button></div>`;
-                    tabPane.append(`<h4>${section.title} ${sectionControls}</h4>`);
-
-                    const fieldList = $('<ul class="field-list"></ul>').appendTo(tabPane);
-                    section.fields.forEach(field => {
-                        $(`<li class="field-item" data-unique-id="${field.uniqueId}"><span class="drag-handle edit-controls"><i class="fa fa-bars"></i></span><div class="field-info"><strong>${field.label}</strong> <small class="text-muted">(${field.type})</small> <span class="label ${field.visible ? 'label-blue' : 'label-default'}">${field.visible ? 'Visible' : 'Hidden'}</span> <span class="label ${field.required ? 'label-red' : 'label-default'}">${field.required ? 'Required' : 'Optional'}</span></div><div class="field-actions edit-controls"><button class="btn btn-xs btn-default btn-edit-field"><i class="fa fa-pencil"></i></button><button class="btn btn-xs btn-danger btn-delete-field"><i class="fa fa-trash"></i></button></div></li>`).appendTo(fieldList);
-                    });
-
-                    const addButtons = `<div class="edit-controls" style="margin-top:15px;"><button class="btn btn-primary btn-xs btn-add-field"><i class="fa fa-plus"></i> Add Field</button> <button class="btn btn-default btn-xs btn-quick-add" style="margin-left:5px;"><i class="fa fa-bolt"></i> Quick Add Fields</button></div>`;
-                    tabPane.append(addButtons);
-
-                    initSortable(fieldList[0]);
-                });
-                tabs.append(`<li class="add-tab edit-controls"><a id="btnAddSection" title="Add New Section"><i class="fa fa-plus"></i></a></li>`);
-                initSortable(tabs[0]);
-            }
-
-            function renderClientPreview() {
-                const modalBody = $('#modal-preview-body').empty();
-                if (formConfig.instructions) { modalBody.append(`<p class="lead">${formConfig.instructions}</p>`); }
-                const previewTabs = $('<ul class="nav nav-tabs"></ul>').appendTo(modalBody);
-                const previewContent = $('<div class="tab-content" style="padding-top:20px;"></div>').appendTo(modalBody);
-
-                formConfig.sections.forEach((section, index) => {
-                    const visibleFields = section.fields.filter(f => f.visible);
-                    if (visibleFields.length === 0) return;
-                    previewTabs.append(`<li class="${index === 0 ? 'active' : ''}"><a data-toggle="tab" href="#prev_tab_${section.id}">${section.title}</a></li>`);
-                    const tabPane = $(`<div id="prev_tab_${section.id}" class="tab-pane fade ${index === 0 ? 'in active' : ''}"><div class="row"></div></div>`).appendTo(previewContent);
-                    const panelBodyRow = tabPane.find('.row');
-                    visibleFields.forEach(field => {
-                        const requiredClass = field.required ? 'required-field' : '';
-                        let inputHtml = '';
-                        switch (field.type) {
-                            case 'select': inputHtml = `<select class="form-control" disabled></select>`; break;
-                            case 'file': inputHtml = `<input type="file" class="form-control" disabled>`; break;
-                            case 'textarea': inputHtml = `<textarea class="form-control" rows="3" disabled></textarea>`; break;
-                            default: inputHtml = `<input type="${field.type}" class="form-control" disabled>`;
-                        }
-                        panelBodyRow.append(`<div class="col-sm-6"><div class="form-group"><label class="${requiredClass}">${field.label}</label>${inputHtml}</div></div>`);
-                    });
-                });
-                $('#clientPreviewModal').modal('show');
-            }
-
-            function initSortable(element) { if (element) new Sortable(element, { animation: 150 }); }
-
-            function saveConfig() {
-                const newSections = [];
-                $('#sectionTabs li:not(.add-tab) a').each(function () {
-                    const sectionId = $(this).attr('href').substring(5);
-                    let section = formConfig.sections.find(s => s.id === sectionId);
-                    if (!section) return;
-                    const newFields = [];
-                    $(`#tab_${sectionId} .field-item`).each(function () {
-                        const fieldUniqueId = $(this).data('unique-id');
-                        const field = section.fields.find(f => f.uniqueId === fieldUniqueId);
-                        if (field) newFields.push(field);
-                    });
-                    section.fields = newFields;
-                    newSections.push(section);
-                });
-                formConfig.sections = newSections;
-                formConfig.instructions = $('#generalInstructions').val();
-                localStorage.setItem(configKey, JSON.stringify(formConfig));
-                alert("Configuration saved!");
-                toggleViewMode(false);
-            }
-
-            function loadConfig() {
-                const savedConfig = JSON.parse(localStorage.getItem(configKey));
-                if (savedConfig) {
-                    formConfig = savedConfig;
-                } else {
-                    // *** NEW DEFAULT CONFIG FOR DEMO PURPOSES ***
-                    formConfig = {
-                        instructions: "Welcome. For demo purposes, this form is pre-configured with the standard fields. Click Save to apply.",
-                        sections: [
-                            {
-                                id: generateUniqueId('sec'), title: 'Personal Details', type: 'custom', fields: [
-                                    { uniqueId: generateUniqueId('fld'), id: 'pob', label: 'Place of Birth', type: 'text', visible: true, required: false, validation: '' },
-                                    { uniqueId: generateUniqueId('fld'), id: 'nationality', label: 'Nationality', type: 'select', visible: true, required: true, validation: 'Filipino, American, Spanish, Japanese' },
-                                    { uniqueId: generateUniqueId('fld'), id: 'address', label: 'Residence Address', type: 'text', visible: true, required: true, validation: '' },
-                                    { uniqueId: generateUniqueId('fld'), id: 'phone', label: 'Phone', type: 'text', visible: true, required: false, validation: '' },
-                                    { uniqueId: generateUniqueId('fld'), id: 'mobile', label: 'Mobile Number', type: 'text', visible: true, required: true, validation: '' }
-                                ]
-                            },
-                            {
-                                id: generateUniqueId('sec'), title: 'Company Information', type: 'custom', fields: [
-                                    { uniqueId: generateUniqueId('fld'), id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text', visible: true, required: false, validation: '' },
-                                    { uniqueId: generateUniqueId('fld'), id: 'passport', label: 'Passport Upload', type: 'file', visible: true, required: true, validation: 'PDF/JPG/PNG only' }
-                                ]
-                            },
-                            { id: generateUniqueId('sec_nok'), title: 'Next of Kin 1', type: 'nok', fields: JSON.parse(JSON.stringify(nokFieldTemplates)).map(f => ({ ...f, uniqueId: generateUniqueId('fld') })) },
-                            { id: generateUniqueId('sec_nok'), title: 'Next of Kin 2', type: 'nok', fields: JSON.parse(JSON.stringify(nokFieldTemplates)).map(f => ({ ...f, uniqueId: generateUniqueId('fld') })) }
-                        ]
-                    };
-                }
-            }
-
-            function handleFormUpdate(rerender, callback) {
-                const activeTabId = $('#sectionTabs li.active a').attr('href');
-                callback();
-                if (rerender) renderForm(activeTabId);
-            }
-
-            // --- EVENT HANDLERS ---
-            $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
-            $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
-            $('#clientPreviewBtn').on('click', renderClientPreview);
-
-            $('#sectionTabs').on('click', '#btnAddSection', () => { $('#sectionModalTitle').text('Add Section'); $('#sectionTitleInput').val(''); $('#editSectionId').val(''); $('#addEditSectionModal').modal('show'); });
-            $('#saveSectionBtn').on('click', function () {
-                const title = $('#sectionTitleInput').val().trim();
-                const sectionId = $('#editSectionId').val();
-                handleFormUpdate(true, () => {
-                    if (title) {
-                        if (sectionId) { const section = formConfig.sections.find(s => s.id === sectionId); if (section) section.title = title; }
-                        else { formConfig.sections.push({ id: generateUniqueId('sec'), title: title, fields: [] }); }
-                    }
-                });
-                $('#addEditSectionModal').modal('hide');
-            });
-            $('#sectionTabContent').on('click', '.btn-edit-section', function () {
-                const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
-                $('#sectionModalTitle').text('Edit Section Title'); $('#sectionTitleInput').val(section.title); $('#editSectionId').val(section.id); $('#addEditSectionModal').modal('show');
-            });
-            $('#sectionTabContent').on('click', '.btn-delete-section', function () {
-                if (confirm('Are you sure?')) {
-                    handleFormUpdate(true, () => {
-                        const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
-                        formConfig.sections = formConfig.sections.filter(s => s.id !== sectionId);
-                    });
-                }
-            });
-            $('#sectionTabContent').on('click', '.btn-add-field', function () {
-                $('#formField')[0].reset(); $('#fieldSectionId').val($(this).closest('.tab-pane').attr('id').substring(4)); $('#fieldUniqueId').val('');
-                $('#fieldModalTitle').text('Add Field'); $('#addFieldModal').modal('show');
-            });
-            $('#sectionTabContent').on('click', '.btn-edit-field', function () {
-                const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
-                const field = section.fields.find(f => f.uniqueId === $(this).closest('.field-item').data('unique-id'));
-                if (field) {
-                    $('#fieldSectionId').val(section.id); $('#fieldUniqueId').val(field.uniqueId); $('#fldLabel').val(field.label);
-                    $('#fldType').val(field.type); $('#fldVisible').val(field.visible.toString()); $('#fldRequired').val(field.required.toString());
-                    $('#fldValidation').val(field.validation); $('#fieldModalTitle').text('Edit Field'); $('#addFieldModal').modal('show');
-                }
-            });
-            $('#formField').on('submit', function (e) {
-                e.preventDefault();
-                handleFormUpdate(true, () => {
-                    const section = formConfig.sections.find(s => s.id === $('#fieldSectionId').val());
-                    if (!section) return;
-                    const fieldData = { label: $('#fldLabel').val(), type: $('#fldType').val(), visible: $('#fldVisible').val() === 'true', required: $('#fldRequired').val() === 'true', validation: $('#fldValidation').val() };
-                    const fieldUniqueId = $('#fieldUniqueId').val();
-                    if (fieldUniqueId) { Object.assign(section.fields.find(f => f.uniqueId === fieldUniqueId), fieldData); }
-                    else { section.fields.push({ ...fieldData, uniqueId: generateUniqueId('fld') }); }
-                });
-                $('#addFieldModal').modal('hide');
-            });
-            $('#sectionTabContent').on('click', '.btn-delete-field', function () {
-                if (confirm('Are you sure?')) {
-                    handleFormUpdate(true, () => {
-                        const section = formConfig.sections.find(s => s.id === $(this).closest('.tab-pane').attr('id').substring(4));
-                        const fieldUniqueId = $(this).closest('.field-item').data('unique-id');
-                        if (section) section.fields = section.fields.filter(f => f.uniqueId !== fieldUniqueId);
-                    });
-                }
-            });
-            $('#sectionTabContent').on('click', '.btn-quick-add', function () {
-                const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
-                const section = formConfig.sections.find(s => s.id === sectionId);
-                const existingFieldIds = section.fields.map(f => f.id).filter(Boolean);
-                const availableFields = poFields.filter(pf => !existingFieldIds.includes(pf.id));
-                let checkboxHtml = availableFields.length ? '' : '<p>No more PO fields to add.</p>';
-                availableFields.forEach(field => { checkboxHtml += `<div class="checkbox"><label><input type="checkbox" value="${field.id}"> ${field.label}</label></div>`; });
-                $('#quickAddFieldsBody').html(checkboxHtml);
-                $('#quickAddFieldsModal').data('sectionId', sectionId).modal('show');
-            });
-            $('#saveQuickAddBtn').on('click', function () {
-                handleFormUpdate(true, () => {
-                    const sectionId = $('#quickAddFieldsModal').data('sectionId');
-                    const section = formConfig.sections.find(s => s.id === sectionId);
-                    $('#quickAddFieldsBody input:checked').each(function () {
-                        const fieldId = $(this).val();
-                        const fieldTemplate = poFields.find(f => f.id === fieldId);
-                        if (fieldTemplate) { section.fields.push({ ...fieldTemplate, uniqueId: generateUniqueId('fld'), visible: true, required: false, validation: '' }); }
-                    });
-                });
-                $('#quickAddFieldsModal').modal('hide');
-            });
-
-            // --- INITIAL LOAD ---
-            loadConfig();
-            $('#generalInstructions').val(formConfig.instructions);
-            toggleViewMode(false); // Start in preview mode
+  <script>
+    $(function () {
+      // --- SIDEBAR ---
+      fetch('customer-sidebar.html')
+        .then(res => res.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          $('[data-page="customer-registration"]').addClass('active');
         });
-    </script>
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // --- CONSTANTS & GLOBALS ---
+      const CONFIG_KEY = "registrationFormConfig_v4";
+      const REG_CONFIG_BY_VESSEL_KEY = "registrationFormConfigsByVessel";
+
+      // System-locked core fields (IDs used in quick add)
+      const LOCKED_FIELD_IDS = [
+        'locked_firstname',
+        'locked_surname',
+        'locked_gender',
+        'locked_dob',
+        'locked_company',
+        'locked_position',
+        'locked_assigned_vessel',
+        'locked_embarkation_date',
+        'locked_email',
+        'locked_password'
+      ];
+
+      let formConfig = {};
+      let regConfigsByVessel = {};
+      let currentVesselId = null;
+
+      const deepCopy = obj => JSON.parse(JSON.stringify(obj || {}));
+
+      // Shared vessel list
+      let vessels = JSON.parse(localStorage.getItem('vessels') || 'null') || [
+        { id: 'VES-001', name: 'M/V Ocean Explorer' },
+        { id: 'VES-002', name: 'M/V Yurisan Dozo' },
+        { id: 'VES-003', name: 'M/V Ripple Star' }
+      ];
+      localStorage.setItem('vessels', JSON.stringify(vessels));
+
+      // Quick add templates (includes locked core fields)
+      const poFields = [
+        // LOCKED CORE FIELDS
+        { id: 'locked_firstname', label: 'First Name / Nickname', type: 'text', locked: true },
+        { id: 'locked_surname', label: 'Surname', type: 'text', locked: true },
+        { id: 'locked_gender', label: 'Gender', type: 'select', locked: true, validation: 'Male, Female, Other' },
+        { id: 'locked_dob', label: 'Date of Birth', type: 'date', locked: true },
+        { id: 'locked_company', label: 'Company', type: 'text', locked: true },
+        { id: 'locked_position', label: 'Position / Rank', type: 'text', locked: true },
+        { id: 'locked_assigned_vessel', label: 'Assigned Vessel', type: 'select', locked: true },
+        { id: 'locked_embarkation_date', label: 'Embarkation Date', type: 'date', locked: true },
+        { id: 'locked_email', label: 'Email', type: 'email', locked: true },
+        { id: 'locked_password', label: 'Password', type: 'text', locked: true },
+
+        // OTHER OPTIONAL FIELDS
+        { id: 'pob', label: 'Place of Birth', type: 'text' },
+        { id: 'nationality', label: 'Nationality', type: 'select' },
+        { id: 'phone', label: 'Phone', type: 'text' },
+        { id: 'mobile', label: 'Mobile', type: 'text' },
+        { id: 'address', label: 'Residence Address', type: 'text' },
+        { id: 'emergencyContact', label: 'Emergency Contact in Company', type: 'text' },
+        { id: 'passport', label: 'Passport Upload', type: 'file' },
+        { id: 'nok_rel', label: 'NOK Relationship', type: 'select' },
+        { id: 'nok_fname', label: 'NOK First Name', type: 'text' },
+        { id: 'nok_lname', label: 'NOK Surname', type: 'text' },
+        { id: 'nok_address', label: 'NOK Address', type: 'text' },
+        { id: 'nok_residence', label: 'NOK Residence', type: 'select' },
+        { id: 'nok_phone', label: 'NOK Phone', type: 'text' },
+        { id: 'nok_mobile', label: 'NOK Mobile', type: 'text' },
+        { id: 'nok_email', label: 'NOK Email', type: 'email' }
+      ];
+
+      const nokFieldTemplates = [
+        { id: 'nok_rel', label: 'Relationship', type: 'select', visible: true, required: true, validation: 'Spouse, Parent, Sibling, Other' },
+        { id: 'nok_fname', label: 'First Name', type: 'text', visible: true, required: true, validation: '' },
+        { id: 'nok_lname', label: 'Surname', type: 'text', visible: true, required: true, validation: '' },
+        { id: 'nok_address', label: 'Address', type: 'text', visible: true, required: true, validation: '' },
+        { id: 'nok_residence', label: 'Residence', type: 'select', visible: true, required: true, validation: 'Philippines, Norway, Greece' },
+        { id: 'nok_phone', label: 'Phone', type: 'text', visible: true, required: false, validation: '' },
+        { id: 'nok_mobile', label: 'Mobile', type: 'text', visible: true, required: true, validation: '' },
+        { id: 'nok_email', label: 'Email', type: 'email', visible: true, required: false, validation: '' }
+      ];
+
+      function generateUniqueId(prefix = 'id_') {
+        return prefix + Date.now() + Math.floor(Math.random() * 1000);
+      }
+
+      function getVesselName(id) {
+        const v = vessels.find(v => v.id === id);
+        return v ? v.name : id;
+      }
+
+      function createDefaultConfig() {
+        return {
+          instructions: "Welcome. This registration form is pre-configured with standard sections. Adjust required fields as needed, then Save & Post.",
+          sections: [
+            {
+              id: generateUniqueId('sec_pd'),
+              title: 'Personal Details',
+              type: 'custom',
+              fields: [
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_firstname',
+                  label: 'First Name / Nickname',
+                  type: 'text',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_surname',
+                  label: 'Surname',
+                  type: 'text',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_gender',
+                  label: 'Gender',
+                  type: 'select',
+                  visible: true,
+                  required: true,
+                  validation: 'Male, Female, Other',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_dob',
+                  label: 'Date of Birth',
+                  type: 'date',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                { uniqueId: generateUniqueId('fld'), id: 'pob', label: 'Place of Birth', type: 'text', visible: true, required: false, validation: '' },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'nationality',
+                  label: 'Nationality',
+                  type: 'select',
+                  visible: true,
+                  required: true,
+                  validation: 'Filipino, Norwegian, Greek, Other'
+                },
+                { uniqueId: generateUniqueId('fld'), id: 'address', label: 'Residence Address', type: 'text', visible: true, required: true, validation: '' },
+                { uniqueId: generateUniqueId('fld'), id: 'mobile', label: 'Mobile Number', type: 'text', visible: true, required: true, validation: '' }
+              ]
+            },
+            {
+              id: generateUniqueId('sec_comp'),
+              title: 'Company & Emergency Contact',
+              type: 'custom',
+              fields: [
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_company',
+                  label: 'Company',
+                  type: 'text',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_position',
+                  label: 'Position / Rank',
+                  type: 'text',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_assigned_vessel',
+                  label: 'Assigned Vessel',
+                  type: 'select',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'locked_embarkation_date',
+                  label: 'Embarkation Date',
+                  type: 'date',
+                  visible: true,
+                  required: true,
+                  validation: '',
+                  locked: true
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'emergencyContact',
+                  label: 'Emergency Contact in Company',
+                  type: 'text',
+                  visible: true,
+                  required: true,
+                  validation: ''
+                }
+              ]
+            },
+            {
+              id: generateUniqueId('sec_iddocs'),
+              title: 'Identification Documents',
+              type: 'custom',
+              fields: [
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'passport_no',
+                  label: 'Passport Number',
+                  type: 'text',
+                  visible: true,
+                  required: true,
+                  validation: ''
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'passport',
+                  label: 'Passport Upload',
+                  type: 'file',
+                  visible: true,
+                  required: true,
+                  fileRequired: true,
+                  validation: 'PDF/JPG/PNG only'
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'seamans_book_no',
+                  label: "Seaman's Book Number",
+                  type: 'text',
+                  visible: true,
+                  required: false,
+                  validation: ''
+                },
+                {
+                  uniqueId: generateUniqueId('fld'),
+                  id: 'nat_id',
+                  label: 'National ID Upload',
+                  type: 'file',
+                  visible: true,
+                  required: false,
+                  fileRequired: false,
+                  validation: 'PDF/JPG/PNG only'
+                }
+              ]
+            },
+            {
+              id: generateUniqueId('sec_nok1'),
+              title: 'Next of Kin 1',
+              type: 'nok',
+              fields: deepCopy(nokFieldTemplates).map(f => ({ ...f, uniqueId: generateUniqueId('fld') }))
+            },
+            {
+              id: generateUniqueId('sec_nok2'),
+              title: 'Next of Kin 2',
+              type: 'nok',
+              fields: deepCopy(nokFieldTemplates).map(f => ({ ...f, uniqueId: generateUniqueId('fld') }))
+            }
+          ]
+        };
+      }
+
+      function isLockedField(field) {
+        return field.locked === true || (field.id && LOCKED_FIELD_IDS.indexOf(field.id) !== -1);
+      }
+
+      function initSortable(element) {
+        if (element) new Sortable(element, { animation: 150 });
+      }
+
+      function toggleViewMode(isEditing) {
+        $('body').toggleClass('edit-mode', isEditing);
+        $('#generalInstructions').prop('disabled', !isEditing);
+        renderForm();
+
+        $('#footer-btn-container').html(
+          isEditing
+            ? '<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save &amp; Post Changes</button>'
+            : '<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>'
+        );
+      }
+
+      function renderForm(activeTabId = null) {
+        const tabs = $('#sectionTabs').empty();
+        const content = $('#sectionTabContent').empty();
+
+        if (!formConfig.sections || !formConfig.sections.length) return;
+
+        formConfig.sections.forEach((section, index) => {
+          const tabHref = '#tab_' + section.id;
+          const isActive = activeTabId ? (tabHref === activeTabId) : index === 0;
+
+          tabs.append(
+            '<li class="' + (isActive ? 'active' : '') + '">' +
+            '<a data-toggle="tab" href="' + tabHref + '">' + section.title + '</a></li>'
+          );
+
+          const tabPane = $(
+            '<div id="tab_' + section.id + '" class="tab-pane fade ' +
+            (isActive ? 'in active' : '') + '"></div>'
+          ).appendTo(content);
+
+          tabPane.append('<h4>' + section.title + '</h4>');
+
+          const fieldList = $('<ul class="field-list"></ul>').appendTo(tabPane);
+
+          section.fields.forEach(field => {
+            const locked = isLockedField(field);
+            if (locked) {
+              field.locked = true;
+              field.visible = true;
+              field.required = true;
+              if (field.type === 'file') field.fileRequired = true;
+            }
+
+            const requiredLabelClass = field.required ? 'label-danger' : 'label-default';
+            const requiredLabelText = field.required ? 'Required' : 'Optional';
+
+            const lockTag = locked
+              ? '<span class="locked-pill"><i class="fa fa-lock"></i> Locked</span>'
+              : '';
+
+            const fileRequiredTag =
+              field.type === 'file' && field.fileRequired
+                ? ' <span class="label label-info">File required</span>'
+                : '';
+
+            $('<li class="field-item" data-unique-id="' + field.uniqueId + '">' +
+              '<span class="drag-handle edit-controls"><i class="fa fa-bars"></i></span>' +
+              '<div class="field-info">' +
+              '<strong>' + field.label + '</strong> ' +
+              '<small class="text-muted">(' + field.type + ')</small> ' +
+              lockTag +
+              ' <span class="label ' + requiredLabelClass + '">' + requiredLabelText + '</span>' +
+              fileRequiredTag +
+              '</div>' +
+              '<div class="field-actions edit-controls">' +
+              '<button class="btn btn-xs btn-default btn-edit-field"><i class="fa fa-pencil"></i></button> ' +
+              '<button class="btn btn-xs btn-danger btn-delete-field"><i class="fa fa-trash"></i></button>' +
+              '</div>' +
+              '</li>').appendTo(fieldList);
+          });
+
+          const addButtons =
+            '<div class="edit-controls" style="margin-top:15px;">' +
+            '<button class="btn btn-primary btn-xs btn-add-field">' +
+            '<i class="fa fa-plus"></i> Add Field</button> ' +
+            '<button class="btn btn-default btn-xs btn-quick-add" style="margin-left:5px;">' +
+            '<i class="fa fa-bolt"></i> Quick Add Fields</button>' +
+            '</div>';
+          tabPane.append(addButtons);
+
+          initSortable(fieldList[0]);
+        });
+      }
+
+      function renderClientPreview() {
+  const modalBody = $('#modal-preview-body').empty();
+
+  if (formConfig.instructions) {
+    modalBody.append('<p class="lead">' + formConfig.instructions + '</p>');
+  }
+
+  // No more lock explanation text here
+
+  const previewTabs = $('<ul class="nav nav-tabs"></ul>').appendTo(modalBody);
+  const previewContent = $('<div class="tab-content" style="padding-top:20px;"></div>').appendTo(modalBody);
+
+  formConfig.sections.forEach((section, index) => {
+    const visibleFields = section.fields.filter(f => f.visible !== false); // default true
+    if (!visibleFields.length) return;
+
+    const tabId = 'prev_tab_' + section.id;
+    previewTabs.append(
+      '<li class="' + (index === 0 ? 'active' : '') + '">' +
+        '<a data-toggle="tab" href="#' + tabId + '">' + section.title + '</a>' +
+      '</li>'
+    );
+
+    const tabPane = $(
+      '<div id="' + tabId + '" class="tab-pane fade ' +
+        (index === 0 ? 'in active' : '') + '">' +
+        '<div class="row"></div>' +
+      '</div>'
+    ).appendTo(previewContent);
+
+    const $row = tabPane.find('.row');
+
+    visibleFields.forEach(field => {
+      const locked = isLockedField(field);
+      if (locked) {
+        field.locked = true;
+        field.required = true; // still always required
+      }
+
+      const requiredClass = field.required ? 'required-field' : '';
+      let inputHtml = '';
+
+      switch (field.type) {
+        case 'select':
+          inputHtml = '<select class="form-control" disabled></select>';
+          break;
+        case 'file':
+          inputHtml = '<input type="file" class="form-control" disabled>';
+          break;
+        case 'textarea':
+          inputHtml = '<textarea class="form-control" rows="3" disabled></textarea>';
+          break;
+        default:
+          inputHtml = '<input type="' + field.type + '" class="form-control" disabled>';
+      }
+
+      // ❌ No lockTag here anymore – just label + disabled input
+      $row.append(
+        '<div class="col-sm-6">' +
+          '<div class="form-group">' +
+            '<label class="' + requiredClass + '">' + field.label + '</label>' +
+            inputHtml +
+          '</div>' +
+        '</div>'
+      );
+    });
+  });
+
+        $('#clientPreviewModal').modal('show');
+      }
+
+      function syncConfigFromUI() {
+        const newSections = [];
+
+        $('#sectionTabs li a').each(function () {
+          const href = $(this).attr('href');
+          if (!href) return;
+          const sectionId = href.substring(5); // strip '#tab_'
+          let section = formConfig.sections.find(s => s.id === sectionId);
+          if (!section) return;
+
+          const newFields = [];
+          $('#tab_' + sectionId + ' .field-item').each(function () {
+            const fieldUniqueId = $(this).data('unique-id');
+            const field = section.fields.find(f => f.uniqueId === fieldUniqueId);
+            if (field) newFields.push(field);
+          });
+          section.fields = newFields;
+          newSections.push(section);
+        });
+
+        formConfig.sections = newSections;
+        formConfig.instructions = $('#generalInstructions').val();
+      }
+
+      function saveConfig(showAlertAndToggle = true) {
+        syncConfigFromUI();
+
+        // Persist per-vessel
+        if (currentVesselId) {
+          regConfigsByVessel[currentVesselId] = formConfig;
+          localStorage.setItem(REG_CONFIG_BY_VESSEL_KEY, JSON.stringify(regConfigsByVessel));
+        }
+
+        // Also update global config (dashboard tile checks this)
+        localStorage.setItem(CONFIG_KEY, JSON.stringify(formConfig));
+
+        if (showAlertAndToggle) {
+          alert("Configuration saved!");
+          toggleViewMode(false);
+        }
+      }
+
+      function loadConfigForCurrentVessel() {
+        regConfigsByVessel = JSON.parse(localStorage.getItem(REG_CONFIG_BY_VESSEL_KEY) || '{}');
+
+        let cfg = currentVesselId ? regConfigsByVessel[currentVesselId] : null;
+
+        if (!cfg) {
+          const savedGlobal = JSON.parse(localStorage.getItem(CONFIG_KEY) || 'null');
+          cfg = savedGlobal || createDefaultConfig();
+        }
+
+        formConfig = cfg;
+        $('#generalInstructions').val(formConfig.instructions || '');
+      }
+
+      function handleFormUpdate(rerender, callback) {
+        const activeTabId = $('#sectionTabs li.active a').attr('href');
+        callback();
+        if (rerender) renderForm(activeTabId);
+      }
+
+      // --- VESSEL SELECT INIT ---
+      function initEditingVesselSelect() {
+        const $sel = $('#editing-vessel').empty();
+        vessels.forEach(v => {
+          $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+        });
+
+        const storedId = localStorage.getItem('regCurrentVesselId');
+        if (storedId && vessels.some(v => v.id === storedId)) {
+          currentVesselId = storedId;
+        } else if (vessels.some(v => v.id === 'VES-002')) {
+          currentVesselId = 'VES-002'; // default to Yurisan for demo
+        } else if (vessels.length) {
+          currentVesselId = vessels[0].id;
+        }
+
+        $sel.val(currentVesselId);
+
+        if ($.fn.select2) {
+          $sel.select2({
+            placeholder: 'Select a vessel to edit',
+            width: '100%'
+          });
+        }
+
+        $sel.on('change', function () {
+          currentVesselId = $(this).val();
+          localStorage.setItem('regCurrentVesselId', currentVesselId);
+          loadConfigForCurrentVessel();
+          const isEditing = $('body').hasClass('edit-mode');
+          toggleViewMode(isEditing);
+        });
+      }
+
+      // --- APPLY TO OTHER VESSELS ---
+      function openApplyModal() {
+        if (!currentVesselId) {
+          alert('Select a vessel to edit first.');
+          return;
+        }
+        // Ensure current UI state is saved for this vessel
+        saveConfig(false);
+
+        $('#apply-source-vessel-name').text(getVesselName(currentVesselId));
+
+        const $sel = $('#apply-vessels-select').empty();
+        vessels.forEach(v => {
+          if (v.id !== currentVesselId) {
+            $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+          }
+        });
+        $sel.val(null);
+        $('#applyToVesselsModal').modal('show');
+      }
+
+      function applyConfigToTargets() {
+        const targets = $('#apply-vessels-select').val() || [];
+        if (!targets.length) {
+          alert('Please select at least one vessel to apply to.');
+          return;
+        }
+
+        const sourceCfg =
+          (currentVesselId && regConfigsByVessel[currentVesselId]) || formConfig;
+        const copyData = deepCopy(sourceCfg);
+
+        targets.forEach(id => {
+          regConfigsByVessel[id] = deepCopy(copyData);
+        });
+        localStorage.setItem(REG_CONFIG_BY_VESSEL_KEY, JSON.stringify(regConfigsByVessel));
+
+        $('#applyToVesselsModal').modal('hide');
+        alert('Registration setup applied to ' + targets.length + ' vessel(s).');
+      }
+
+      // --- EVENT HANDLERS ---
+      $('#footer-btn-container')
+        .on('click', '#saveBtn', function () { saveConfig(true); })
+        .on('click', '#editBtn', function () { toggleViewMode(true); });
+
+      $('#clientPreviewBtn').on('click', renderClientPreview);
+
+      $('#applyConfigBtn').on('click', openApplyModal);
+      $('#applyConfigConfirmBtn').on('click', applyConfigToTargets);
+
+      // Add field
+      $('#sectionTabContent').on('click', '.btn-add-field', function () {
+        $('#formField')[0].reset();
+        $('#fieldSectionId').val($(this).closest('.tab-pane').attr('id').substring(4));
+        $('#fieldUniqueId').val('');
+
+        $('#fldRequired').prop('checked', false).prop('disabled', false);
+        $('#fldFileRequired').prop('checked', false).prop('disabled', false);
+        $('#fileRequiredWrapper').hide();
+        $('#lockedFieldHint').hide();
+
+        $('#fieldModalTitle').text('Add Field');
+        $('#addFieldModal').modal('show');
+      });
+
+      // Edit field
+      $('#sectionTabContent').on('click', '.btn-edit-field', function () {
+        const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
+        const section = formConfig.sections.find(s => s.id === sectionId);
+        const field = section.fields.find(f => f.uniqueId === $(this).closest('.field-item').data('unique-id'));
+        if (!field) return;
+
+        const locked = isLockedField(field);
+        if (locked) {
+          field.locked = true;
+          field.visible = true;
+          field.required = true;
+          if (field.type === 'file') field.fileRequired = true;
+        }
+
+        $('#fieldSectionId').val(section.id);
+        $('#fieldUniqueId').val(field.uniqueId);
+        $('#fldLabel').val(field.label);
+        $('#fldType').val(field.type);
+        $('#fldRequired').prop('checked', !!field.required);
+        $('#fldFileRequired').prop('checked', !!field.fileRequired);
+        $('#fldValidation').val(field.validation || '');
+
+        const isFile = field.type === 'file';
+        $('#fileRequiredWrapper').toggle(isFile);
+
+        if (locked) {
+          $('#fldRequired').prop('checked', true).prop('disabled', true);
+          if (isFile) {
+            $('#fldFileRequired').prop('checked', true).prop('disabled', true);
+          } else {
+            $('#fldFileRequired').prop('disabled', true);
+          }
+          $('#lockedFieldHint').show();
+        } else {
+          $('#fldRequired').prop('disabled', false);
+          $('#fldFileRequired').prop('disabled', false);
+          $('#lockedFieldHint').hide();
+        }
+
+        $('#fieldModalTitle').text('Edit Field');
+        $('#addFieldModal').modal('show');
+      });
+
+      // Field type change => show/hide "Required to upload file"
+      $('#fldType').on('change', function () {
+        const isFile = $(this).val() === 'file';
+        $('#fileRequiredWrapper').toggle(isFile);
+        if (!isFile) {
+          $('#fldFileRequired').prop('checked', false);
+        }
+      });
+
+      // Save Add/Edit field
+      $('#formField').on('submit', function (e) {
+        e.preventDefault();
+        handleFormUpdate(true, () => {
+          const section = formConfig.sections.find(s => s.id === $('#fieldSectionId').val());
+          if (!section) return;
+
+          const fieldUniqueId = $('#fieldUniqueId').val();
+          let field = fieldUniqueId
+            ? section.fields.find(f => f.uniqueId === fieldUniqueId)
+            : null;
+
+          const baseData = {
+            label: $('#fldLabel').val(),
+            type: $('#fldType').val(),
+            // visible is no longer configurable; always visible
+            visible: true,
+            required: $('#fldRequired').is(':checked'),
+            fileRequired: $('#fldFileRequired').is(':checked'),
+            validation: $('#fldValidation').val()
+          };
+
+          if (!field) {
+            // new field
+            const newField = {
+              ...baseData,
+              uniqueId: generateUniqueId('fld')
+            };
+            section.fields.push(newField);
+            field = newField;
+          } else {
+            Object.assign(field, baseData);
+          }
+
+          // Re-apply locked behavior for locked fields
+          if (field && isLockedField(field)) {
+            field.locked = true;
+            field.visible = true;
+            field.required = true;
+            if (field.type === 'file') field.fileRequired = true;
+          }
+        });
+        $('#addFieldModal').modal('hide');
+      });
+
+      // Delete field (allowed even for locked – crew side will still enforce)
+      $('#sectionTabContent').on('click', '.btn-delete-field', function () {
+        if (!confirm('Are you sure you want to remove this field from this section?')) return;
+        handleFormUpdate(true, () => {
+          const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
+          const section = formConfig.sections.find(s => s.id === sectionId);
+          const fieldUniqueId = $(this).closest('.field-item').data('unique-id');
+          if (section) {
+            section.fields = section.fields.filter(f => f.uniqueId !== fieldUniqueId);
+          }
+        });
+      });
+
+      // Quick Add – compact, 2-column layout
+      $('#sectionTabContent').on('click', '.btn-quick-add', function () {
+        const sectionId = $(this).closest('.tab-pane').attr('id').substring(4);
+        const section = formConfig.sections.find(s => s.id === sectionId);
+        if (!section) return;
+
+        const existingFieldIds = section.fields.map(f => f.id).filter(Boolean);
+        const availableFields = poFields.filter(pf => !existingFieldIds.includes(pf.id));
+
+        let html = '';
+        if (!availableFields.length) {
+          html = '<p>No more predefined fields to add.</p>';
+        } else {
+          const coreFields = availableFields.filter(f => f.locked);
+          const otherFields = availableFields.filter(f => !f.locked);
+
+          const colClassBoth = (coreFields.length && otherFields.length) ? 'col-sm-6' : 'col-sm-12';
+
+          html += '<p class="quick-add-header">Tick the fields you want to show in <strong>' + section.title + '</strong>. You can reorder them later.</p>';
+          html += '<div class="row quick-add-groups">';
+
+          if (coreFields.length) {
+            html += '<div class="' + colClassBoth + '">';
+            html += '<div class="quick-add-group-title">Core registration fields <span class="label label-default"><i class="fa fa-lock"></i> Locked</span></div>';
+            coreFields.forEach(field => {
+              html +=
+                '<div class="checkbox">' +
+                '<label>' +
+                '<input type="checkbox" value="' + field.id + '"> ' +
+                field.label +
+                ' <i class="fa fa-lock text-muted"></i>' +
+                '</label>' +
+                '</div>';
+            });
+            html += '</div>';
+          }
+
+          if (otherFields.length) {
+            html += '<div class="' + colClassBoth + '">';
+            html += '<div class="quick-add-group-title">Additional fields</div>';
+            otherFields.forEach(field => {
+              html +=
+                '<div class="checkbox">' +
+                '<label>' +
+                '<input type="checkbox" value="' + field.id + '"> ' +
+                field.label +
+                '</label>' +
+                '</div>';
+            });
+            html += '</div>';
+          }
+
+          html += '</div>'; // row
+        }
+
+        $('#quickAddFieldsBody').html(html);
+        $('#quickAddFieldsModal').data('sectionId', sectionId).modal('show');
+      });
+
+      $('#saveQuickAddBtn').on('click', function () {
+        handleFormUpdate(true, () => {
+          const sectionId = $('#quickAddFieldsModal').data('sectionId');
+          const section = formConfig.sections.find(s => s.id === sectionId);
+          if (!section) return;
+
+          $('#quickAddFieldsBody input:checked').each(function () {
+            const fieldId = $(this).val();
+            const fieldTemplate = poFields.find(f => f.id === fieldId);
+            if (!fieldTemplate) return;
+
+            const locked = fieldTemplate.locked === true || LOCKED_FIELD_IDS.indexOf(fieldTemplate.id) !== -1;
+            const isFile = fieldTemplate.type === 'file';
+
+            const newField = {
+              ...fieldTemplate,
+              uniqueId: generateUniqueId('fld'),
+              // visible is always true
+              visible: true,
+              required: locked ? true : false,
+              fileRequired: isFile && locked ? true : false,
+              validation: fieldTemplate.validation || ''
+            };
+
+            if (locked) newField.locked = true;
+
+            section.fields.push(newField);
+          });
+        });
+        $('#quickAddFieldsModal').modal('hide');
+      });
+
+      // --- INITIAL LOAD ---
+      function init() {
+        initEditingVesselSelect();
+        loadConfigForCurrentVessel();
+        toggleViewMode(false); // start in preview mode
+      }
+
+      init();
+    });
+  </script>
 </body>
 
 </html>

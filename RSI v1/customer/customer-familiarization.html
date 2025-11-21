@@ -2,161 +2,542 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>RSI Customer • Familiarization Video</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="../assets/ripple.css" rel="stylesheet" />
-    <link href="page.css" rel="stylesheet" />
-    <style>
-        .preview-container {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 15px;
-        }
+  <meta charset="UTF-8" />
+  <title>RSI Customer • Familiarization Video</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+  <style>
+    body {
+      padding-bottom: 80px;
+    }
 
-        .preview-container video {
-            max-width: 100%;
-            border-radius: 4px;
-            background-color: #000;
-        }
-    </style>
+    .preview-container {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+    }
+
+    .preview-container video {
+      max-width: 100%;
+      border-radius: 4px;
+      background-color: #000;
+    }
+
+    .top-nav {
+      background: #fff;
+      border: 1px solid #E6ECF3;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(7, 10, 26, .06);
+    }
+
+    .top-nav .title {
+      font-weight: 600;
+      margin: 4px 0 4px;
+    }
+
+    .text-muted-2 {
+      color: #6B84A8;
+    }
+
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 8px 15px;
+      z-index: 1030;
+    }
+
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container-fluid dashboard-layout">
-        <div class="row">
-            <div id="sidebar-placeholder"></div>
-            <div class="col-sm-9 col-md-10 main-content">
-                <div class="page-header">
-                    <h2>Familiarization Video Configuration</h2>
-                    <p>Set the video and instructions for the crew's familiarization onboarding step.</p>
-                </div>
-                <div class="panel">
-                    <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
-                    <div class="panel-body">
-                        <div id="edit-view">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label>Upload/Replace Video</label>
-                                        <input id="videoFile" type="file" class="form-control"
-                                            accept="video/mp4,video/webm,video/quicktime,.mov">
-                                        <p class="help-block" id="currentFileName"></p>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Instructions for Crew</label>
-                                        <textarea id="videoInstructions" class="form-control" rows="5"
-                                            placeholder="Provide instructions about watching the familiarization video."></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Settings</label>
-                                    <div class="checkbox"><label><input type="checkbox" id="showVideo"> Show
-                                            Familiarization Video page in crew portal</label></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="preview-view" style="display:none;">
-                            <h4>Preview</h4>
-                            <div class="preview-container">
-                                <video id="videoPreview" controls muted playsinline></video>
-                                <hr>
-                                <strong>Instructions:</strong>
-                                <blockquote id="instructionsPreview" style="font-size:14px; margin-top:5px;">
-                                </blockquote>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Familiarization Video Configuration</h2>
+          <p>Set the video and instructions for the crew's familiarization onboarding step.</p>
         </div>
+
+        <!-- Editing vessel selector (single) -->
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="top-nav">
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="title">
+                    <i class="fa fa-ship text-primary"></i> Editing vessel
+                    <i class="fa fa-info-circle text-muted" data-toggle="tooltip" data-placement="top"
+                      title="Choose a vessel to view and edit its familiarization video. Use “Apply to other vessels…” to reuse this setup."></i>
+                  </div>
+                </div>
+                <div class="col-sm-9">
+                  <select class="form-control" id="editing-vessel"></select>
+                  <p class="text-muted-2" style="font-style: italic; margin-top: 2px; font-size: smaller;">
+                    You are configuring this vessel’s familiarization video and instructions. Apply to other vessels from
+                    the footer.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- General Instructions (same pattern as other pages) -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i class="fa fa-info-circle"></i> General Instructions for Crew
+          </div>
+          <div class="panel-body">
+            <textarea class="form-control" id="videoInstructions" rows="3" disabled></textarea>
+          </div>
+        </div>
+
+        <!-- Main Familiarization configuration panel -->
+        <div class="panel">
+          <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video & File</div>
+          <div class="panel-body">
+            <!-- Edit view -->
+            <div id="edit-view">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Upload / Replace Video</label>
+                    <input id="videoFile" type="file" class="form-control"
+                      accept="video/mp4,video/webm,video/quicktime,.mov">
+                    <p class="help-block" id="currentFileName"></p>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Upload Familiarization Document (optional)</label>
+                    <input id="docFile" type="file" class="form-control"
+                      accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+                    <p class="help-block" id="currentDocName"></p>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label>Settings</label>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="showVideo">
+                      Show Familiarization Video page in crew portal
+                    </label>
+                  </div>
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" id="requireConfirm">
+                      Require crew to tick “I confirm that I have watched the full video”
+                    </label>
+                  </div>
+                  <p class="text-muted-2" style="margin-top:8px;font-size:12px;">
+                    When the confirmation checkbox is enabled, the crew portal will require the crew to confirm they
+                    watched the full video before they can continue.
+                  </p>
+                  <p class="text-muted-2" style="margin-top:4px;font-size:12px;">
+                    The familiarization page will show the instructions above, then the video player, and a link to the
+                    uploaded document (if any).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview view -->
+            <div id="preview-view" style="display:none;">
+              <h4>Preview for selected vessel</h4>
+              <div class="preview-container">
+                <video id="videoPreview" controls muted playsinline></video>
+                <hr>
+                <strong>Instructions:</strong>
+                <blockquote id="instructionsPreview" style="font-size:14px; margin-top:5px;"></blockquote>
+                <p id="docPreview" style="font-size:13px; margin-top:8px;"></p>
+                <div id="confirmPreview" style="font-size:13px; margin-top:8px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /.main-content -->
+    </div> <!-- /.row -->
+  </div> <!-- /.container-fluid -->
+
+  <!-- Sticky footer -->
+  <div class="sticky-footer">
+    <div class="footer-container">
+      <div class="row">
+        <div class="col-xs-6">
+          <button id="applyConfigBtn" class="btn btn-default btn-sm">
+            <i class="fa fa-clone"></i> Apply to other vessels…
+          </button>
+        </div>
+        <div class="col-xs-6" id="footer-btn-container">
+          <!-- Save/Edit buttons injected by JS -->
+        </div>
+      </div>
     </div>
-    <div class="sticky-footer">
-        <div class="footer-container" id="footer-btn-container"></div>
+  </div>
+
+  <!-- Apply to other vessels modal -->
+  <div class="modal fade" id="applyToVesselsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title">Apply familiarization setup to other vessels</h4>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted">
+            This will copy the <strong>familiarization video, document, visibility setting, confirmation checkbox and
+              crew instructions</strong> from
+            <strong id="apply-source-vessel-name"></strong> to the selected vessels below.
+            Existing familiarization setups for those vessels will be overwritten.
+          </p>
+          <div class="form-group">
+            <label for="apply-vessels-select">Choose vessels to update</label>
+            <select id="apply-vessels-select" class="form-control" multiple></select>
+            <p class="help-block">You can select one or more vessels. The current editing vessel is excluded.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="applyConfigConfirmBtn">
+            Apply to selected vessel(s)
+          </button>
+        </div>
+      </div>
     </div>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script>
-        $(function () {
-            fetch('customer-sidebar.html')
-                .then(r => r.text())
-                .then(html => {
-                    $('#sidebar-placeholder').html(html);
-                    const activeLink = document.querySelector('[data-page="customer-familiarization"]');
-                    if (activeLink) activeLink.classList.add('active');
-                });
-                
-            const configKey = "familiarizationConfig";
-            let tempVideoUrl = null;
+  </div>
 
-            function toggleViewMode(isEditing) {
-                if (isEditing) {
-                    $('#edit-view').show();
-                    $('#preview-view').hide();
-                    $('#footer-btn-container').html('<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save & Post Changes</button>');
-                } else {
-                    $('#edit-view').hide();
-                    $('#preview-view').show();
-                    $('#footer-btn-container').html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Configuration</button>');
-                }
-            }
-
-            function saveConfig() {
-                const existingConfig = JSON.parse(localStorage.getItem(configKey)) || {};
-                const config = {
-                    instructions: $("#videoInstructions").val(),
-                    show: $("#showVideo").prop("checked"),
-                    videoUrl: tempVideoUrl || existingConfig.videoUrl,
-                    fileName: $("#videoFile")[0].files[0]?.name || existingConfig.fileName
-                };
-                localStorage.setItem(configKey, JSON.stringify(config));
-                showAlert("Familiarization configuration saved.", "success");
-                loadConfig();
-                toggleViewMode(false);
-            }
-
-            function loadConfig() {
-                const savedConfig = JSON.parse(localStorage.getItem(configKey));
-                if (savedConfig) {
-                    $("#videoInstructions").val(savedConfig.instructions);
-                    $("#showVideo").prop("checked", savedConfig.show);
-                    $('#instructionsPreview').html(savedConfig.instructions.replace(/\n/g, '<br>') || "<em>No instructions provided.</em>");
-                    $('#videoPreview').attr('src', savedConfig.videoUrl || "");
-                    if (savedConfig.fileName) {
-                        $('#currentFileName').text(`Current file: ${savedConfig.fileName}`);
-                    }
-                    return true;
-                } else {
-                    $("#showVideo").prop("checked", true);
-                    $("#videoInstructions").val("Please watch the entire familiarization video below before proceeding.");
-                    return false;
-                }
-            }
-
-            $("#videoFile").on("change", function () {
-                const file = this.files[0];
-                if (file) {
-                    // Revoke old blob URL if it exists to prevent memory leaks
-                    if (tempVideoUrl) {
-                        URL.revokeObjectURL(tempVideoUrl);
-                    }
-                    // Create a new blob URL
-                    tempVideoUrl = URL.createObjectURL(file);
-                    $('#currentFileName').text(`New file selected: ${file.name}`);
-                    showAlert("Video file is ready to be saved.", "info");
-                }
-            });
-
-            $('#footer-btn-container').on('click', '#saveBtn', saveConfig);
-            $('#footer-btn-container').on('click', '#editBtn', () => toggleViewMode(true));
-            const hasData = loadConfig();
-            toggleViewMode(!hasData);
-            function showAlert(msg, type = 'success') { const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`); $('body').append(alert); setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000); }
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    $(function () {
+      // Sidebar
+      fetch('customer-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="customer-familiarization"]');
+          if (activeLink) activeLink.classList.add('active');
         });
-    </script>
+
+      $('[data-toggle="tooltip"]').tooltip();
+
+      // Keys
+      const GLOBAL_CONFIG_KEY = "familiarizationConfig";
+      const PER_VESSEL_KEY = "familiarizationConfigsByVessel";
+      const CURRENT_VESSEL_KEY = "famCurrentVesselId";
+
+      // Globals
+      let tempVideoUrl = null;
+      let currentVesselId = null;
+      let familiarConfigsByVessel = {};
+
+      // Vessels (shared list)
+      let vessels = JSON.parse(localStorage.getItem('vessels') || 'null') || [
+        { id: 'VES-001', name: 'M/V Ocean Explorer' },
+        { id: 'VES-002', name: 'M/V Yurisan Dozo' },
+        { id: 'VES-003', name: 'M/V Ripple Star' }
+      ];
+      localStorage.setItem('vessels', JSON.stringify(vessels));
+
+      function getVesselName(id) {
+        const v = vessels.find(v => v.id === id);
+        return v ? v.name : id;
+      }
+
+      function toggleViewMode(isEditing) {
+        if (isEditing) {
+          $('#edit-view').show();
+          $('#preview-view').hide();
+          $('#videoInstructions').prop('disabled', false);
+          $('#footer-btn-container').html(
+            '<button id="saveBtn" class="btn btn-success btn-block btn-sm">' +
+            '<i class="fa fa-save"></i> Save &amp; Post Changes</button>'
+          );
+        } else {
+          $('#edit-view').hide();
+          $('#preview-view').show();
+          $('#videoInstructions').prop('disabled', true);
+          $('#footer-btn-container').html(
+            '<button id="editBtn" class="btn btn-primary btn-block btn-sm">' +
+            '<i class="fa fa-pencil"></i> Edit Configuration</button>'
+          );
+        }
+      }
+
+      function updatePreview(config) {
+        const cfg = config || {};
+        const instructions = cfg.instructions || '';
+        $('#instructionsPreview').html(
+          instructions
+            ? instructions.replace(/\n/g, '<br>')
+            : "<em>No instructions provided.</em>"
+        );
+
+        if (cfg.videoUrl) {
+          $('#videoPreview').attr('src', cfg.videoUrl);
+        } else {
+          $('#videoPreview').removeAttr('src');
+        }
+
+        if (cfg.docFileName) {
+          $('#docPreview').html(
+            '<i class="fa fa-file-text-o"></i> Document available: <strong>' +
+            cfg.docFileName +
+            '</strong>'
+          );
+        } else {
+          $('#docPreview').html('<em>No familiarization document uploaded.</em>');
+        }
+
+        // Show or hide the confirmation checkbox preview
+        if (cfg.requireConfirm) {
+          $('#confirmPreview').html(
+            '<label class="checkbox-inline">' +
+            '<input type="checkbox" disabled> ' +
+            'I confirm that I have watched the full familiarization video.' +
+            '</label>'
+          );
+        } else {
+          $('#confirmPreview').html('<span class="text-muted-2"><em>No confirmation checkbox will be shown to crew.</em></span>');
+        }
+      }
+
+      function saveConfig(showAlertAndToggle = true) {
+        const perVesselConfigs = familiarConfigsByVessel;
+        const existingConfig =
+          (currentVesselId && perVesselConfigs[currentVesselId]) ||
+          JSON.parse(localStorage.getItem(GLOBAL_CONFIG_KEY) || '{}');
+
+        const fileInput = $("#videoFile")[0];
+        const docInput = $("#docFile")[0];
+
+        let videoUrl = existingConfig.videoUrl || '';
+        let fileName = existingConfig.fileName || '';
+        if (tempVideoUrl) {
+          videoUrl = tempVideoUrl;
+          if (fileInput.files.length > 0) {
+            fileName = fileInput.files[0].name;
+          }
+        } else if (fileInput.files.length > 0) {
+          // New selection but not yet previewed: create object URL
+          videoUrl = URL.createObjectURL(fileInput.files[0]);
+          fileName = fileInput.files[0].name;
+        }
+
+        let docFileName = existingConfig.docFileName || '';
+        if (docInput.files.length > 0) {
+          docFileName = docInput.files[0].name;
+        }
+
+        const config = {
+          instructions: $("#videoInstructions").val(),
+          show: $("#showVideo").prop("checked"),
+          requireConfirm: $("#requireConfirm").prop("checked"),
+          videoUrl: videoUrl || '',
+          fileName: fileName || '',
+          docFileName: docFileName || ''
+        };
+
+        if (currentVesselId) {
+          familiarConfigsByVessel[currentVesselId] = config;
+          localStorage.setItem(PER_VESSEL_KEY, JSON.stringify(familiarConfigsByVessel));
+        }
+
+        // Keep global key for dashboard / legacy logic / crew portal
+        localStorage.setItem(GLOBAL_CONFIG_KEY, JSON.stringify(config));
+
+        // Update UI bits
+        $('#currentFileName').text(config.fileName ? `Current file: ${config.fileName}` : '');
+        $('#currentDocName').text(config.docFileName ? `Current document: ${config.docFileName}` : '');
+        updatePreview(config);
+
+        if (showAlertAndToggle) {
+          showAlert("Familiarization configuration saved.", "success");
+          toggleViewMode(false);
+        }
+      }
+
+      function loadConfigForCurrentVessel() {
+        familiarConfigsByVessel = JSON.parse(localStorage.getItem(PER_VESSEL_KEY) || '{}');
+
+        let cfg = currentVesselId ? familiarConfigsByVessel[currentVesselId] : null;
+
+        if (!cfg) {
+          const globalCfg = JSON.parse(localStorage.getItem(GLOBAL_CONFIG_KEY) || 'null');
+          if (globalCfg) {
+            cfg = globalCfg;
+          } else {
+            cfg = {
+              instructions: "Please watch the entire familiarization video below before proceeding.",
+              show: true,
+              requireConfirm: true,
+              videoUrl: "",
+              fileName: "",
+              docFileName: ""
+            };
+          }
+        }
+
+        // Bind to UI
+        $("#videoInstructions").val(cfg.instructions || '');
+        $("#showVideo").prop("checked", !!cfg.show);
+        $("#requireConfirm").prop("checked", !!cfg.requireConfirm);
+        $('#currentFileName').text(cfg.fileName ? `Current file: ${cfg.fileName}` : '');
+        $('#currentDocName').text(cfg.docFileName ? `Current document: ${cfg.docFileName}` : '');
+
+        // Clear file inputs (we don't rehydrate files themselves)
+        $("#videoFile").val('');
+        $("#docFile").val('');
+
+        tempVideoUrl = null;
+        updatePreview(cfg);
+
+        // Decide initial mode
+        return !!cfg && (cfg.videoUrl || cfg.instructions || cfg.fileName || cfg.docFileName);
+      }
+
+      function initEditingVesselSelect() {
+        const $sel = $('#editing-vessel').empty();
+        vessels.forEach(v => {
+          $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+        });
+
+        const storedId = localStorage.getItem(CURRENT_VESSEL_KEY);
+        if (storedId && vessels.some(v => v.id === storedId)) {
+          currentVesselId = storedId;
+        } else if (vessels.some(v => v.id === 'VES-002')) {
+          currentVesselId = 'VES-002';
+        } else if (vessels.length) {
+          currentVesselId = vessels[0].id;
+        }
+
+        $sel.val(currentVesselId);
+
+        $sel.on('change', function () {
+          currentVesselId = $(this).val();
+          localStorage.setItem(CURRENT_VESSEL_KEY, currentVesselId);
+          const hasData = loadConfigForCurrentVessel();
+          const isEditing = $('body').data('editing') === true;
+          // Keep current mode if already editing, otherwise go preview when data exists
+          toggleViewMode(isEditing ? true : !hasData);
+        });
+      }
+
+      // Apply to other vessels
+      function openApplyModal() {
+        if (!currentVesselId) {
+          alert('Select a vessel to edit first.');
+          return;
+        }
+
+        // Ensure current state is saved for this vessel but don't toggle mode
+        saveConfig(false);
+
+        $('#apply-source-vessel-name').text(getVesselName(currentVesselId));
+
+        const $sel = $('#apply-vessels-select').empty();
+        vessels.forEach(v => {
+          if (v.id !== currentVesselId) {
+            $sel.append('<option value="' + v.id + '">' + v.name + '</option>');
+          }
+        });
+        $sel.val(null);
+
+        $('#applyToVesselsModal').modal('show');
+      }
+
+      function applyConfigToTargets() {
+        const targets = $('#apply-vessels-select').val() || [];
+        if (!targets.length) {
+          alert('Please select at least one vessel to apply to.');
+          return;
+        }
+
+        const sourceCfg =
+          (currentVesselId && familiarConfigsByVessel[currentVesselId]) ||
+          JSON.parse(localStorage.getItem(GLOBAL_CONFIG_KEY) || '{}') ||
+          {};
+
+        const copyData = JSON.parse(JSON.stringify(sourceCfg));
+
+        targets.forEach(id => {
+          familiarConfigsByVessel[id] = JSON.parse(JSON.stringify(copyData));
+        });
+
+        localStorage.setItem(PER_VESSEL_KEY, JSON.stringify(familiarConfigsByVessel));
+
+        $('#applyToVesselsModal').modal('hide');
+        showAlert('Familiarization setup applied to ' + targets.length + ' vessel(s).', 'success');
+      }
+
+      // Events
+      $('#footer-btn-container')
+        .on('click', '#saveBtn', function () {
+          $('body').data('editing', false);
+          saveConfig(true);
+        })
+        .on('click', '#editBtn', function () {
+          $('body').data('editing', true);
+          toggleViewMode(true);
+        });
+
+      $('#applyConfigBtn').on('click', openApplyModal);
+      $('#applyConfigConfirmBtn').on('click', applyConfigToTargets);
+
+      $("#videoFile").on("change", function () {
+        const file = this.files[0];
+        if (file) {
+          if (tempVideoUrl) {
+            URL.revokeObjectURL(tempVideoUrl);
+          }
+          tempVideoUrl = URL.createObjectURL(file);
+          $('#currentFileName').text(`New file selected: ${file.name}`);
+          showAlert("Video file is ready to be saved.", "info");
+        }
+      });
+
+      $("#docFile").on("change", function () {
+        const file = this.files[0];
+        if (file) {
+          $('#currentDocName').text(`New document selected: ${file.name}`);
+          showAlert("Document file is ready to be saved.", "info");
+        }
+      });
+
+      function showAlert(msg, type = 'success') {
+        const alert = $(
+          `<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`
+        );
+        $('body').append(alert);
+        setTimeout(() => alert.fadeOut(500, () => alert.remove()), 3000);
+      }
+
+      // Init
+      initEditingVesselSelect();
+      const hasData = loadConfigForCurrentVessel();
+      $('body').data('editing', !hasData);
+      toggleViewMode(!hasData);
+    });
+  </script>
 </body>
 
 </html>
