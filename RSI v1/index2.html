@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RSI Crew Login – Hana No Umi Logistics</title>
+  <title>Ripple Smart Induction</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Overpass:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -128,7 +128,7 @@
       padding: 40px;
       color: #fff;
       background:
-        linear-gradient(rgba(0, 102, 204, 0.18), rgba(30, 42, 74, 0.1)),
+        linear-gradient(rgba(0, 102, 204, 0.25), rgba(30, 42, 74, 0.12)),
         url('https://shipadmin.com/sadesign/templates/New/assets/login-image.jpg') center/cover no-repeat;
     }
 
@@ -136,7 +136,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(0, 102, 204, 0.7), rgba(30, 42, 74, 0.78));
+      background: linear-gradient(135deg, rgba(0, 102, 204, 0.75), rgba(30, 42, 74, 0.78));
       z-index: 0;
     }
 
@@ -175,7 +175,7 @@
       font-weight: 400;
       color: #eaf2ff;
       opacity: 0.95;
-      max-width: 280px;
+      max-width: 320px;
     }
 
     .powered-left {
@@ -247,6 +247,12 @@
       height: auto;
       object-fit: contain;
       filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+    }
+
+    .role-hint {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 18px;
     }
 
     .form-group {
@@ -333,13 +339,13 @@
     }
 
     .btn-login {
-      background: var(--r-green);
+      background: var(--r-blue);
       color: #ffffff;
       margin-bottom: 18px;
     }
 
     .btn-login:hover {
-      background: #27ae60;
+      background: #2f6fd4;
       transform: translateY(-2px);
       box-shadow: 0 8px 14px rgba(0, 0, 0, 0.22);
     }
@@ -425,9 +431,14 @@
     <!-- LEFT: Company branding -->
     <section class="left-brand" aria-label="Branding">
       <div class="brand-stack">
-        <div class="company-name" id="companyName">Hana No Umi Logistics</div>
+        <div class="text-center logo">
+      <img src="assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px;height:auto;" />
+    </div>
+        <div class="company-name" id="companyName"></div>
         <div class="product-name">Ripple Smart Induction</div>
-        <div class="tagline" id="sloganText">Onboard Smarter. Ready Faster.</div>
+        <div class="tagline" id="sloganText">
+          Manage crew induction, configurations, and compliance in one place.
+        </div>
       </div>
 
       <div class="powered-left" aria-label="Powered by Ripple Operations">
@@ -436,51 +447,50 @@
       </div>
     </section>
 
-    <!-- RIGHT: Login form -->
-    <section class="right-form" aria-label="Crew Login">
+    <!-- RIGHT: Unified login form -->
+    <section class="right-form" aria-label="User Login">
       <div class="header-top">
         <div class="header-text login-header">
-          <h1>Crew Login</h1>
-          <p>Sign in to access your account</p>
+          <h1>User Login</h1>
+          <p>Sign in with your RSI account</p>
         </div>
-        <div class="brand-mini">
-          <img src="assets/company-logo.png" alt="Company Logo">
-        </div>
+        
       </div>
 
-      <form id="crew-login-form" class="crew-login">
+      <p class="role-hint">
+        Use your registered email. The system will route you to the correct portal (customer or administrator).
+      </p>
+
+      <form id="portal-login-form">
         <div class="form-group">
           <div class="input-with-icon">
             <i class="fas fa-envelope"></i>
-            <input type="email" class="form-control" placeholder="Email address" required>
+            <input type="email" class="form-control" id="emailInput"
+                   placeholder="Company email address" required>
           </div>
         </div>
 
         <div class="form-group">
           <div class="input-with-icon">
             <i class="fas fa-lock"></i>
-            <input type="password" class="form-control" placeholder="Password" required>
+            <input type="password" class="form-control" id="passwordInput"
+                   placeholder="Password" required>
           </div>
         </div>
 
         <div class="options">
           <label class="remember-me">
-            <input type="checkbox" id="remember-crew">Remember me
+            <input type="checkbox" id="remember-admin">Remember me
           </label>
           <a href="#" class="forgot-password" id="forgotPassword">Forgot password?</a>
         </div>
 
-        <button type="submit" class="btn btn-login">
+        <button type="submit" class="btn btn-login" id="loginBtn">
           <i class="fas fa-sign-in-alt"></i> Sign in
         </button>
       </form>
 
-      <div class="register-section">
-        <p class="register-text">New crew member?</p>
-        <button class="btn btn-register" id="registerCrew">
-          <i class="fas fa-user-plus"></i> Register as crew
-        </button>
-      </div>
+     
     </section>
   </div>
 
@@ -491,7 +501,6 @@
       const themeIcon = document.getElementById('themeIcon');
       const themeLabel = document.getElementById('themeLabel');
 
-      // Default theme = light
       const savedTheme = localStorage.getItem('theme') || 'light';
       document.body.setAttribute('data-theme', savedTheme);
       updateThemeUI(savedTheme);
@@ -514,14 +523,13 @@
         }
       }
 
-      // Dynamic tagline variations
+      // Dynamic tagline variants (optional)
       const slogans = [
-        "Onboard Smarter. Ready Faster.",
-        "Your Journey Starts Here.",
-        "The Future of Maritime Induction.",
-        "Seamless Onboarding. Stronger Crew.",
-        "Safety First. Knowledge Always.",
-        "Connect. Learn. Sail."
+        "Manage crew induction, configurations, and compliance in one place.",
+        "One portal for your RSI customer and admin tools.",
+        "Centralize vessel onboarding and crew management.",
+        "Stay in control of induction, anytime, anywhere.",
+        "Smarter induction for modern maritime operations."
       ];
       const sloganElement = document.getElementById('sloganText');
       if (sloganElement) {
@@ -529,47 +537,64 @@
         sloganElement.textContent = slogans[randomIndex];
       }
 
-      // Optional: override company name via ?company=
+      // Optional company override via ?company=
       const params = new URLSearchParams(window.location.search);
       const company = params.get('company');
       if (company) {
         const companyEl = document.getElementById('companyName');
         if (companyEl) companyEl.textContent = company;
-        document.title = `RSI Crew Login – ${company}`;
+        document.title = `RSI Customer & Admin Login – ${company}`;
       }
 
       // FORM HANDLERS
-      const form = document.getElementById('crew-login-form');
+      const form = document.getElementById('portal-login-form');
+      const loginBtn = document.getElementById('loginBtn');
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const email = form.querySelector('input[type="email"]').value.trim();
-        if (!email) {
-          alert('Please enter your email address.');
+        const email = document.getElementById('emailInput').value.trim();
+        const password = document.getElementById('passwordInput').value.trim();
+
+        if (!email || !password) {
+          alert('Please enter both email and password.');
           return;
         }
 
-        localStorage.setItem('userType', 'crew');
-        localStorage.setItem('userEmail', email);
+        // Store for demo / future role routing
+        localStorage.setItem('portalUserEmail', email);
 
-        const btn = form.querySelector('.btn-login');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
-        btn.disabled = true;
+        // Simple demo logic for role detection (EXTEND LATER)
+        // Example idea:
+        // - admins: email endswith @ripple-ops.com
+        // - customers: everything else
+        let role = 'customer';
+        if (email.toLowerCase().endsWith('@ripple-ops.com')) {
+          role = 'admin';
+        }
+        localStorage.setItem('portalUserRole', role);
 
-        // Demo redirect
+        // Button loading state
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+        loginBtn.disabled = true;
+
+        // TODO (future): route based on role:
+        // if (role === 'admin') window.location.href = 'admin-dashboard.html';
+        // else window.location.href = 'customer-dashboard.html';
+        //
+        // For now: ALL go to landing.html as requested
         setTimeout(() => {
           window.location.href = 'landing.html';
-        }, 1000);
+        }, 900);
       });
 
-      document.getElementById('registerCrew').addEventListener('click', (e) => {
+      document.getElementById('requestAccess').addEventListener('click', (e) => {
         e.preventDefault();
-        window.location.href = 'landing.html';
+        alert('For demo: this would open a form or contact page to request RSI portal access.');
       });
 
       document.getElementById('forgotPassword').addEventListener('click', (e) => {
         e.preventDefault();
-        const email = document.querySelector('input[type="email"]').value.trim();
+        const email = document.getElementById('emailInput').value.trim();
         if (email) {
           alert(`Password reset link will be sent to: ${email}`);
         } else {
