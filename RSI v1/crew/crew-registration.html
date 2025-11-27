@@ -1,145 +1,585 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>RSI Crew • My Profile</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="../assets/ripple.css" rel="stylesheet" />
-    <link href="page.css" rel="stylesheet" />
-    <style>
-        .nav-tabs { border-bottom: 2px solid #ddd; }
-        .nav-tabs > li > a { border-radius: 4px 4px 0 0; padding: 12px 20px; font-size: 16px; color: var(--r-gray); border: 2px solid transparent; border-bottom: none; margin-right: 5px; }
-        .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus { color: var(--r-blue); background-color: #fff; border-color: #ddd; border-bottom-color: transparent; font-weight: 600; }
-        .nav-tabs > li > a:hover { background-color: #f9f9f9; border-color: #eee; border-bottom-color: transparent; }
-        .tab-content { background-color: #fff; padding: 25px; border: 1px solid #ddd; border-top: none; border-radius: 0 0 12px 12px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
-        label.required-field::after { content: " *"; color: var(--r-red); }
-    </style>
+  <meta charset="UTF-8" />
+  <title>RSI Crew • My Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
+
+  <style>
+    .nav-tabs {
+      border-bottom: 2px solid #e3e9f5;
+    }
+    .nav-tabs > li > a {
+      border-radius: 12px 12px 0 0;
+      padding: 12px 20px;
+      font-size: 14px;
+      color: var(--r-gray);
+      border: 2px solid transparent;
+      border-bottom: none;
+      margin-right: 4px;
+      background: #f5f7fb;
+    }
+    .nav-tabs > li.active > a,
+    .nav-tabs > li.active > a:hover,
+    .nav-tabs > li.active > a:focus {
+      color: var(--r-blue);
+      background-color: #ffffff;
+      border-color: #e3e9f5;
+      border-bottom-color: transparent;
+      font-weight: 600;
+    }
+    .nav-tabs > li > a:hover {
+      background-color: #eef2fb;
+      border-color: #e3e9f5;
+      border-bottom-color: transparent;
+    }
+
+    .tab-content {
+      background-color: #fff;
+      padding: 24px;
+      border: 1px solid #e3e9f5;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 14px rgba(7,10,26,0.06);
+    }
+
+    .profile-section-header {
+      margin-bottom: 18px;
+    }
+    .profile-section-header h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      color: var(--r-dark);
+      font-weight: 600;
+    }
+    .profile-section-header p {
+      margin: 0;
+      font-size: 13px;
+      color: #6b84a8;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label.required-field::after {
+      content: " *";
+      color: var(--r-red);
+    }
+
+    /* NORMALIZE FIELD HEIGHTS */
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #d6deee;
+      box-shadow: none;
+      font-size: 14px;
+      padding: 8px 10px;
+      min-height: 38px;
+      height: 38px;
+    }
+    input[type="date"].form-control {
+      line-height: 1.42857143;
+      padding-top: 7px;
+      padding-bottom: 7px;
+    }
+    select.form-control {
+      height: 38px;
+    }
+    textarea.form-control {
+      min-height: 80px;
+      height: auto;
+    }
+    .form-control:focus {
+      border-color: var(--r-blue);
+      box-shadow: 0 0 0 1px rgba(63,145,255,0.20);
+    }
+
+    /* READONLY / LOCKED VISUALS */
+    .profile-input[readonly],
+    .profile-input[disabled] {
+      background: #f5f7fb;
+      color: #4a5c7a;
+      cursor: default;
+    }
+
+    .field-lock-pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      background: #f1f4ff;
+      color: #5264a5;
+      border-radius: 999px;
+      padding: 2px 8px;
+      margin-left: 6px;
+    }
+    .field-lock-pill i {
+      font-size: 10px;
+      margin-right: 4px;
+    }
+
+    .field-hint {
+      margin: 4px 0 0;
+      font-size: 11px;
+      color: #9aa7c3;
+    }
+
+    /* Standardize file hint positioning */
+    .field-hint.file-hint {
+      font-size: 12px;
+      color: #6B84A8;
+      margin-top: 6px !important;
+      margin-bottom: 0;
+      display: block;
+    }
+
+    .sticky-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #f5f5f5;
+      border-top: 1px solid #ddd;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+    .footer-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      border: 1px solid #d6deee;
+      color: #2e3b59;
+    }
+    .btn-outline:hover {
+      background: #f5f7fc;
+    }
+
+    @media (max-width: 768px) {
+      .tab-content {
+        padding: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container-fluid dashboard-layout">
-        <div class="row">
-            <div id="sidebar-placeholder"></div>
-            <div class="col-sm-9 col-md-10 main-content">
-                <div class="page-header">
-                    <h2>My Profile</h2>
-                    <p id="page-instructions">View and maintain your registration details.</p>
-                </div>
-                
-                <ul class="nav nav-tabs" id="profileTabs" role="tablist"></ul>
-                <div class="tab-content" id="profileTabContent"></div>
-            </div>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>My Profile</h2>
+          <p id="page-instructions">View and maintain your registration details.</p>
         </div>
+
+        <ul class="nav nav-tabs" id="profileTabs" role="tablist"></ul>
+        <div class="tab-content" id="profileTabContent"></div>
+      </div>
     </div>
+  </div>
 
-    <div class="sticky-footer">
-        <div class="footer-container" id="footer-btn-container"></div>
-    </div>
+  <div class="sticky-footer">
+    <div class="footer-container" id="footer-btn-container"></div>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script>
-    $(function () {
-        // --- INITIALIZATION & DATA ---
-         fetch('crew-sidebar.html')
-            .then(res => res.text())
-            .then(html => {
-                $('#sidebar-placeholder').html(html);
-                $('[data-page="crew-registration"]').addClass('active');
-            });
-        const configKey = "registrationFormConfig_v4";
-        
-        // *** DATA FIX: Added complete data for nok1 and nok2 ***
-        const crewProfileData = {
-            firstName: "Cloud", lastName: "Strife", gender: "Male", dob: "1986-08-11",
-            pob: "Nibelheim", nationality: "Filipino", address: "123 Port Street, Manila", phone: "+63 2 123 4567", mobile: "+63 917 123 4567",
-            company: "Ripple Shipping Inc.", rank: "Chief Engineer", emergencyContact: "+63 2 765 4321", passport: "passport.pdf",
-            email: "cloud.strife@email.com",
-            // NOK 1 Data
-            nok1_rel: "Friend", nok1_fname: "Tifa", nok1_lname: "Lockhart", nok1_address: "Sector 7, Midgar", nok1_residence: "Philippines", nok1_phone: "+63 2 555 2222", nok1_mobile: "+63 917 555 2222", nok1_email: "tifa@email.com",
-            // NOK 2 Data
-            nok2_rel: "Friend", nok2_fname: "Barret", nok2_lname: "Wallace", nok2_address: "Sector 7, Midgar", nok2_residence: "Philippines", nok2_phone: "", nok2_mobile: "+63 918 555 3333", nok2_email: ""
-        };
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-        const lockedFields = { personal: [ { id: 'firstName', label: 'First Name', type: 'text', required: true }, { id: 'lastName', label: 'Surname', type: 'text', required: true }, { id: 'gender', label: 'Gender', type: 'select', required: true, options: 'Male,Female,Other' }, { id: 'dob', label: 'Date of Birth', type: 'date', required: true } ], company: [ { id: 'company', label: 'Company', type: 'text', required: true }, { id: 'rank', label: 'Position / Rank', type: 'select', required: true, options: 'Captain,Chief Engineer,Deck Officer,AB Seaman' } ], account: [ { id: 'email', label: 'Email (Username)', type: 'email', required: true }] };
-        let originalValues = {};
+<script>
+  $(function () {
+    // --- SIDEBAR ---
+    fetch('crew-sidebar.html')
+      .then(res => res.text())
+      .then(html => {
+        $('#sidebar-placeholder').html(html);
+        $('[data-page="crew-registration"]').addClass('active');
+      });
 
-        // --- CORE FUNCTIONS ---
-        function toggleViewMode(isEditing) {
-            const footer = $('#footer-btn-container');
-            const inputs = $('.profile-input');
-            if (isEditing) {
-                originalValues = {};
-                inputs.each(function () { originalValues[this.id] = $(this).val(); });
-                inputs.prop('readonly', false);
-                footer.html(`<div class="row"><div class="col-xs-6"><button id="cancelBtn" class="btn btn-danger btn-block btn-sm"><i class="fa fa-times"></i> Cancel</button></div><div class="col-xs-6"><button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save Changes</button></div></div>`);
+    const CONFIG_KEY = "registrationFormConfig_v4";
+
+    // Locked fields from Registration (cannot be edited here)
+    const LOCKED_FIELD_IDS = [
+      "locked_firstname",
+      "locked_surname",
+      "locked_gender",
+      "locked_dob",
+      "locked_company",
+      "locked_position",
+      "locked_assigned_vessel",
+      "locked_embarkation_date",
+      "locked_email"
+    ];
+
+    // Sample data for Cloud Strife as a SEAFARER persona
+    const crewProfileData = {
+      // Personal
+      locked_firstname: "Cloud",
+      locked_surname: "Strife",
+      locked_gender: "Male",
+      locked_dob: "1986-08-11",
+      pob: "Batangas City",
+      nationality: "Filipino",
+      address: "Unit 12B, Portview Residences, Manila",
+      mobile: "+63 917 123 4567",
+
+      // Company / emergency
+      locked_company: "Hana no Umi Logistics, Inc.",
+      locked_position: "Able Seaman",
+      locked_assigned_vessel: "M/V Ocean Explorer",
+      locked_embarkation_date: "2025-12-01",
+      emergencyContact: "+63 2 8456 7890",
+
+      // Identification
+      passport_no: "P1234567A",
+      seamans_book_no: "SB-0098765",
+      nat_id: "",
+      passport: "cloud_passport.pdf",
+
+      // NOK1
+      nok_rel: "Parent",
+      nok_fname: "Claudia",
+      nok_lname: "Strife",
+      nok_address: "Nibelheim, Philippines",
+      nok_residence: "Philippines",
+      nok_phone: "",
+      nok_mobile: "+63 918 555 0000",
+      nok_email: "claudia.strife@email.com",
+
+      // NOK2
+      nok2_rel: "Sibling",
+      nok2_fname: "Tifa",
+      nok2_lname: "Lockhart",
+      nok2_address: "Sector 7, Midgar",
+      nok2_residence: "Philippines",
+      nok2_phone: "",
+      nok2_mobile: "+63 918 555 2222",
+      nok2_email: "tifa.lockhart@email.com",
+
+      // Account
+      locked_email: "cloud.strife@crew.ripple.com"
+    };
+
+    let originalValues = {};
+
+    function safeParse(json, fallback) {
+      try {
+        if (!json) return fallback;
+        return JSON.parse(json);
+      } catch (e) {
+        console.warn("JSON parse error:", e);
+        return fallback;
+      }
+    }
+
+    // --- TOGGLE VIEW / EDIT ---
+    function toggleViewMode(isEditing) {
+      const footer = $('#footer-btn-container');
+      const $inputs = $('.profile-input');
+
+      if (isEditing) {
+        originalValues = {};
+        $inputs.each(function () {
+          const id = this.id;
+          if (this.type === 'file') {
+            originalValues[id] = crewProfileData[id] || '';
+          } else {
+            originalValues[id] = $(this).val();
+          }
+        });
+
+        $inputs.each(function () {
+          const $el = $(this);
+          const isLocked = $el.data('locked') === true;
+          const isFormControl = $el.is('select, textarea, input[type="file"]');
+
+          if (isLocked) {
+            if (isFormControl) {
+              $el.prop('disabled', true);
             } else {
-                inputs.prop('readonly', true);
-                footer.html('<button id="editBtn" class="btn btn-primary btn-block btn-sm"><i class="fa fa-pencil"></i> Edit Profile</button>');
+              $el.prop('readonly', true);
             }
-        }
+          } else {
+            if (isFormControl) {
+              $el.prop('disabled', false);
+            } else {
+              $el.prop('readonly', false);
+            }
+          }
+        });
 
-        function loadAndRenderForm() {
-            const configData = JSON.parse(localStorage.getItem(configKey));
-            let sections = (configData && configData.sections) ? JSON.parse(JSON.stringify(configData.sections)) : [{ id: 'personal', title: 'Personal Information', fields: [] }];
-            if (configData && configData.instructions) { $('#page-instructions').text(configData.instructions); }
-            
-            const personalSection = sections.find(s => s.title.toLowerCase().includes('personal')) || sections[0];
-            personalSection.fields.unshift(...lockedFields.personal);
-            let companySection = sections.find(s => s.title.toLowerCase().includes('company'));
-            if (!companySection) { companySection = { id: generateUniqueId('sec'), title: 'Company Information', fields: [] }; sections.push(companySection); }
-            companySection.fields.unshift(...lockedFields.company);
-            personalSection.fields.push(...lockedFields.account);
+        footer.html(
+          '<div class="row">' +
+            '<div class="col-xs-6">' +
+              '<button id="cancelBtn" class="btn btn-outline btn-block btn-sm"><i class="fa fa-times"></i> Cancel</button>' +
+            '</div>' +
+            '<div class="col-xs-6">' +
+              '<button id="saveBtn" class="btn btn-success btn-block btn-sm"><i class="fa fa-save"></i> Save Changes</button>' +
+            '</div>' +
+          '</div>'
+        );
+      } else {
+        $inputs.each(function () {
+          const $el = $(this);
+          const isFormControl = $el.is('select, textarea, input[type="file"]');
+          if (isFormControl) {
+            $el.prop('disabled', true);
+          } else {
+            $el.prop('readonly', true);
+          }
+        });
 
-            const tabs = $('#profileTabs').empty();
-            const content = $('#profileTabContent').empty();
-            let nokCounter = 1;
+        footer.html(
+          '<button id="editBtn" class="btn btn-primary btn-block btn-sm">' +
+          '<i class="fa fa-pencil"></i> Edit Profile' +
+          '</button>'
+        );
+      }
+    }
 
-            sections.forEach((section, index) => {
-                const visibleFields = section.fields.filter(f => f.visible !== false);
-                if (visibleFields.length === 0) return;
-                
-                const sectionId = `section_${section.id}`;
-                tabs.append(`<li class="${index === 0 ? 'active' : ''}"><a href="#${sectionId}" role="tab" data-toggle="tab">${section.title}</a></li>`);
-                const tabPane = $(`<div class="tab-pane ${index === 0 ? 'active' : ''}" id="${sectionId}"><form class="row"></form></div>`).appendTo(content);
-                const form = tabPane.find('form');
+    // --- BUILD FORM FROM REGISTRATION CONFIG ---
+    function loadAndRenderForm() {
+      const configData = safeParse(localStorage.getItem(CONFIG_KEY), null);
 
-                visibleFields.forEach(field => {
-                    let dataLookupId = field.id;
-                    // *** LOGIC FIX: Create the correct ID for looking up NOK data ***
-                    if (section.type === 'nok') {
-                        dataLookupId = `nok${nokCounter}_${field.id.replace('nok_', '')}`;
-                    }
-                    const value = crewProfileData[dataLookupId] || '';
-                    const inputHtml = `<input type="${field.type}" class="form-control profile-input" id="${dataLookupId}" value="${value}" readonly>`;
-                    form.append(`<div class="col-sm-6 form-group"><label class="${field.required ? 'required-field' : ''}">${field.label}</label>${inputHtml}</div>`);
-                });
+      let sections = (configData && Array.isArray(configData.sections))
+        ? JSON.parse(JSON.stringify(configData.sections))
+        : [];
 
-                if (section.type === 'nok') {
-                    nokCounter++;
-                }
+      if (!sections.length) {
+        sections = [{
+          id: 'sec_personal',
+          title: 'Personal Details',
+          fields: []
+        }];
+      }
+
+      if (configData && configData.instructions) {
+        $('#page-instructions').text(configData.instructions);
+      }
+
+      const $tabs = $('#profileTabs').empty();
+      const $content = $('#profileTabContent').empty();
+
+      sections.forEach((section, index) => {
+        const visibleFields = (section.fields || []).filter(f => f.visible !== false);
+        if (!visibleFields.length) return;
+
+        const tabId = 'section_' + section.id;
+
+        // Tab header
+        $tabs.append(
+          '<li class="' + (index === 0 ? 'active' : '') + '">' +
+          '<a href="#' + tabId + '" role="tab" data-toggle="tab">' +
+          (section.title || 'Section') +
+          '</a></li>'
+        );
+
+        // Tab content
+        const $pane = $('<div class="tab-pane ' + (index === 0 ? 'active' : '') + '" id="' + tabId + '"></div>');
+        const $form = $('<form class="row"></form>');
+
+        // Section header copy
+        const subtitle = getSectionSubtitle(section.title || '');
+        $pane.append(
+          '<div class="profile-section-header">' +
+            '<h3>' + (section.title || 'Details') + '</h3>' +
+            '<p>' + subtitle + '</p>' +
+          '</div>'
+        );
+
+        visibleFields.forEach(field => {
+          const fieldId = field.id || field.uniqueId || ('fld_' + Date.now());
+          const isLocked = LOCKED_FIELD_IDS.indexOf(fieldId) !== -1;
+
+          const labelText = field.label || fieldId;
+          const required = !!field.required;
+
+          const value = (crewProfileData[fieldId] != null)
+            ? crewProfileData[fieldId]
+            : '';
+
+          const col = $('<div class="col-sm-6 form-group"></div>');
+          const $label = $('<label></label>').text(labelText);
+          if (required) $label.addClass('required-field');
+
+          if (isLocked) {
+            $label.append(
+              '<span class="field-lock-pill"><i class="fa fa-lock"></i> Locked</span>'
+            );
+          }
+
+          col.append($label);
+
+          const baseAttrs = {
+            id: fieldId,
+            class: 'form-control profile-input',
+            'data-field-id': fieldId,
+            'data-locked': isLocked ? 'true' : 'false'
+          };
+
+          let $input = null;
+          let $fileHint = null;
+
+          if (field.type === 'file') {
+            // FILE FIELD
+            $input = $('<input>', $.extend({}, baseAttrs, {
+              type: 'file'
+            }));
+
+            const infoText = value
+              ? 'Current file: ' + value
+              : 'No file uploaded yet.';
+
+            // file hint created but appended AFTER input
+            $fileHint = $('<p class="field-hint file-hint"></p>')
+              .attr('data-file-for', fieldId)
+              .text(infoText);
+
+          } else if (field.type === 'select') {
+            $input = $('<select></select>', baseAttrs);
+            const opts = (field.validation || '').split(',')
+              .map(o => o.trim())
+              .filter(Boolean);
+
+            $input.append('<option value="">Select...</option>');
+            opts.forEach(o => {
+              const opt = $('<option></option>').attr('value', o).text(o);
+              if (o === value) opt.prop('selected', true);
+              $input.append(opt);
             });
-        }
-        
-        // --- EVENT HANDLERS ---
-        const footerContainer = $('#footer-btn-container');
-        footerContainer.on('click', '#editBtn', () => toggleViewMode(true));
-        footerContainer.on('click', '#saveBtn', function() {
-            alert('Profile updated successfully! (Simulation)');
-            toggleViewMode(false);
-        });
-        footerContainer.on('click', '#cancelBtn', function() {
-            $('.profile-input').each(function () { $(this).val(originalValues[this.id]); });
-            toggleViewMode(false);
+
+          } else if (field.type === 'textarea') {
+            $input = $('<textarea></textarea>', baseAttrs).val(value);
+
+          } else {
+            const type = field.type === 'password' ? 'password'
+                        : field.type === 'date' ? 'date'
+                        : field.type === 'email' ? 'email'
+                        : 'text';
+
+            $input = $('<input>', $.extend({}, baseAttrs, {
+              type: type,
+              value: value
+            }));
+          }
+
+          // initial readonly / disabled state
+          if ($input) {
+            if ($input.is('select, textarea, input[type="file"]')) {
+              $input.prop('disabled', true);
+            } else {
+              $input.prop('readonly', true);
+            }
+
+            // ✅ Append in correct order:
+            // label → input → file-hint → locked-hint
+            col.append($input);
+
+            if ($fileHint) {
+              col.append($fileHint);
+            }
+          }
+
+          if (isLocked) {
+            col.append(
+              '<p class="field-hint">This field is maintained by your company and cannot be edited in the Crew Portal.</p>'
+            );
+          }
+
+          $form.append(col);
         });
 
-        function generateUniqueId(prefix = 'id_') { return prefix + Date.now(); }
+        $pane.append($form);
+        $content.append($pane);
+      });
+    }
 
-        // --- INITIAL LOAD ---
-        loadAndRenderForm();
-        toggleViewMode(false);
+    function getSectionSubtitle(title) {
+      if (!title) return "Maintain your profile information.";
+      const t = title.toLowerCase();
+      if (t.indexOf('personal') !== -1) {
+        return "Maintain your personal details and contact information.";
+      }
+      if (t.indexOf('company') !== -1) {
+        return "Keep your employment and company emergency contact details up to date.";
+      }
+      if (t.indexOf('identification') !== -1 || t.indexOf('id') !== -1) {
+        return "Review your passport and other identification documents.";
+      }
+      if (t.indexOf('next of kin') !== -1 || t.indexOf('nok') !== -1) {
+        return "Maintain your emergency contact details.";
+      }
+      if (t.indexOf('account') !== -1) {
+        return "Review your account and login information.";
+      }
+      return "Maintain your profile information.";
+    }
+
+    // Footer button events
+    const footerContainer = $('#footer-btn-container');
+
+    footerContainer.on('click', '#editBtn', function () {
+      toggleViewMode(true);
     });
-    </script>
+
+    footerContainer.on('click', '#saveBtn', function () {
+      // In real app you'd send to backend; here we keep new values in crewProfileData
+      $('.profile-input').each(function () {
+        const id = this.id;
+
+        if (this.type === 'file') {
+          const files = this.files;
+          if (files && files.length) {
+            const filename = files[0].name;
+            crewProfileData[id] = filename;
+
+            // update hint text
+            $('.file-hint[data-file-for="' + id + '"]')
+              .text('Current file: ' + filename);
+
+            // clear the input after "upload"
+            $(this).val('');
+          }
+        } else {
+          crewProfileData[id] = $(this).val();
+        }
+      });
+
+      alert('Profile updated successfully! (Demo)');
+      toggleViewMode(false);
+    });
+
+    footerContainer.on('click', '#cancelBtn', function () {
+      $('.profile-input').each(function () {
+        const id = this.id;
+
+        if (this.type === 'file') {
+          $(this).val('');
+          const original = originalValues[id] || crewProfileData[id] || '';
+          const txt = original
+            ? 'Current file: ' + original
+            : 'No file uploaded yet.';
+          $('.file-hint[data-file-for="' + id + '"]').text(txt);
+        } else if (originalValues[id] != null) {
+          $(this).val(originalValues[id]);
+        }
+      });
+      toggleViewMode(false);
+    });
+
+    // --- INIT ---
+    loadAndRenderForm();
+    toggleViewMode(false);
+  });
+</script>
+
 </body>
 </html>

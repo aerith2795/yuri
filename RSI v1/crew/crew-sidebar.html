@@ -3,19 +3,22 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>RSI Crew • Dashboard</title>
+  <title>RSI Crew • Sidebar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- Bootstrap & Icons -->
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 
+  <!-- Ripple theme -->
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
 </head>
 
 <body>
 
+  <!-- Mobile toggle -->
   <button type="button" id="sidebar-toggle" class="mobile-toggle">
     <i class="fa fa-bars"></i>
   </button>
@@ -23,33 +26,148 @@
   <div class="page-container">
     <div class="col-sm-3 col-md-2 sidebar">
       <div class="text-center logo">
-  <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px;height:auto;" />
-</div>
+        <img src="../assets/Logo-White.png" alt="Ripple Logo" style="max-width:160px;height:auto;" />
+      </div>
 
-<ul class="nav nav-pills nav-stacked">
-  <li data-page="crew-dashboard"><a href="crew-dashboard.html"><i class="fa fa-tachometer"></i> Welcome</a></li>
-  <hr />
-  <h5 class="text-uppercase text-gray" style="letter-spacing: 0.1rem;"><i class="fa fa-cog"></i> Configurations</h5>
-  <li data-page="crew-vessel-info"><a href="crew-vessel-info.html"><i class="fa fa-ship"></i> Vessel </a></li>
-  <li data-page="crew-registration"><a href="crew-registration.html"><i class="fa fa-user"></i> Profile </a></li>
-  <li data-page="crew-certificates"><a href="crew-certificates.html"><i class="fa fa-certificate"></i> Certificates</a></li>
-  <li data-page="crew-gdpr"><a href="crew-gdpr.html"><i class="fa fa-shield"></i> GDPR</a></li>
-  <li data-page="crew-familiarization"><a href="crew-familiarization.html"><i class="fa fa-video-camera"></i> Familiarization</a></li>
-</ul>
+      <ul class="nav nav-pills nav-stacked">
+        <!-- Dashboard: always enabled -->
+        <li data-page="crew-dashboard">
+          <a href="crew-dashboard.html">
+            <i class="fa fa-tachometer"></i> Welcome
+          </a>
+        </li>
+
+        <hr />
+
+        <h5 class="text-uppercase text-gray" style="letter-spacing: 0.1rem;">
+          <i class="fa fa-cog"></i> Configurations
+        </h5>
+
+        <!-- Vessel: only when there is an active vessel -->
+        <li data-page="crew-vessel-info">
+          <a href="crew-vessel-info.html">
+            <i class="fa fa-ship"></i> Vessel
+          </a>
+        </li>
+
+        <!-- Profile: always enabled -->
+        <li data-page="crew-registration">
+          <a href="crew-registration.html">
+            <i class="fa fa-user"></i> Profile
+          </a>
+        </li>
+
+        <!-- Certificates: always enabled -->
+        <li data-page="crew-certificates">
+          <a href="crew-certificates.html">
+            <i class="fa fa-certificate"></i> Certificates
+          </a>
+        </li>
+
+        <!-- GDPR: only when there is an active vessel -->
+        <li data-page="crew-gdpr">
+          <a href="crew-gdpr.html">
+            <i class="fa fa-shield"></i> GDPR
+          </a>
+        </li>
+
+        <!-- Familiarization: only when there is an active vessel -->
+        <li data-page="crew-familiarization">
+          <a href="crew-familiarization.html">
+            <i class="fa fa-video-camera"></i> Familiarization
+          </a>
+        </li>
+      </ul>
     </div>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+  <!-- Small popup for disabled menus -->
+  <div class="modal fade" id="noVesselModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p style="margin:0;">
+            <i class="fa fa-info-circle"></i>
+            Unavailable — no active vessel assigned.
+          </p>
+        </div>
+        <div class="modal-footer" style="padding:8px 15px;">
+          <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-      $(document).ready(function () {
-        // Toggle sidebar on button click
-        $('#sidebar-toggle').on('click', function () {
-          $('.sidebar').toggleClass('active');
-        });
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      // Mobile toggle for sidebar
+      $('#sidebar-toggle').on('click', function () {
+        $('.sidebar').toggleClass('active');
       });
-    </script>
+
+      // CREW STATUS LOGIC
+      // crewStatus expected from calling page, e.g.:
+      // { activeVessel: null or "M/V Aozora Maru", previousVessels: number }
+      var crewStatus = JSON.parse(localStorage.getItem("crewStatus")) || {
+        activeVessel: null,
+        previousVessels: 0
+      };
+
+      var hasActiveVessel = !!crewStatus.activeVessel;
+
+      // Menu items that require an active vessel
+      var $vesselMenu = $('li[data-page="crew-vessel-info"]');
+      var $gdprMenu = $('li[data-page="crew-gdpr"]');
+      var $famMenu = $('li[data-page="crew-familiarization"]');
+
+      if (!hasActiveVessel) {
+        // No active vessel → disable vessel-specific menus
+        disableMenu($vesselMenu, "Unavailable — no active vessel assigned");
+        disableMenu($gdprMenu, "Unavailable — no active vessel assigned");
+        disableMenu($famMenu, "Unavailable — no active vessel assigned");
+      } else {
+        // Active vessel → ensure they’re enabled
+        enableMenu($vesselMenu);
+        enableMenu($gdprMenu);
+        enableMenu($famMenu);
+      }
+
+      // When user clicks disabled menu item, show popup
+      $('.nav.nav-pills').on('click', 'li.disabled > a', function (e) {
+        e.preventDefault();
+        $('#noVesselModal').modal('show');
+        return false;
+      });
+
+      // Helper functions
+      function disableMenu($li, tooltipText) {
+        $li.addClass('disabled');
+        var $link = $li.find('a');
+        $link.data('original-href', $link.attr('href'));
+        $link.attr('href', '#');
+        $link.css('opacity', '0.4');
+        if (tooltipText) {
+          $li.attr('title', tooltipText);
+        }
+      }
+
+      function enableMenu($li) {
+        $li.removeClass('disabled');
+        var $link = $li.find('a');
+        var originalHref = $link.data('original-href');
+        if (originalHref) {
+          $link.attr('href', originalHref);
+        }
+        $link.css('opacity', '');
+        $li.removeAttr('title');
+      }
+    });
+  </script>
 
 </body>
 

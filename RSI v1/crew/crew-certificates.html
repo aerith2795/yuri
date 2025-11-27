@@ -10,7 +10,6 @@
   <link href="../assets/ripple.css" rel="stylesheet" />
   <link href="page.css" rel="stylesheet" />
   <style>
-
     .required-field-label {
       font-weight: bold;
     }
@@ -34,6 +33,23 @@
       padding: 2px 0;
       margin-left: 10px;
     }
+
+    .cert-config-note {
+      font-size: 12px;
+      color: #999;
+      margin-top: -5px;
+      margin-bottom: 10px;
+    }
+
+    .group-tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: #eff4fa;
+      color: #5d7fac;
+      margin-left: 6px;
+    }
   </style>
 </head>
 
@@ -45,6 +61,9 @@
         <div class="page-header">
           <h2>Certificates</h2>
           <p id="pageInstructions">Please upload clear, readable copies of your required documents.</p>
+          <p class="cert-config-note">
+            Certificate list and requirements are configured by your company and may vary per vessel.
+          </p>
         </div>
 
         <div class="panel panel-default">
@@ -52,7 +71,7 @@
             <table class="table table-bordered certificate-table">
               <thead>
                 <tr>
-                  <th>Certificate</th>
+                  <th>Certificate / Document</th>
                   <th style="width:160px">Status</th>
                   <th style="width:320px">Action</th>
                 </tr>
@@ -67,8 +86,9 @@
 
   <div class="sticky-footer">
     <div class="footer-container">
-      <button id="saveCertificates" class="btn btn-primary btn-sm btn-block"><i class="fa fa-save"></i> Save All
-        Changes</button>
+      <button id="saveCertificates" class="btn btn-primary btn-sm btn-block">
+        <i class="fa fa-save"></i> Save All Changes
+      </button>
     </div>
   </div>
 
@@ -76,107 +96,357 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script>
     $(function () {
-      // --- INITIALIZATION & DATA ---
-      // sidebar
+      // --- SIDEBAR ---
       fetch('crew-sidebar.html').then(r => r.text()).then(html => {
         $('#sidebar-placeholder').html(html);
         $('#sidebar-placeholder').find('[data-page="crew-certificates"]').addClass('active');
       });
 
-      let config = JSON.parse(localStorage.getItem('certificatesConfig'));
-      if (!config || !config.certificates || config.certificates.length === 0) {
-        config = {
-          instructions: "Please upload clear, readable copies of all required certificates for this vessel.",
-          certificates: [
-            { name: "Passport", desc: "Valid passport for international travel.", isRequired: true, requireUpload: true, instructions: "Must be valid for 6 months." },
-            { name: "Seaman’s Book", desc: "Official seafarer identification booklet.", isRequired: true, requireUpload: true },
-            { name: "Medical Certificate", desc: "Issued by an approved maritime medical examiner.", isRequired: true, requireUpload: true, instructions: "Must be valid for 1 year." },
-            { name: "Yellow Fever Vaccination", desc: "International vaccination certificate.", isRequired: false, requireUpload: false, instructions: "Only required for specific voyages." } // Changed requireUpload to false for demo
-          ]
-        };
+      // --- CONFIG KEYS (same as Customer portal) ---
+      const COMPANY_CONFIG_KEY = 'certificatesConfig';
+      const CERT_CONFIG_BY_VESSEL_KEY = 'certificatesConfigByVessel';
+
+      // Try to determine active vessel for the crew
+      // crewActiveVesselId = set this when crew is assigned a vessel
+      const crewActiveVesselId = localStorage.getItem('crewActiveVesselId');
+      const customerCurrentVesselId = localStorage.getItem('certCurrentVesselId'); // from customer config UI
+      const activeVesselId = crewActiveVesselId || customerCurrentVesselId || null;
+
+      const vesselConfigs = JSON.parse(localStorage.getItem(CERT_CONFIG_BY_VESSEL_KEY) || '{}');
+      let config =
+        (activeVesselId && vesselConfigs[activeVesselId]) ||
+        JSON.parse(localStorage.getItem(COMPANY_CONFIG_KEY) || 'null');
+
+      // Fallback default, aligned with customer schema
+      if (!config || !config.certificates || !config.certificates.length) {
+        config = (function createDefaultConfig() {
+          const stcwList = [
+            {
+              name: "Basic Training (BT)",
+              type: "Training",
+              code: "BT",
+              category: "STCW",
+              desc: "Mandatory STCW basic safety training.",
+              isRequired: true,
+              requireUpload: true
+            },
+            {
+              name: "Proficiency in Survival Craft and Rescue Boats (PSCRB)",
+              type: "Training",
+              code: "PSCRB",
+              category: "STCW",
+              desc: "Survival craft and rescue boat proficiency certificate.",
+              isRequired: true,
+              requireUpload: true
+            },
+            {
+              name: "Advanced Fire Fighting (AFF)",
+              type: "Training",
+              code: "AFF",
+              category: "STCW",
+              desc: "Advanced fire fighting training certificate.",
+              isRequired: true,
+              requireUpload: true
+            },
+            {
+              name: "Medical Care / Medical First Aid",
+              type: "Training",
+              code: "MEDCARE",
+              category: "STCW",
+              desc: "Approved maritime medical care / first aid certificate.",
+              isRequired: false,
+              requireUpload: true
+            }
+          ];
+
+          const idPapers = [
+            {
+              name: "Passport",
+              type: "Document",
+              code: "PASSPORT",
+              category: "Identity",
+              desc: "Valid passport for international travel.",
+              isRequired: true,
+              requireUpload: true
+            },
+            {
+              name: "Seaman’s Book",
+              type: "Document",
+              code: "SEABOOK",
+              category: "Identity",
+              desc: "Official seafarer identification booklet.",
+              isRequired: true,
+              requireUpload: true
+            },
+            {
+              name: "National ID / Government ID",
+              type: "Document",
+              code: "NAT-ID",
+              category: "Identity",
+              desc: "Government-issued ID (National ID, Driver’s License, etc.).",
+              isRequired: false,
+              requireUpload: true
+            }
+          ];
+
+          const markGroup = (arr, group) => arr.map(c => ({
+            ...c,
+            group,
+            allowedFileType: 'any',
+            maxSize: 5
+          }));
+
+          return {
+            instructions: "Please upload clear, readable copies of all required certificates and identification documents.",
+            certificates: [
+              ...markGroup(stcwList, 'cert'),
+              ...markGroup(idPapers, 'id')
+            ]
+          };
+        })();
       }
 
+      // Crew uploads per browser (for prototype)
+      // Use a stable key: code || name
       const crewUploads = JSON.parse(localStorage.getItem('crewCertUploads') || '{}');
 
-      // --- RENDER FUNCTION ---
+      // --- RENDER ---
       function renderCrewCertificates() {
         const tbody = $('#crewCertTable').empty();
-        if (config.instructions) { $('#pageInstructions').text(config.instructions); }
 
-        config.certificates.forEach(cert => {
-          const isMandatory = cert.isRequired || cert.requireUpload;
+        if (config.instructions) {
+          $('#pageInstructions').text(config.instructions);
+        }
 
-          // *** LOGIC FIX: Always show the upload input field ***
-          const uploadHtml = `<input type="file" class="form-control input-sm cert-upload" data-name="${cert.name}" />`;
+        const certificates = config.certificates || [];
 
-          const instructionIcon = cert.instructions ? ` <i class="fa fa-info-circle text-muted" data-toggle="tooltip" title="${escapeHtml(cert.instructions)}"></i>` : '';
-          const markMissingBtn = !isMandatory ? `<button class="btn btn-link btn-xs mark-missing" data-name="${cert.name}">Mark as Not Applicable</button>` : '';
+        if (!certificates.length) {
+          tbody.append(`
+            <tr>
+              <td colspan="3" class="text-muted">
+                No certificates have been configured for this vessel. Please contact your company if you believe this is an error.
+              </td>
+            </tr>
+          `);
+          return;
+        }
 
+        certificates.forEach(cert => {
+          const certKey = cert.code || cert.name || '';
+          const isRequired = !!cert.isRequired;
+          const requireUpload = (cert.requireUpload === true); // only show upload if true
+          const groupLabel = cert.group === 'id' ? 'Identification' : 'Certificate';
+
+          const saved = crewUploads[certKey] || {};
+          const mode = saved.mode || saved.status || null; // 'uploaded' | 'missing' | undefined
+
+          // Status
           let statusHtml = `<span class="label label-default">Pending</span>`;
-          if (crewUploads[cert.name]) {
-            if (crewUploads[cert.name].status === 'missing') {
-              statusHtml = `<span class="label label-warning">Not Applicable</span>`;
-            } else {
-              statusHtml = `<span class="label label-success">Uploaded</span><div class="small-note">${escapeHtml(crewUploads[cert.name].filename)}</div>`;
-            }
+          let statusNote = '';
+
+          if (mode === 'missing') {
+            statusHtml = `<span class="label label-warning">Not Applicable</span>`;
+          } else if (saved.filename) {
+            statusHtml = `<span class="label label-success">Uploaded</span>`;
+            statusNote = `<div class="small-note">${escapeHtml(saved.filename)}</div>`;
           }
 
+          // Action column
+          let actionHtml = '';
+
+          if (requireUpload) {
+            actionHtml += `
+              <input type="file"
+                     class="form-control input-sm cert-upload"
+                     data-key="${escapeHtml(certKey)}"
+                     data-name="${escapeHtml(cert.name || '')}"
+                     data-allowed="${escapeHtml(cert.allowedFileType || 'any')}"
+                     data-maxsize="${cert.maxSize || 5}" />
+            `;
+          } else {
+            actionHtml += `
+              <span class="small-note">
+                No file upload required. Keep original document available when requested.
+              </span>
+            `;
+          }
+
+          // Only allow Not Applicable for non-required items
+          if (!isRequired) {
+            const hideBtn = (mode === 'missing') ? 'style="display:none;"' : '';
+            actionHtml += `
+              <button class="btn btn-link btn-xs mark-missing"
+                      data-key="${escapeHtml(certKey)}"
+                      data-name="${escapeHtml(cert.name || '')}"
+                      ${hideBtn}>
+                Mark as Not Applicable
+              </button>
+            `;
+          }
+
+          const instructionIcon = cert.instructions
+            ? ` <i class="fa fa-info-circle text-muted"
+                 data-toggle="tooltip"
+                 title="${escapeHtml(cert.instructions)}"></i>`
+            : '';
+
           tbody.append(`
-                    <tr data-name="${cert.name}">
-                        <td>
-                            <label class="${isMandatory ? 'required-field-label' : ''}">${escapeHtml(cert.name)}</label>${instructionIcon}
-                            ${cert.desc ? `<div class="small-note">${escapeHtml(cert.desc)}</div>` : ''}
-                        </td>
-                        <td class="cert-status">${statusHtml}</td>
-                        <td>${uploadHtml} ${markMissingBtn}</td>
-                    </tr>
-                `);
+            <tr data-key="${escapeHtml(certKey)}">
+              <td>
+                <label class="${isRequired ? 'required-field-label' : ''}">
+                  ${escapeHtml(cert.name || '')}
+                </label>
+                <span class="group-tag">${escapeHtml(groupLabel)}</span>
+                ${instructionIcon}
+                ${cert.desc ? `<div class="small-note">${escapeHtml(cert.desc)}</div>` : ''}
+                ${cert.code || cert.category ? `
+                  <div class="small-note">
+                    ${(cert.code ? 'Code: ' + escapeHtml(cert.code) : '')}
+                    ${(cert.code && cert.category ? ' • ' : '')}
+                    ${(cert.category ? 'Category: ' + escapeHtml(cert.category) : '')}
+                  </div>` : ''}
+              </td>
+              <td class="cert-status">
+                ${statusHtml}
+                ${statusNote}
+              </td>
+              <td>${actionHtml}</td>
+            </tr>
+          `);
         });
+
         $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
       }
 
-      // --- EVENT HANDLERS ---
-      $('#crewCertTable').on('change', '.cert-upload', function (e) {
-        const certName = $(this).data('name');
+      // --- EVENTS ---
+
+      // Upload handler (respects allowedFileType & maxSize)
+      $('#crewCertTable').on('change', '.cert-upload', function () {
+        const $input = $(this);
+        const certKey = $input.data('key');
+        const certName = $input.data('name') || certKey;
+        const allowedType = ($input.data('allowed') || 'any').toLowerCase();
+        const maxSizeMb = parseInt($input.data('maxsize'), 10) || 5;
+
         const file = this.files[0];
         if (!file) return;
 
-        crewUploads[certName] = { filename: file.name, timestamp: Date.now() };
+        // Validate file type
+        if (allowedType === 'pdf' && file.type !== 'application/pdf') {
+          showToast('Please upload a PDF file for ' + certName + '.', 'danger');
+          $input.val('');
+          return;
+        }
+        if (allowedType === 'image' && !file.type.match(/^image\//)) {
+          showToast('Please upload an image file (JPG/PNG) for ' + certName + '.', 'danger');
+          $input.val('');
+          return;
+        }
+
+        // Validate file size
+        const sizeMb = file.size / (1024 * 1024);
+        if (sizeMb > maxSizeMb) {
+          showToast('File for ' + certName + ' exceeds ' + maxSizeMb + ' MB.', 'danger');
+          $input.val('');
+          return;
+        }
+
+        crewUploads[certKey] = {
+          mode: 'uploaded',
+          filename: file.name,
+          timestamp: Date.now()
+        };
         localStorage.setItem('crewCertUploads', JSON.stringify(crewUploads));
 
-        const statusCell = $(this).closest('tr').find('.cert-status');
-        statusCell.html(`<span class="label label-success">Uploaded</span><div class="small-note">${escapeHtml(file.name)}</div>`);
+        const statusCell = $input.closest('tr').find('.cert-status');
+        statusCell.html(`
+          <span class="label label-success">Uploaded</span>
+          <div class="small-note">${escapeHtml(file.name)}</div>
+        `);
 
-        let progress = JSON.parse(localStorage.getItem("progress")) || {};
-        progress['cert'] = true;
-        localStorage.setItem("progress", JSON.stringify(progress));
-
-        showToast(`'${certName}' was uploaded successfully.`);
+        recomputeProgress();
+        showToast("'" + certName + "' was uploaded successfully.");
       });
 
+      // Mark as Not Applicable (only for non-required)
       $('#crewCertTable').on('click', '.mark-missing', function () {
-        const certName = $(this).data('name');
-        crewUploads[certName] = { status: 'missing', timestamp: Date.now() };
+        const certKey = $(this).data('key');
+        const certName = $(this).data('name') || certKey;
+
+        crewUploads[certKey] = {
+          mode: 'missing',
+          status: 'missing',
+          timestamp: Date.now()
+        };
         localStorage.setItem('crewCertUploads', JSON.stringify(crewUploads));
-        $(this).closest('tr').find('.cert-status').html(`<span class="label label-warning">Not Applicable</span>`);
+
+        $(this).closest('tr').find('.cert-status').html(`
+          <span class="label label-warning">Not Applicable</span>
+        `);
         $(this).hide();
+
+        recomputeProgress();
+        showToast("'" + certName + "' was marked as Not Applicable.");
       });
 
       $('#saveCertificates').on('click', function () {
+        recomputeProgress();
         showToast('All changes have been saved.');
       });
 
       // --- HELPERS ---
-      function escapeHtml(s) { if (!s) return ''; return String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
-      function showToast(msg) {
+
+      function escapeHtml(s) {
+        if (!s) return '';
+        return String(s).replace(/[&<>"']/g, function (m) {
+          return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          }[m];
+        });
+      }
+
+      // Progress = all required+requireUpload certs uploaded or marked Not Applicable
+      function recomputeProgress() {
+        const certificates = config.certificates || [];
+        let allOk = true;
+
+        certificates.forEach(cert => {
+          if (!cert.isRequired || !cert.requireUpload) return;
+
+          const key = cert.code || cert.name || '';
+          const saved = crewUploads[key] || {};
+          const mode = saved.mode || saved.status;
+
+          if (!saved.filename && mode !== 'missing') {
+            allOk = false;
+          }
+        });
+
+        const progress = JSON.parse(localStorage.getItem('progress') || '{}');
+        progress['cert'] = allOk;
+        localStorage.setItem('progress', JSON.stringify(progress));
+      }
+
+      function showToast(msg, type) {
         $('.toast-custom').remove();
-        const toast = $(`<div class="alert alert-success toast-custom" style="position:fixed;bottom:20px;right:20px;z-index:1050;">${escapeHtml(msg)}</div>`);
+        const alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+        const toast = $(`
+          <div class="alert ${alertClass} toast-custom"
+               style="position:fixed;bottom:20px;right:20px;z-index:1050;">
+            ${escapeHtml(msg)}
+          </div>
+        `);
         $('body').append(toast);
         setTimeout(() => toast.fadeOut(500, () => toast.remove()), 3000);
       }
 
       // --- INITIAL LOAD ---
       renderCrewCertificates();
+      recomputeProgress();
     });
   </script>
 </body>

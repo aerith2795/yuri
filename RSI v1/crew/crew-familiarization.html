@@ -2,183 +2,370 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <title>RSI Crew • Familiarization Video</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="../assets/ripple.css" rel="stylesheet" />
-    <link href="page.css" rel="stylesheet" />
-    <style>
-        #videoContainer {
-            position: relative;
-            max-width: 100%;
-        }
+  <meta charset="UTF-8" />
+  <title>RSI Crew • Familiarization Video</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        #videoPlayer {
-            max-width: 100%;
-            border-radius: 4px 4px 0 0;
-        }
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="../assets/ripple.css" rel="stylesheet" />
+  <link href="page.css" rel="stylesheet" />
 
-        .custom-controls {
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 10px;
-            border-radius: 0 0 4px 4px;
-            text-align: left;
-        }
+  <style>
+    #videoContainer {
+      position: relative;
+      max-width: 100%;
+    }
 
-        .custom-controls .btn {
-            color: white;
-        }
+    #videoPlayer {
+      max-width: 100%;
+      border-radius: 4px 4px 0 0;
+    }
 
-        .progress-bar-container {
-            flex-grow: 1;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.3);
-            margin: 0 15px;
-            top: 7px;
-            position: relative;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    .custom-controls {
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      padding: 10px;
+      border-radius: 0 0 4px 4px;
+      text-align: left;
+    }
 
-        .progress-bar-watched {
-            background: var(--r-blue);
-            height: 100%;
-            width: 0%;
-            border-radius: 5px;
-        }
-    </style>
+    .custom-controls .btn {
+      color: #fff;
+    }
+
+    .progress-bar-container {
+      flex-grow: 1;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.3);
+      margin: 0 15px;
+      top: 7px;
+      position: relative;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .progress-bar-watched {
+      background: var(--r-blue);
+      height: 100%;
+      width: 0%;
+      border-radius: 5px;
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: #6B84A8;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="container-fluid dashboard-layout">
-        <div class="row">
-            <div id="sidebar-placeholder"></div>
-            <div class="col-sm-9 col-md-10 main-content">
-                <div class="page-header">
-                    <h2>Familiarization Video</h2>
-                    <p id="instructionsText">Watch the required video and confirm once completed. Skipping ahead is
-                        disabled.</p>
-                </div>
-                <div id="videoPanel" class="panel panel-default" style="display:none;">
-                    <div class="panel-heading"><i class="fa fa-video-camera"></i> Familiarization Video</div>
-                    <div class="panel-body text-center" style="padding: 15px;">
-                        <div id="videoContainer">
-                        </div>
-                        <div class="checkbox" style="margin-top: 20px;">
-                            <label style="font-size: 16px;">
-                                <input type="checkbox" id="videoWatched" disabled> I confirm I have watched and
-                                understood the entire video.
-                            </label>
-                        </div>
-                        <div style="margin-top: 15px;">
-                            <button id="confirmWatchedBtn" class="btn btn-success" disabled><i
-                                    class="fa fa-check-circle"></i> Mark as Complete</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="noVideoMsg" class="alert alert-info" style="display:none;"></div>
-            </div>
+  <div class="container-fluid dashboard-layout">
+    <div class="row">
+      <div id="sidebar-placeholder"></div>
+
+      <div class="col-sm-9 col-md-10 main-content">
+        <div class="page-header">
+          <h2>Familiarization Video</h2>
+          <p id="instructionsText">
+            Watch the required video and confirm once completed. Skipping ahead is disabled.
+          </p>
+          <p id="currentVesselLabel" class="small-note" style="display:none;">
+            Current vessel: <span id="currentVesselName"></span>
+          </p>
         </div>
+
+        <div id="videoPanel" class="panel panel-default" style="display:none;">
+          <div class="panel-heading">
+            <i class="fa fa-video-camera"></i> Familiarization Video
+          </div>
+          <div class="panel-body text-center" style="padding: 15px;">
+            <div id="videoContainer"></div>
+
+            <div id="docInfo" class="text-left" style="margin-top: 15px; font-size: 13px;"></div>
+
+            <div id="confirmCheckboxWrapper" class="checkbox" style="margin-top: 20px;">
+              <label style="font-size: 16px;">
+                <input type="checkbox" id="videoWatched" disabled>
+                I confirm I have watched and understood the entire video.
+              </label>
+            </div>
+
+            <div style="margin-top: 15px;">
+              <button id="confirmWatchedBtn" class="btn btn-success" disabled>
+                <i class="fa fa-check-circle"></i> Mark as Complete
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="noVideoMsg" class="alert alert-info" style="display:none;"></div>
+      </div>
     </div>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script>
-        $(function () {
-            fetch('crew-sidebar.html')
-                .then(r => r.text())
-                .then(html => {
-                    $('#sidebar-placeholder').html(html);
-                    const activeLink = document.querySelector('[data-page="crew-familiarization"]');
-                    if (activeLink) activeLink.classList.add('active');
-                });
-            const familiarizationConfig = JSON.parse(localStorage.getItem("familiarizationConfig"));
-            let progress = JSON.parse(localStorage.getItem("progress")) || {};
+  </div>
 
-            if (!familiarizationConfig || !familiarizationConfig.show) {
-                $("#noVideoMsg").text("The familiarization video step is not required for this vessel.").show();
-                return;
-            }
-            $("#videoPanel").show();
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
-            if (familiarizationConfig.instructions) {
-                $("#instructionsText").text(familiarizationConfig.instructions);
-            }
-
-            if (familiarizationConfig.videoUrl) {
-                const videoHtml = `
-                    <video id="videoPlayer" style="max-width:100%; border-radius: 4px 4px 0 0;" src="${familiarizationConfig.videoUrl}"></video>
-                    <div class="custom-controls">
-                        <div style="display:flex; align-items:center;">
-                            <button id="playPauseBtn" class="btn"><i class="fa fa-play"></i></button>
-                            <div class="progress-bar-container"><div class="progress-bar-watched"></div></div>
-                        </div>
-                    </div>`;
-                $("#videoContainer").html(videoHtml);
-
-                const video = document.getElementById('videoPlayer');
-
-                // *** FIX: Wrap all video control logic in the 'loadedmetadata' event listener ***
-                $(video).on('loadedmetadata', function () {
-                    const playPauseBtn = $('#playPauseBtn i');
-                    const watchedProgress = $('.progress-bar-watched');
-                    const watchedCheckbox = $('#videoWatched');
-                    let maxWatchedTime = 0;
-
-                    $('#playPauseBtn').on('click', function () {
-                        if (video.paused) {
-                            video.play();
-                            playPauseBtn.removeClass('fa-play').addClass('fa-pause');
-                        } else {
-                            video.pause();
-                            playPauseBtn.removeClass('fa-pause').addClass('fa-play');
-                        }
-                    });
-
-                    $(video).on('timeupdate', function () {
-                        if (video.currentTime > maxWatchedTime) {
-                            maxWatchedTime = video.currentTime;
-                        }
-                        const progressPercent = (video.currentTime / video.duration) * 100;
-                        watchedProgress.css('width', progressPercent + '%');
-                    });
-
-                    $(video).on('seeking', function () {
-                        if (video.currentTime > maxWatchedTime + 0.1) { // Add a small buffer
-                            video.currentTime = maxWatchedTime;
-                        }
-                    });
-
-                    $(video).on('ended', function () {
-                        watchedCheckbox.prop('disabled', false);
-                        playPauseBtn.removeClass('fa-pause').addClass('fa-play');
-                        showAlert("Video complete. You can now mark this task as complete.", "success");
-                    });
-                });
-
-            } else {
-                $("#videoContainer").html('<div class="alert alert-warning">No video has been uploaded by the administrator.</div>');
-            }
-
-            $("#videoWatched").on("change", function () { $("#confirmWatchedBtn").prop("disabled", !this.checked); });
-            $("#confirmWatchedBtn").on("click", function () {
-                progress['video'] = true;
-                localStorage.setItem("progress", JSON.stringify(progress));
-                $(this).prop('disabled', true).removeClass('btn-success').addClass('btn-default').html('<i class="fa fa-check"></i> Completed');
-                $('#videoWatched').prop('disabled', true);
-                showAlert("Confirmation saved. Thank you!", "success");
-            });
-
-            if (progress['video']) {
-                $('#videoWatched').prop('checked', true).prop('disabled', true);
-                $('#confirmWatchedBtn').prop('disabled', true).removeClass('btn-success').addClass('btn-default').html('<i class="fa fa-check"></i> Completed');
-            }
-
-            function showAlert(msg, type = 'success') { const alert = $(`<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`); $('body').append(alert); setTimeout(() => alert.fadeOut(500, () => alert.remove()), 4000); }
+  <script>
+    $(function () {
+      // Load sidebar and set active item
+      fetch('crew-sidebar.html')
+        .then(r => r.text())
+        .then(html => {
+          $('#sidebar-placeholder').html(html);
+          const activeLink = document.querySelector('[data-page="crew-familiarization"]');
+          if (activeLink) activeLink.classList.add('active');
         });
-    </script>
+
+      // Keys aligned with Customer Familiarization Config
+      const GLOBAL_CONFIG_KEY = "familiarizationConfig";
+      const PER_VESSEL_KEY = "familiarizationConfigsByVessel";
+      const FAM_CURRENT_VESSEL_KEY = "famCurrentVesselId";        // from customer config UI
+      const CREW_ASSIGNED_VESSEL_KEY = "crewAssignedVesselId";    // you can set this when crew logs in
+      const PROGRESS_KEY = "crewProgressByVessel";
+
+      // Vessels list (shared with customer portal)
+      let vessels = JSON.parse(localStorage.getItem('vessels') || 'null') || [];
+
+      function getVesselName(id) {
+        const v = vessels.find(v => v.id === id);
+        return v ? v.name : id;
+      }
+
+      function getAssignedVesselId() {
+        // Priority: dedicated crew key -> famCurrentVesselId (for demo) -> first vessel -> null
+        return localStorage.getItem(CREW_ASSIGNED_VESSEL_KEY)
+          || localStorage.getItem(FAM_CURRENT_VESSEL_KEY)
+          || (vessels[0] && vessels[0].id)
+          || null;
+      }
+
+      // Resolve config: per-vessel first, then global
+      function resolveFamiliarizationConfig() {
+        const perVesselConfigs = JSON.parse(localStorage.getItem(PER_VESSEL_KEY) || '{}');
+        const globalConfig = JSON.parse(localStorage.getItem(GLOBAL_CONFIG_KEY) || 'null');
+        const vesselId = getAssignedVesselId();
+
+        let cfg = null;
+        if (vesselId && perVesselConfigs[vesselId]) {
+          cfg = perVesselConfigs[vesselId];
+        } else if (globalConfig) {
+          cfg = globalConfig;
+        }
+
+        return {
+          vesselId: vesselId,
+          config: cfg
+        };
+      }
+
+      // Per-vessel progress
+      function loadProgress(vesselId) {
+        let progressByVessel = JSON.parse(localStorage.getItem(PROGRESS_KEY) || 'null');
+
+        // Backward compatibility: if old "progress" key exists and new one doesn't
+        if (!progressByVessel) {
+          const legacy = JSON.parse(localStorage.getItem("progress") || '{}');
+          progressByVessel = {};
+          if (Object.keys(legacy).length) {
+            progressByVessel["GLOBAL"] = legacy;
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressByVessel));
+          }
+        }
+
+        progressByVessel = progressByVessel || {};
+        const id = vesselId || "GLOBAL";
+        return {
+          vesselId: id,
+          all: progressByVessel,
+          current: progressByVessel[id] || {}
+        };
+      }
+
+      function saveProgress(progressState) {
+        localStorage.setItem(PROGRESS_KEY, JSON.stringify(progressState));
+      }
+
+      function showAlert(msg, type = 'success') {
+        const alert = $(
+          `<div class="alert alert-${type}" style="position:fixed;top:20px;right:20px;z-index:9999;">${msg}</div>`
+        );
+        $('body').append(alert);
+        setTimeout(() => alert.fadeOut(500, () => alert.remove()), 4000);
+      }
+
+      // ---- INIT ----
+      const { vesselId, config: familiarizationConfig } = resolveFamiliarizationConfig();
+
+      // Show vessel name (if any)
+      if (vesselId) {
+        $('#currentVesselLabel').show();
+        $('#currentVesselName').text(getVesselName(vesselId));
+      }
+
+      // No config or explicitly hidden
+      if (!familiarizationConfig || !familiarizationConfig.show) {
+        $("#noVideoMsg")
+          .text("The familiarization video step is not required for this vessel.")
+          .show();
+        return;
+      }
+
+      $("#videoPanel").show();
+
+      // Instructions
+      if (familiarizationConfig.instructions) {
+        $("#instructionsText").text(familiarizationConfig.instructions);
+      }
+
+      // Document info (from docFileName, same as customer preview)
+     // Document info (clickable from config)
+if (familiarizationConfig.docFileName) {
+  if (familiarizationConfig.docUrl) {
+    $('#docInfo').html(
+      '<i class="fa fa-file-text-o"></i> Familiarization document: ' +
+      '<a href="' + familiarizationConfig.docUrl + '" target="_blank" rel="noopener">' +
+      '<strong>' + familiarizationConfig.docFileName + '</strong>' +
+      '</a>'
+    );
+  } else {
+    $('#docInfo').html(
+      '<i class="fa fa-file-text-o"></i> Familiarization document: ' +
+      '<strong>' + familiarizationConfig.docFileName + '</strong> ' +
+      '<span class="text-muted">(no link available)</span>'
+    );
+  }
+} else {
+  $('#docInfo').html(
+    '<span class="text-muted"><em>No familiarization document was provided for this vessel.</em></span>'
+  );
+}
+
+
+      // Confirmation behavior based on requireConfirm
+      const requireConfirm = !!familiarizationConfig.requireConfirm;
+      if (!requireConfirm) {
+        // Hide checkbox, button still gated by video end
+        $('#confirmCheckboxWrapper').hide();
+        $('#confirmWatchedBtn').prop('disabled', true);
+      } else {
+        $('#confirmCheckboxWrapper').show();
+        $('#videoWatched').prop('disabled', true);
+        $('#confirmWatchedBtn').prop('disabled', true);
+      }
+
+      // Video block
+      if (familiarizationConfig.videoUrl) {
+        const videoHtml = `
+          <video id="videoPlayer"
+                 style="max-width:100%; border-radius: 4px 4px 0 0;"
+                 src="${familiarizationConfig.videoUrl}">
+          </video>
+          <div class="custom-controls">
+            <div style="display:flex; align-items:center;">
+              <button id="playPauseBtn" class="btn"><i class="fa fa-play"></i></button>
+              <div class="progress-bar-container"><div class="progress-bar-watched"></div></div>
+            </div>
+          </div>
+        `;
+        $("#videoContainer").html(videoHtml);
+
+        const video = document.getElementById('videoPlayer');
+
+        $(video).on('loadedmetadata', function () {
+          const playPauseIcon = $('#playPauseBtn i');
+          const watchedProgress = $('.progress-bar-watched');
+          const watchedCheckbox = $('#videoWatched');
+
+          let maxWatchedTime = 0;
+
+          $('#playPauseBtn').on('click', function () {
+            if (video.paused) {
+              video.play();
+              playPauseIcon.removeClass('fa-play').addClass('fa-pause');
+            } else {
+              video.pause();
+              playPauseIcon.removeClass('fa-pause').addClass('fa-play');
+            }
+          });
+
+          $(video).on('timeupdate', function () {
+            if (video.currentTime > maxWatchedTime) {
+              maxWatchedTime = video.currentTime;
+            }
+            const progressPercent = (video.currentTime / video.duration) * 100;
+            watchedProgress.css('width', progressPercent + '%');
+          });
+
+          $(video).on('seeking', function () {
+            if (video.currentTime > maxWatchedTime + 0.1) {
+              video.currentTime = maxWatchedTime;
+            }
+          });
+
+          $(video).on('ended', function () {
+            // When video fully watched:
+            if (requireConfirm) {
+              watchedCheckbox.prop('disabled', false);
+            } else {
+              $('#confirmWatchedBtn').prop('disabled', false);
+            }
+            playPauseIcon.removeClass('fa-pause').addClass('fa-play');
+            showAlert("Video complete. You can now mark this task as complete.", "success");
+          });
+        });
+      } else {
+        $("#videoContainer").html(
+          '<div class="alert alert-warning">No video has been uploaded by the administrator for this vessel.</div>'
+        );
+      }
+
+      // Per-vessel progress wiring
+      const { vesselId: progressVesselId, all: progressByVessel, current: vesselProgress } = loadProgress(vesselId);
+
+      // If already completed for this vessel, lock UI
+      if (vesselProgress['video']) {
+        if (requireConfirm) {
+          $('#videoWatched').prop('checked', true).prop('disabled', true);
+        } else {
+          $('#confirmCheckboxWrapper').hide();
+        }
+        $('#confirmWatchedBtn')
+          .prop('disabled', true)
+          .removeClass('btn-success')
+          .addClass('btn-default')
+          .html('<i class="fa fa-check"></i> Completed');
+      }
+
+      // Events for confirmation flow
+      $("#videoWatched").on("change", function () {
+        $("#confirmWatchedBtn").prop("disabled", !this.checked);
+      });
+
+      $("#confirmWatchedBtn").on("click", function () {
+        // Update per-vessel progress
+        const updated = progressByVessel;
+        const pv = updated[progressVesselId] || {};
+        pv['video'] = true;
+        updated[progressVesselId] = pv;
+        saveProgress(updated);
+
+        $(this)
+          .prop('disabled', true)
+          .removeClass('btn-success')
+          .addClass('btn-default')
+          .html('<i class="fa fa-check"></i> Completed');
+
+        if (requireConfirm) {
+          $('#videoWatched').prop('disabled', true);
+        }
+
+        showAlert("Confirmation saved. Thank you!", "success");
+      });
+    });
+  </script>
 </body>
 
 </html>

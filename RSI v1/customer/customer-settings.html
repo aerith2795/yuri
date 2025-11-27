@@ -71,7 +71,7 @@
                           <textarea id="finalMessage" class="form-control"></textarea>
                         </div>
                         <div class="checkbox">
-                          <label><input type="checkbox" id="finalCheckbox"> Include checkbox: “I approve sharing my information with the vessel and confirm accuracy.”</label>
+                          <label><input type="checkbox" id="finalCheckbox"> Include checkbox: “I approve sharing my information with the vessel and confirm that the details I have provided are accurate.”</label>
                         </div>
                     </div>
                 </div>
@@ -184,14 +184,30 @@
                 toggleViewMode(false);
             }
             
-            function renderAllPreviews() {
-                const finalContent = $('#finalMessage').summernote('code');
-                const finalCheckboxChecked = $('#finalCheckbox').is(':checked');
-                let finalPreviewHtml = finalContent || '<p class="text-muted"><em>Preview will appear here...</em></p>';
-                if (finalCheckboxChecked) {
-                    finalPreviewHtml += '<hr style="margin: 10px 0;"><div class="checkbox disabled"><label><input type="checkbox" disabled checked> I approve sharing my information...</label></div>';
-                }
-                $('#finalPreview').html(finalPreviewHtml);
+function renderAllPreviews() {
+    const finalContent = $('#finalMessage').summernote('code');
+    const finalCheckboxChecked = $('#finalCheckbox').is(':checked');
+
+    let finalPreviewHtml = "";
+
+    // 1. Checkbox first
+    if (finalCheckboxChecked) {
+        finalPreviewHtml +=
+            '<div class="checkbox disabled" style="margin-bottom:10px;">' +
+            '<label><input type="checkbox" disabled checked> I approve sharing my information with the vessel and confirm that the details I have provided are accurate.</label>' +
+            '</div>' +
+            '<hr style="margin: 10px 0;">';
+    }
+
+    // 2. Message after checkbox
+    if (finalContent && finalContent.trim() !== "") {
+        finalPreviewHtml += finalContent;
+    } else {
+        finalPreviewHtml += '<p class="text-muted"><em>Preview will appear here...</em></p>';
+    }
+
+    // Apply to preview
+    $('#finalPreview').html(finalPreviewHtml);
 
                 const showLogs = $('#showActivityLogs').is(':checked');
                 const logCount = $('#activityLogCount').val();
@@ -216,7 +232,7 @@
                     return true;
                 } else {
                     // Default values when no settings yet
-                    $('#finalMessage').summernote('code', '<p>Thank you for completing your registration.</p>');
+                    $('#finalMessage').summernote('code', '<p>Thank you for completing your Ripple Smart Induction registration. Once your registration is approved, you can log in to the RSI Crew Portal to continue your onboarding.</p>');
                     $('#finalCheckbox').prop('checked', true);
                     $('#showActivityLogs').prop('checked', true);
                     $('#activityLogCount').val(10);

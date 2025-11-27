@@ -142,7 +142,7 @@
                   <div class="checkbox">
                     <label>
                       <input type="checkbox" id="requireConfirm">
-                      Require crew to tick “I confirm that I have watched the full video”
+                      Require crew to check “I confirm that I have watched the full video”
                     </label>
                   </div>
                   <p class="text-muted-2" style="margin-top:8px;font-size:12px;">
@@ -283,98 +283,115 @@
         }
       }
 
-      function updatePreview(config) {
-        const cfg = config || {};
-        const instructions = cfg.instructions || '';
-        $('#instructionsPreview').html(
-          instructions
-            ? instructions.replace(/\n/g, '<br>')
-            : "<em>No instructions provided.</em>"
-        );
+     function updatePreview(config) {
+  const cfg = config || {};
+  const instructions = cfg.instructions || '';
+  $('#instructionsPreview').html(
+    instructions
+      ? instructions.replace(/\n/g, '<br>')
+      : "<em>No instructions provided.</em>"
+  );
 
-        if (cfg.videoUrl) {
-          $('#videoPreview').attr('src', cfg.videoUrl);
-        } else {
-          $('#videoPreview').removeAttr('src');
-        }
+  if (cfg.videoUrl) {
+    $('#videoPreview').attr('src', cfg.videoUrl);
+  } else {
+    $('#videoPreview').removeAttr('src');
+  }
 
-        if (cfg.docFileName) {
-          $('#docPreview').html(
-            '<i class="fa fa-file-text-o"></i> Document available: <strong>' +
-            cfg.docFileName +
-            '</strong>'
-          );
-        } else {
-          $('#docPreview').html('<em>No familiarization document uploaded.</em>');
-        }
+  // --- DOCUMENT PREVIEW (CLICKABLE) ---
+  if (cfg.docFileName) {
+    if (cfg.docUrl) {
+      $('#docPreview').html(
+        '<i class="fa fa-file-text-o"></i> Document: ' +
+        '<a href="' + cfg.docUrl + '" target="_blank" rel="noopener">' +
+        '<strong>' + cfg.docFileName + '</strong>' +
+        '</a>'
+      );
+    } else {
+      $('#docPreview').html(
+        '<i class="fa fa-file-text-o"></i> Document available: <strong>' +
+        cfg.docFileName +
+        '</strong> <span class="text-muted">(no link available)</span>'
+      );
+    }
+  } else {
+    $('#docPreview').html('<em>No familiarization document uploaded.</em>');
+  }
 
-        // Show or hide the confirmation checkbox preview
-        if (cfg.requireConfirm) {
-          $('#confirmPreview').html(
-            '<label class="checkbox-inline">' +
-            '<input type="checkbox" disabled> ' +
-            'I confirm that I have watched the full familiarization video.' +
-            '</label>'
-          );
-        } else {
-          $('#confirmPreview').html('<span class="text-muted-2"><em>No confirmation checkbox will be shown to crew.</em></span>');
-        }
-      }
+  if (cfg.requireConfirm) {
+    $('#confirmPreview').html(
+      '<label class="checkbox-inline">' +
+      '<input type="checkbox" disabled> ' +
+      'I confirm that I have watched the full familiarization video.' +
+      '</label>'
+    );
+  } else {
+    $('#confirmPreview').html(
+      '<span class="text-muted-2"><em>No confirmation checkbox will be shown to crew.</em></span>'
+    );
+  }
+}
 
-      function saveConfig(showAlertAndToggle = true) {
-        const perVesselConfigs = familiarConfigsByVessel;
-        const existingConfig =
-          (currentVesselId && perVesselConfigs[currentVesselId]) ||
-          JSON.parse(localStorage.getItem(GLOBAL_CONFIG_KEY) || '{}');
 
-        const fileInput = $("#videoFile")[0];
-        const docInput = $("#docFile")[0];
+     function saveConfig(showAlertAndToggle = true) {
+  const perVesselConfigs = familiarConfigsByVessel;
+  const existingConfig =
+    (currentVesselId && perVesselConfigs[currentVesselId]) ||
+    JSON.parse(localStorage.getItem(GLOBAL_CONFIG_KEY) || '{}');
 
-        let videoUrl = existingConfig.videoUrl || '';
-        let fileName = existingConfig.fileName || '';
-        if (tempVideoUrl) {
-          videoUrl = tempVideoUrl;
-          if (fileInput.files.length > 0) {
-            fileName = fileInput.files[0].name;
-          }
-        } else if (fileInput.files.length > 0) {
-          // New selection but not yet previewed: create object URL
-          videoUrl = URL.createObjectURL(fileInput.files[0]);
-          fileName = fileInput.files[0].name;
-        }
+  const fileInput = $("#videoFile")[0];
+  const docInput = $("#docFile")[0];
 
-        let docFileName = existingConfig.docFileName || '';
-        if (docInput.files.length > 0) {
-          docFileName = docInput.files[0].name;
-        }
+  // --- VIDEO ---
+  let videoUrl = existingConfig.videoUrl || '';
+  let fileName = existingConfig.fileName || '';
+  if (tempVideoUrl) {
+    videoUrl = tempVideoUrl;
+    if (fileInput.files.length > 0) {
+      fileName = fileInput.files[0].name;
+    }
+  } else if (fileInput.files.length > 0) {
+    videoUrl = URL.createObjectURL(fileInput.files[0]);
+    fileName = fileInput.files[0].name;
+  }
 
-        const config = {
-          instructions: $("#videoInstructions").val(),
-          show: $("#showVideo").prop("checked"),
-          requireConfirm: $("#requireConfirm").prop("checked"),
-          videoUrl: videoUrl || '',
-          fileName: fileName || '',
-          docFileName: docFileName || ''
-        };
+  // --- DOCUMENT (NEW: docUrl) ---
+  let docFileName = existingConfig.docFileName || '';
+  let docUrl = existingConfig.docUrl || '';
 
-        if (currentVesselId) {
-          familiarConfigsByVessel[currentVesselId] = config;
-          localStorage.setItem(PER_VESSEL_KEY, JSON.stringify(familiarConfigsByVessel));
-        }
+  if (docInput.files.length > 0) {
+    const docFile = docInput.files[0];
+    docFileName = docFile.name;
+    docUrl = URL.createObjectURL(docFile); // store object URL same as video
+  }
 
-        // Keep global key for dashboard / legacy logic / crew portal
-        localStorage.setItem(GLOBAL_CONFIG_KEY, JSON.stringify(config));
+  const config = {
+    instructions: $("#videoInstructions").val(),
+    show: $("#showVideo").prop("checked"),
+    requireConfirm: $("#requireConfirm").prop("checked"),
+    videoUrl: videoUrl || '',
+    fileName: fileName || '',
+    docFileName: docFileName || '',
+    docUrl: docUrl || ''             // NEW
+  };
 
-        // Update UI bits
-        $('#currentFileName').text(config.fileName ? `Current file: ${config.fileName}` : '');
-        $('#currentDocName').text(config.docFileName ? `Current document: ${config.docFileName}` : '');
-        updatePreview(config);
+  if (currentVesselId) {
+    familiarConfigsByVessel[currentVesselId] = config;
+    localStorage.setItem(PER_VESSEL_KEY, JSON.stringify(familiarConfigsByVessel));
+  }
 
-        if (showAlertAndToggle) {
-          showAlert("Familiarization configuration saved.", "success");
-          toggleViewMode(false);
-        }
-      }
+  localStorage.setItem(GLOBAL_CONFIG_KEY, JSON.stringify(config));
+
+  $('#currentFileName').text(config.fileName ? `Current file: ${config.fileName}` : '');
+  $('#currentDocName').text(config.docFileName ? `Current document: ${config.docFileName}` : '');
+  updatePreview(config);
+
+  if (showAlertAndToggle) {
+    showAlert("Familiarization configuration saved.", "success");
+    toggleViewMode(false);
+  }
+}
+
 
       function loadConfigForCurrentVessel() {
         familiarConfigsByVessel = JSON.parse(localStorage.getItem(PER_VESSEL_KEY) || '{}');

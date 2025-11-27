@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>RSI Crew • Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="../assets/ripple.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+
+    <style>
+        /* Modern welcome banner */
+        .welcome-banner {
+            position: relative;
+            border-radius: 16px;
+            padding: 18px 22px;
+            background: linear-gradient(135deg, rgba(7, 10, 26, 0.98), #0b1535, #1b2f5b);
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            margin-bottom: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .welcome-banner::after {
+            content: "";
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(63, 145, 255, 0.25), transparent 60%);
+            opacity: 0.9;
+        }
+
+        .welcome-main {
+            position: relative;
+            z-index: 1;
+            max-width: 60%;
+        }
+
+        .welcome-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 6px;
+        }
+
+        .welcome-meta {
+            margin-bottom: 6px;
+        }
+
+        .welcome-meta .label {
+            margin-right: 6px;
+        }
+
+        .welcome-text {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .welcome-actions {
+            margin-top: 10px;
+        }
+
+        .welcome-actions .btn {
+            margin-right: 6px;
+        }
+
+        .welcome-secondary {
+            position: relative;
+            z-index: 1;
+            text-align: right;
+            font-size: 12px;
+        }
+
+        .vessel-tag {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: rgba(239, 244, 250, 0.12);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .vessel-tag i {
+            margin-right: 4px;
+            color: var(--r-blue);
+        }
+
+        .vessel-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .vessel-company {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 767px) {
+            .welcome-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .welcome-main {
+                max-width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .welcome-secondary {
+                text-align: left;
+            }
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #ddd;
+        }
+
+        .nav-tabs > li > a {
+            border-radius: 4px 4px 0 0 !important;
+        }
+
+        /* Next steps panel */
+        .panel-next-steps .panel-heading {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .next-steps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .next-steps-header-main {
+            font-size: 13px;
+        }
+
+        .next-steps-header-status {
+            font-size: 12px;
+            color: #6c7a90;
+        }
+
+        .next-step-item {
+            margin-bottom: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .next-step-icon {
+            width: 22px;
+            margin-right: 8px;
+            text-align: center;
+        }
+
+        .next-step-icon i {
+            font-size: 14px;
+            color: var(--r-blue);
+        }
+
+        .next-step-content {
+            flex: 1;
+        }
+
+        .next-step-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .next-step-desc {
+            font-size: 12px;
+            margin: 2px 0 0;
+            color: #6c7a90;
+        }
+
+        .next-step-item.completed {
+            background: #f0fdf4;
+            border-left: 3px solid #2d8548;
+        }
+
+        .next-step-item.completed .next-step-icon i {
+            color: #2d8548;
+        }
+
+        .assignment-status-pill {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+        }
+
+        .assignment-status-pill.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .assignment-status-pill.none {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .assignment-status-pill.ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .small-link {
+            font-size: 11px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid dashboard-layout">
+        <div class="row">
+            <div id="sidebar-placeholder"></div>
+
+            <div class="col-sm-9 col-md-10 main-content">
+
+                <!-- MODERN WELCOME BANNER (ex-Sakurayuri, no active vessel yet) -->
+<div class="page-header">
+    <div class="welcome-banner">
+        <div id="welcome-container" class="welcome-main">
+            <h2 class="welcome-title">Welcome back, Cloud Strife</h2>
+
+            <p class="welcome-text">
+                You currently don’t have an active vessel assigned. You can still update your profile 
+                and certificates. When your office gives you joining instructions, request your next vessel here.
+            </p>
+
+            <div class="welcome-actions">
+                <button class="btn btn-xs btn-default" data-toggle="modal" data-target="#vesselRequestModal">
+                    <i class="fa fa-ship"></i> Request vessel assignment
+                </button>
+            </div>
+        </div>
+
+        <!-- Retained: ONE clear previous vessel block -->
+        <div class="welcome-secondary hidden-xs">
+            <div class="vessel-tag">
+                <i class="fa fa-history"></i> Previous assignment
+            </div>
+            <div class="vessel-name">M/V Sakurayuri Maru</div>
+            <div class="vessel-company">Hana No Umi Logistics</div>
+        </div>
+    </div>
+</div>
+
+
+                <!-- NEXT STEPS & STATUS PANEL -->
+                <div class="panel panel-default panel-next-steps">
+                    <div class="panel-heading">
+                        <i class="fa fa-info-circle"></i> Next steps & status
+                    </div>
+                    <div class="panel-body">
+
+                        <div class="next-steps-header">
+                            <div class="next-steps-header-main" id="headerMessage">
+                                Let’s get you ready for your next vessel.
+                            </div>
+                            <div class="next-steps-header-status">
+                                <span id="assignmentStatusPill" class="assignment-status-pill none">
+                                    No request submitted
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Action items -->
+                        <div class="row">
+                            <div class="col-md-7">
+
+                                <!-- Profile action -->
+                                <div class="next-step-item" data-action="profile">
+                                    <div class="next-step-icon">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <div class="next-step-content">
+                                        <p class="next-step-title">Review your profile</p>
+                                        <p class="next-step-desc">
+                                            Check that your personal details and contact information are up to date.
+                                            Go to <a href="crew-registration.html">Profile</a>.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Certificates action -->
+                                <div class="next-step-item" data-action="certs">
+                                    <div class="next-step-icon">
+                                        <i class="fa fa-certificate"></i>
+                                    </div>
+                                    <div class="next-step-content">
+                                        <p class="next-step-title">Check your certificates</p>
+                                        <p class="next-step-desc">
+                                            Make sure required certificates are uploaded and still valid.
+                                            Go to <a href="crew-certificates.html">Certificates</a>.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Request vessel action -->
+                                <div class="next-step-item" data-action="request">
+                                    <div class="next-step-icon">
+                                        <i class="fa fa-ship"></i>
+                                    </div>
+                                    <div class="next-step-content">
+                                        <p class="next-step-title">Send vessel assignment request</p>
+                                        <p class="next-step-desc" id="requestStepDesc">
+                                            If your joining instruction says, for example,
+                                            <strong>M/V Aozora Maru</strong>, use
+                                            <a href="#" data-toggle="modal" data-target="#vesselRequestModal">
+                                                Request vessel assignment
+                                            </a>
+                                            so your fleet office can confirm it.
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Info / help -->
+                            <div class="col-md-5">
+                                <p class="small-link text-muted" style="margin-bottom:6px;">
+                                    Once your office approves your request, your new vessel will appear in the sidebar
+                                    and vessel modules will be unlocked.
+                                </p>
+                                <p class="small-link text-muted">
+                                    If something looks incorrect (wrong vessel or missing history), please contact your
+                                    fleet office.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOGS + VESSEL HISTORY (CONFIG-DRIVEN) -->
+                <div>
+                    <ul class="nav nav-tabs" id="logTabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#activity">
+                                <i class="fa fa-history"></i> Activity logs
+                            </a>
+                        </li>
+                        <li id="historyTab">
+                            <a data-toggle="tab" href="#history">
+                                <i class="fa fa-ship"></i> Vessel history
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Activity Logs Tab -->
+                        <div id="activity" class="tab-pane fade in active">
+                            <div class="panel-body">
+                                <table class="table table-striped" id="crewLogsTable">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Vessel History Tab -->
+                        <div id="history" class="tab-pane fade">
+                            <div class="panel-body">
+                                <table class="table table-striped" id="vesselHistoryTable">
+                                    <thead>
+                                        <tr></tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /main-content -->
+        </div>
+    </div>
+
+    <!-- REQUEST VESSEL ASSIGNMENT MODAL (Option B) -->
+    <div class="modal fade" id="vesselRequestModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title"><i class="fa fa-ship"></i> Request vessel assignment</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        Your request will be reviewed by your fleet office before anything changes.
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select vessel</label>
+                        <select id="requestedVessel" class="form-control">
+                            <option value="">-- Please select --</option>
+                            <!-- Example list of Hana No Umi vessels; adjust as needed -->
+                            <option value="M/V Aozora Maru">M/V Aozora Maru</option>
+                            <option value="M/V Sakurayuri Maru">M/V Sakurayuri Maru</option>
+                            <option value="M/V Sea Spirit">M/V Sea Spirit</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Reason (optional)</label>
+                        <textarea id="requestReason" class="form-control" rows="3"
+                                  placeholder="Example: My joining instruction is for M/V Aozora Maru."></textarea>
+                    </div>
+
+                    <div id="requestFeedback" class="small text-muted"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="submitVesselRequest" class="btn btn-primary">Submit request</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- JS LIBS -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script>
+        $(function () {
+            // Load sidebar and highlight dashboard
+            fetch('crew-sidebar.html')
+                .then(r => r.text())
+                .then(html => {
+                    $('#sidebar-placeholder').html(html);
+                    const activeLink = document.querySelector('[data-page="crew-dashboard"]');
+                    if (activeLink) activeLink.classList.add('active');
+                });
+
+            // DEMO SEED: ex-Sakurayuri, no active vessel
+            localStorage.setItem("crewStatus", JSON.stringify({
+                activeVessel: null,      // no active vessel
+                previousVessels: 1       // at least one completed assignment
+            }));
+
+            // DEMO SEED: vessel history with Sakurayuri
+            (function seedVesselHistory() {
+                const existing = JSON.parse(localStorage.getItem("vesselHistory") || "[]");
+                if (!existing || existing.length === 0) {
+                    localStorage.setItem("vesselHistory", JSON.stringify([
+                        {
+                            "Vessel": "M/V Sakurayuri Maru",
+                            "Embark Date": "2025-05-01",
+                            "Disembark Date": "2025-11-21"
+                        }
+                    ]));
+                }
+            })();
+
+            const settingsData = JSON.parse(localStorage.getItem("customerSettings")) || {};
+
+            // Optional: seed crewPrep for demo (what's already done)
+            // Other pages (Profile/Certificates) could update this.
+            const crewPrep = JSON.parse(localStorage.getItem("crewPrep") || "{}");
+            const profileDone = !!crewPrep.profileDone;
+            const certsDone = !!crewPrep.certsDone;
+
+            // ----------------------------------
+            // Activity logging (simple)
+            // ----------------------------------
+            function logActivity(activity, remarks = '') {
+                const activities = JSON.parse(localStorage.getItem("activityLogs") || "[]");
+                const timestamp = new Date().toLocaleString();
+
+                activities.unshift({
+                    Date: timestamp,
+                    Activity: activity,
+                    Remarks: remarks
+                });
+
+                if (activities.length > 50) {
+                    activities.pop();
+                }
+
+                localStorage.setItem("activityLogs", JSON.stringify(activities));
+                return activities;
+            }
+
+            function renderTable(tableId, config, defaultCols, noDataMsg) {
+                const table = $(`#${tableId}`);
+                const thead = table.find('thead tr').empty();
+                const tbody = table.find('tbody').empty();
+
+                const columns = (config && config.columns && config.columns.length > 0)
+                    ? config.columns
+                    : defaultCols;
+                const entries = (config && config.entries) || [];
+                const count = (config && config.count) || 5;
+
+                columns.forEach(col => thead.append(`<th>${col}</th>`));
+
+                if (entries.length > 0) {
+                    entries.slice(0, count).forEach(entry => {
+                        let rowHtml = '<tr>';
+                        columns.forEach(col => {
+                            rowHtml += `<td>${entry[col] || '—'}</td>`;
+                        });
+                        tbody.append(rowHtml + '</tr>');
+                    });
+                } else {
+                    tbody.html(
+                        `<tr><td colspan="${columns.length}" class="text-center text-muted" style="padding:20px;">${noDataMsg}</td></tr>`
+                    );
+                }
+            }
+
+            // ----------------------------------
+            // Vessel Assignment Request (Option B)
+            // ----------------------------------
+            const existingRequests = JSON.parse(localStorage.getItem('vesselChangeRequests') || '[]');
+            const pending = existingRequests.find(r => r.status === 'Pending');
+
+            function markActionCompleted(actionKey) {
+                const $item = $('.next-step-item[data-action="' + actionKey + '"]');
+                $item.addClass('completed');
+            }
+
+            // Reflect profile & cert flags from crewPrep (if set by other pages)
+            if (profileDone) markActionCompleted('profile');
+            if (certsDone) markActionCompleted('certs');
+
+            function updateHeaderState() {
+                const requestDone = !!pending;
+                const allDone = profileDone && certsDone && requestDone;
+
+                const $pill = $('#assignmentStatusPill');
+                const $headerMsg = $('#headerMessage');
+
+                if (allDone) {
+                    $pill
+                        .removeClass('none pending')
+                        .addClass('ready')
+                        .text('All set – waiting for approval');
+
+                    $headerMsg.text("You’ve completed your part. Waiting for your fleet office to confirm your next vessel.");
+                } else if (requestDone) {
+                    $pill
+                        .removeClass('none ready')
+                        .addClass('pending')
+                        .text('Request pending');
+
+                    $headerMsg.text("Thanks, your request is in. You can still review your details while you wait.");
+                } else {
+                    $pill
+                        .removeClass('pending ready')
+                        .addClass('none')
+                        .text('No request submitted');
+
+                    $headerMsg.text("Let’s get you ready for your next vessel.");
+                }
+            }
+
+            if (pending) {
+                // Mark request step as completed
+                markActionCompleted('request');
+
+                // Update request step description
+                $('#requestStepDesc').html(
+                    'You requested assignment to <strong>' + pending.requestedVessel +
+                    '</strong>. Your fleet office will review and confirm your next vessel.'
+                );
+            }
+
+            $('#submitVesselRequest').on('click', function () {
+                const vessel = $('#requestedVessel').val();
+                const reason = $('#requestReason').val().trim();
+
+                if (!vessel) {
+                    $('#requestFeedback').text('Please select a vessel.').css('color', 'red');
+                    return;
+                }
+
+                const newRequest = {
+                    crew: 'Cloud Strife',
+                    currentVessel: null, // ex-crew, no active vessel
+                    requestedVessel: vessel,
+                    reason: reason,
+                    status: 'Pending',
+                    requestedAt: new Date().toLocaleString()
+                };
+
+                existingRequests.unshift(newRequest);
+                localStorage.setItem('vesselChangeRequests', JSON.stringify(existingRequests));
+
+                $('#requestFeedback').text('Request submitted. Awaiting office approval.').css('color', 'green');
+                logActivity('Vessel assignment requested', 'Requested assignment to ' + vessel);
+
+                // Mark request step as completed
+                markActionCompleted('request');
+                $('#requestStepDesc').html(
+                    'You requested assignment to <strong>' + vessel +
+                    '</strong>. Your fleet office will review and confirm your next vessel.'
+                );
+
+                setTimeout(function () {
+                    $('#vesselRequestModal').modal('hide');
+                    $('#requestFeedback').text('');
+                    $('#requestedVessel').val('');
+                    $('#requestReason').val('');
+                }, 1200);
+            });
+
+            updateHeaderState();
+
+            // ----------------------------------
+            // Initialize Dashboard2
+            // ----------------------------------
+            function initializePage() {
+                // Log page view
+                logActivity('Dashboard Viewed', 'User accessed Dashboard2 (ex-Sakurayuri)');
+
+                // Optional dynamic welcome text override from settings
+                if (settingsData.welcomeText) {
+                    let welcomeMsg = settingsData.welcomeText
+                        .replace(/{User}/g, 'Cloud Strife')
+                        .replace(/{Vessel}/g, 'M/V Sakurayuri Maru');
+                    $('#welcome-container').html(welcomeMsg);
+                }
+
+                // Activity Logs (config-driven)
+                if (settingsData.showActivityLogs === false) {
+                    $('#activity').html(
+                        '<p class="text-muted" style="padding:20px;">Activity log display is disabled by the administrator.</p>'
+                    );
+                } else {
+                    const activities = JSON.parse(localStorage.getItem("activityLogs") || "[]");
+                    const activityConfig = {
+                        columns: ['Date', 'Activity', 'Remarks'],
+                        entries: activities,
+                        count: settingsData.activityLogCount || 10
+                    };
+                    renderTable(
+                        'crewLogsTable',
+                        activityConfig,
+                        ['Date', 'Activity', 'Remarks'],
+                        'No activity logs found. Activities will appear here as you use the system.'
+                    );
+                }
+
+                // Vessel History (config-driven, now seeded)
+                if (settingsData.showVesselHistory === false) {
+                    $('#historyTab').hide();
+                } else {
+                    $('#historyTab').show();
+                    const historyEntries = JSON.parse(localStorage.getItem("vesselHistory") || "[]");
+                    const historyConfig = {
+                        columns: ['Vessel', 'Embark Date', 'Disembark Date'],
+                        entries: historyEntries,
+                        count: settingsData.vesselHistoryCount || 5
+                    };
+                    renderTable(
+                        'vesselHistoryTable',
+                        historyConfig,
+                        ['Vessel', 'Embark Date', 'Disembark Date'],
+                        'No vessel history found.'
+                    );
+                }
+            }
+
+            initializePage();
+        });
+    </script>
+</body>
+
+</html>
